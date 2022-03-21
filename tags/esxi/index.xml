@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ESXi on メモ帳</title><link>/tags/esxi/</link><description>Recent content in ESXi on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 07 Dec 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/esxi/index.xml" rel="self" type="application/rss+xml"/><item><title>ESXi6.5でUbuntuがネットワークに繋がらない</title><link>/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</link><pubDate>Fri, 07 Dec 2018 00:00:00 +0000</pubDate><guid>/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ESXi on メモ帳</title><link>https://blog.sky-net.pw/tags/esxi/</link><description>Recent content in ESXi on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 07 Dec 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.sky-net.pw/tags/esxi/index.xml" rel="self" type="application/rss+xml"/><item><title>ESXi6.5でUbuntuがネットワークに繋がらない</title><link>https://blog.sky-net.pw/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</link><pubDate>Fri, 07 Dec 2018 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</guid><description>
 ESXi上で動かしているとあるVMでパッケージのアップデートを適用して再起動したらネットワークに繋がらなくなってしまった．
 ただ，他のVMでは問題なくネットワークに接続できているので設定の問題かな？と思ってDHCPに戻したりして検証していたが，一行に接続できず参ってしまったのでその時のメモ．
 環境 ホスト
@@ -12,7 +12,7 @@ ESXi 6.5 ゲスト Ubuntu16.04（4.4.0-62-generic）
 接続不可能 4.4.0-104-generic 4.4.0-62-generic
 接続可能 解決方法 今回は対応するドライバを入れ直す方法ではなく，ESXiのアダプタタイプを変更することで解決しました．
 ESXiの管理コンソールに入り，ネットワークアダプタの設定項目を開いて当該アダプタのアダプタタイプをVMXNET 3に変更することでドライバも併せたものに変更されました．
-変更したところ上記の接続不可能だったカーネルでも問題なく接続できるようになったのを確認しました．</description></item><item><title>ESXiでghettoVCBを導入する</title><link>/post/esxi%E3%81%A7ghettovcb%E3%82%92%E5%B0%8E%E5%85%A5%E3%81%99%E3%82%8B/</link><pubDate>Sun, 13 May 2018 00:00:00 +0000</pubDate><guid>/post/esxi%E3%81%A7ghettovcb%E3%82%92%E5%B0%8E%E5%85%A5%E3%81%99%E3%82%8B/</guid><description>
+変更したところ上記の接続不可能だったカーネルでも問題なく接続できるようになったのを確認しました．</description></item><item><title>ESXiでghettoVCBを導入する</title><link>https://blog.sky-net.pw/post/esxi%E3%81%A7ghettovcb%E3%82%92%E5%B0%8E%E5%85%A5%E3%81%99%E3%82%8B/</link><pubDate>Sun, 13 May 2018 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/esxi%E3%81%A7ghettovcb%E3%82%92%E5%B0%8E%E5%85%A5%E3%81%99%E3%82%8B/</guid><description>
 はじめに ESXiでバックアップを取るためにghettoVCBを導入する
 環境 ESXi 6.5 事前準備 SSHの有効化 SSHを有効にしないと各種操作が行えないので予めSSHを有効にしておく
 WebUIにログインし
@@ -29,7 +29,7 @@ SSHでログインし
 1# cp /opt/ghettovcb/bin/ghettoVCB.sh /path/to/ あとは環境に合わせて編集しdry-runしてテストした後に実際に実行してみて問題ないかテストする
 ひとまず必要なのはバックアップデータの書き出し先なのでここだけ変更してみる
 1- VM_BACKUP_VOLUME=/vmfs/volumes/mini-local-datastore-hdd/backups 2+ VM_BACKUP_VOLUME=/vmfs/volumes/ds2/backup dry-runして問題ないか確認する
-1# ./ghettoVCB.sh -m VM名 -d dryrun 2Logging output to &amp;#34;/tmp/ghettoVCB-2018-05-13_02-00-31-1436833.log&amp;#34; ... 32018-05-13 02:00:31 -- info: = ghettoVCB LOG START = 4～略～ 52018-05-13 02:00:32 -- info: ###### Final status: OK, only a dryrun.</description></item><item><title>ESXi6.5まとめ</title><link>/post/esxi6.5%E3%81%BE%E3%81%A8%E3%82%81/</link><pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate><guid>/post/esxi6.5%E3%81%BE%E3%81%A8%E3%82%81/</guid><description>
+1# ./ghettoVCB.sh -m VM名 -d dryrun 2Logging output to &amp;#34;/tmp/ghettoVCB-2018-05-13_02-00-31-1436833.log&amp;#34; ... 32018-05-13 02:00:31 -- info: = ghettoVCB LOG START = 4～略～ 52018-05-13 02:00:32 -- info: ###### Final status: OK, only a dryrun.</description></item><item><title>ESXi6.5まとめ</title><link>https://blog.sky-net.pw/post/esxi6.5%E3%81%BE%E3%81%A8%E3%82%81/</link><pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/esxi6.5%E3%81%BE%E3%81%A8%E3%82%81/</guid><description>
 ESXi6.5を使い始めるにあたって気になった点とか使って困った点とかのまとめ
 インストール前の話 利用料金 無償版か有償版か選べる
 ただし無償版でもVMwareに登録必須

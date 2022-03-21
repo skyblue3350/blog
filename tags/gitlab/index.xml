@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gitlab on メモ帳</title><link>/tags/gitlab/</link><description>Recent content in Gitlab on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 14 Sep 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/gitlab/index.xml" rel="self" type="application/rss+xml"/><item><title>GitlabをPrometheusで監視する</title><link>/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</link><pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</guid><description>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gitlab on メモ帳</title><link>https://blog.sky-net.pw/tags/gitlab/</link><description>Recent content in Gitlab on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 14 Sep 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.sky-net.pw/tags/gitlab/index.xml" rel="self" type="application/rss+xml"/><item><title>GitlabをPrometheusで監視する</title><link>https://blog.sky-net.pw/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</link><pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</guid><description>
 9.3からサポートされているGitlabのPrometheusのメトリクス公開を試してみた．
 環境はsameersbn/docker-gitlabの11.2.3です．
 公式イメージでもできるらしいですが未検証なので参考サイトのとこに情報だけ置いておきます．
@@ -14,7 +14,7 @@ prometheus_multiproc_dirの環境変数が未定義との警告があります�
 http://gitlab-host/-/metrics
 からPrometheus用のフォーマットでメトリクスを収集することができます．
 Prometheus 監視対象としていつも通り登録すれば終わりですがいつもと違い/metricsではなく/-/metricsとなるのでそこだけリラベルする必要があります．
-1- targets:2- gitlab.local:100803labels:4__metrics_path__:/-/metrics参考サイト Gitlab doc GitLab Prometheus metrics Gitlab doc IP whitelist [SOLVED] Gitlab Docker prometheus_multiproc_dir and /-/metrics</description></item><item><title>Gitlabを8系から10系までアップデートする</title><link>/post/gitlab%E3%82%928%E7%B3%BB%E3%81%8B%E3%82%8910%E7%B3%BB%E3%81%BE%E3%81%A7%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%81%99%E3%82%8B/</link><pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%82%928%E7%B3%BB%E3%81%8B%E3%82%8910%E7%B3%BB%E3%81%BE%E3%81%A7%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%81%99%E3%82%8B/</guid><description>
+1- targets:2- gitlab.local:100803labels:4__metrics_path__:/-/metrics参考サイト Gitlab doc GitLab Prometheus metrics Gitlab doc IP whitelist [SOLVED] Gitlab Docker prometheus_multiproc_dir and /-/metrics</description></item><item><title>Gitlabを8系から10系までアップデートする</title><link>https://blog.sky-net.pw/post/gitlab%E3%82%928%E7%B3%BB%E3%81%8B%E3%82%8910%E7%B3%BB%E3%81%BE%E3%81%A7%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%81%99%E3%82%8B/</link><pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/gitlab%E3%82%928%E7%B3%BB%E3%81%8B%E3%82%8910%E7%B3%BB%E3%81%BE%E3%81%A7%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%81%99%E3%82%8B/</guid><description>
 はじめに 手元にsameersbn氏作成のGitlabの環境が2つあって双方ともアップデートするの忘れてたので最新版まであげる
 現在の最新リリースが10.6.4なのでここまであげる
 ダウンタイムはある程度生まれるけど1秒落ちたら殺される環境でもないので許容する
@@ -27,7 +27,7 @@ https://github.com/sameersbn/docker-gitlab#upgrading
 今回のバージョンは問題なさそうなので最新までそのままあげます
 ダメな場合は間のバージョンに一度上げてから最新まであげれば大丈夫です
 docker-compose.ymlを以下のように書き換えます
-1- image: sameersbn/gitlab:8.17.4 2+ image: sameersbn/gitlab:10.6.4 3$ docker-compose up -d 4docker-compose logs -f gitlab 5gitlab_1 | Migrating database... 6gitlab_1 | Missing Rails.application.secrets.jws_private_key for production environment. The secret will be generated and stored in config/secrets.yml. 7gitlab_1 | Recompiling assets (relative_url in use), this could take a while.</description></item><item><title>自前運用のGitlabでパスワード認証ができない</title><link>/post/%E8%87%AA%E5%89%8D%E9%81%8B%E7%94%A8%E3%81%AEgitlab%E3%81%A7%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E8%AA%8D%E8%A8%BC%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</link><pubDate>Sat, 14 Apr 2018 00:00:00 +0000</pubDate><guid>/post/%E8%87%AA%E5%89%8D%E9%81%8B%E7%94%A8%E3%81%AEgitlab%E3%81%A7%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E8%AA%8D%E8%A8%BC%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</guid><description>
+1- image: sameersbn/gitlab:8.17.4 2+ image: sameersbn/gitlab:10.6.4 3$ docker-compose up -d 4docker-compose logs -f gitlab 5gitlab_1 | Migrating database... 6gitlab_1 | Missing Rails.application.secrets.jws_private_key for production environment. The secret will be generated and stored in config/secrets.yml. 7gitlab_1 | Recompiling assets (relative_url in use), this could take a while.</description></item><item><title>自前運用のGitlabでパスワード認証ができない</title><link>https://blog.sky-net.pw/post/%E8%87%AA%E5%89%8D%E9%81%8B%E7%94%A8%E3%81%AEgitlab%E3%81%A7%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E8%AA%8D%E8%A8%BC%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</link><pubDate>Sat, 14 Apr 2018 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/%E8%87%AA%E5%89%8D%E9%81%8B%E7%94%A8%E3%81%AEgitlab%E3%81%A7%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E8%AA%8D%E8%A8%BC%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</guid><description>
 表題の通りですがcloneとかする時にhttpsでユーザー認証しようとすると
 1remote: HTTP Basic: Access denied と怒られてしまう
 構成はNginx -&amp;gt; Docker Gitlabって感じでhttpsでリバースプロキシしてる環境
@@ -40,7 +40,7 @@ In case GitLab responds to any kind of POST request (login, OAUTH, changing sett
 proxy_set_header X-Forwarded-Ssl on; (nginx format)
 とあって追加でこのヘッダをつける必要がありました
 以下を追記しておきます
-1proxy_set_header X-Forwarded-SSL on;</description></item><item><title>gitlab-ci-multi-runnerの動作確認をする</title><link>/post/gitlab-ci-multi-runner%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D%E3%82%92%E3%81%99%E3%82%8B/</link><pubDate>Tue, 22 Aug 2017 00:00:00 +0000</pubDate><guid>/post/gitlab-ci-multi-runner%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D%E3%82%92%E3%81%99%E3%82%8B/</guid><description>
+1proxy_set_header X-Forwarded-SSL on;</description></item><item><title>gitlab-ci-multi-runnerの動作確認をする</title><link>https://blog.sky-net.pw/post/gitlab-ci-multi-runner%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D%E3%82%92%E3%81%99%E3%82%8B/</link><pubDate>Tue, 22 Aug 2017 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/gitlab-ci-multi-runner%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D%E3%82%92%E3%81%99%E3%82%8B/</guid><description>
 はじめに Sphinx用のGitlabタスクランナーを久しぶりに作ってたらどうもうまく動かなくて困った
 原因としては他のプロジェクトのランナーが有効になってたのを見落としてただけだった
 良く見ればわかるんだけどもうちょっと直感的にわかりやすく表示して欲しいなって…
@@ -50,7 +50,7 @@ proxy_set_header X-Forwarded-Ssl on; (nginx format)
 今回はこれでそもそも違うコンテナで動いてることに気付いた
 蓋をあけると一瞬で片がついたけど時間かかったなぁ…
 おまけ この後無事venv環境に切り替えて作業出来たのですが
-1$ pip install -r requirements.</description></item><item><title>Gitlab pagesをサブディレクトリで公開する</title><link>/post/gitlab-pages%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E5%85%AC%E9%96%8B%E3%81%99%E3%82%8B/</link><pubDate>Sun, 25 Jun 2017 00:00:00 +0000</pubDate><guid>/post/gitlab-pages%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E5%85%AC%E9%96%8B%E3%81%99%E3%82%8B/</guid><description>
+1$ pip install -r requirements.</description></item><item><title>Gitlab pagesをサブディレクトリで公開する</title><link>https://blog.sky-net.pw/post/gitlab-pages%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E5%85%AC%E9%96%8B%E3%81%99%E3%82%8B/</link><pubDate>Sun, 25 Jun 2017 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/gitlab-pages%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E5%85%AC%E9%96%8B%E3%81%99%E3%82%8B/</guid><description>
 はじめに Gitlab CE版でも8.17辺りからGitlab Pagesが使えます．
 前提としてGitLab Runnerが使える必要があります．
 ※そちらの設定も詰まったのでぼちぼち時間ある時に書きます．
@@ -70,7 +70,7 @@ DNSの設定 内向きだけでいいので
 本来であればhttp://username.domain/projectname/で公開されるものをhttp://domain/pages/username/projectname/で公開します.
 リバースプロキシを以下のように設定します.
 どうするのがお作法的に良いのかわからないのでひとまず正規表現でゴリ押しな感じになってます.
-1location ~ ^/pages/(?&amp;lt;user&amp;gt;[\w-]+)/(?&amp;lt;project&amp;gt;[\w-]+)(?&amp;lt;path&amp;gt;\S*)$ { 2resolver 192.xxx.xxx.xxx; 3proxy_redirect off; 4proxy_set_header Host $user.pages.hoge.jp; 5proxy_pass http://$user.pages.hoge.jp:10080/$project/$path; 6} タスクの登録 予めタスクランナーをプロジェクトで有効にしておくか新規登録しておいて下さい．</description></item><item><title>GitlabのLDAP連携</title><link>/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</link><pubDate>Sun, 02 Apr 2017 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</guid><description>
+1location ~ ^/pages/(?&amp;lt;user&amp;gt;[\w-]+)/(?&amp;lt;project&amp;gt;[\w-]+)(?&amp;lt;path&amp;gt;\S*)$ { 2resolver 192.xxx.xxx.xxx; 3proxy_redirect off; 4proxy_set_header Host $user.pages.hoge.jp; 5proxy_pass http://$user.pages.hoge.jp:10080/$project/$path; 6} タスクの登録 予めタスクランナーをプロジェクトで有効にしておくか新規登録しておいて下さい．</description></item><item><title>GitlabのLDAP連携</title><link>https://blog.sky-net.pw/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</link><pubDate>Sun, 02 Apr 2017 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</guid><description>
 はじめに sameersbn/docker-gitlabでLDAP連携するメモ
 環境 Docker-compose version 1.11.2, build dfed245 Docker version 17.03.1-ce, build c6d412e sameersbn/docker-gitlab 8.17.4 設定 レポジトリにあるdocker-compose.xmlを参考に記述する
 docker-gitlab/docker-compose.yml ※余談ですがバックアップがdailyになっててテスト環境でテストしてたら死にました
@@ -81,7 +81,7 @@ LDAP_UIDはLDAP側ユーザー名として設定してるものに合わせる
 確認 コンテナを起動して確かめる
 1$ cd gitlab 2$ docker-compose up -d このように表示されてればとりあえずおっけー
 あとはログインしてみて正しくログイン出来れば終わり
-設定値の確認 ダメそうだったらコンテナの中に入って確認してみる</description></item><item><title>GitlabのWebAPIを使う話</title><link>/post/gitlab%E3%81%AEwebapi%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</link><pubDate>Sat, 29 Oct 2016 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%81%AEwebapi%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</guid><description>
+設定値の確認 ダメそうだったらコンテナの中に入って確認してみる</description></item><item><title>GitlabのWebAPIを使う話</title><link>https://blog.sky-net.pw/post/gitlab%E3%81%AEwebapi%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</link><pubDate>Sat, 29 Oct 2016 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/gitlab%E3%81%AEwebapi%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</guid><description>
 WebAPI Webhook触ったついでに試す
 バージョンの差異でないことがあったりするのであれ？って思ったらドキュメントを読む
 https://github.com/gitlabhq/gitlabhq/tree/master/doc/api
@@ -95,7 +95,7 @@ https://github.com/gitlabhq/gitlabhq/tree/master/doc/api
 この間のスペースはエンコードした「%2F」で書く必要があります
 つまりユーザー名がhogeでレポジトリ名がfugaの場合
 /projects/hoge%2Ffuga/repository/commits
-となります</description></item><item><title>GitlabのWebhookを使う話</title><link>/post/gitlab%E3%81%AEwebhook%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</link><pubDate>Fri, 28 Oct 2016 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%81%AEwebhook%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</guid><description>
+となります</description></item><item><title>GitlabのWebhookを使う話</title><link>https://blog.sky-net.pw/post/gitlab%E3%81%AEwebhook%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</link><pubDate>Fri, 28 Oct 2016 00:00:00 +0000</pubDate><guid>https://blog.sky-net.pw/post/gitlab%E3%81%AEwebhook%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</guid><description>
 はじめに GitlabでWebhook使ってSlackにでも投稿しようか、という試み
 Gitlabに限らずGithubにもあるのでそちらの場合は適宜ドキュメントを読む
 ドキュメント読もうにもバージョンが分からん…って時は
