@@ -1,0 +1,44 @@
+[[main]]
+  name = "Home"
+  url = ""
+  weight = -110
+
+[[main]]
+  name = "Tags"
+  url = "tags"
+  weight = -109
+
+# Submenus are done this way: parent -> identifier
+[[main]]
+  name = "Links"
+  identifier = "Links"
+  weight = -108
+[[main]]
+  parent = "Links"
+  name = "Discord"
+  url = "https://discordapp.com/users/216546459997306882"
+[[main]]
+  parent = "Links"
+  name = "Stream"
+  url = "https://steamcommunity.com/id/skyblue3350/"
+
+[[main]]
+  name = "About"
+  url = "about/"
+  weight = -107
+
+# social menu links
+
+[[social]]
+  name = "github"
+  type = "social"
+  weight = 1
+  url = "https://github.com/skyblue3350"
+[[social]]
+  name = "twitter"
+  weight = 2
+  url = "https://twitter.com/skyblue3350"
+[[social]]
+  name = "rss"
+  weight = 4
+  url = "index.xml"

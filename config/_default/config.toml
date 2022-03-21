@@ -1,0 +1,15 @@
+# set `baseurl` to your root domain
+# if you set it to "/" share icons won't work properly on production
+baseurl = "/"  # Include trailing slash
+title = "メモ帳"
+# canonifyurls = true
+paginate = 10
+theme = "hugo-clarity"
+disqusShortname = ""
+
+DefaultContentLanguage = "jp"
+
+[taxonomies]
+category = "categories"
+tag = "tags"
+series = "series"
