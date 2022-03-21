@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Reaper on メモ帳</title><link>/tags/reaper/</link><description>Recent content in Reaper on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 09 Apr 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/reaper/index.xml" rel="self" type="application/rss+xml"/><item><title>ReaperでRecord Monitoringを有効にする</title><link>/post/reaper%E3%81%A7record-monitoring%E3%82%92%E6%9C%89%E5%8A%B9%E3%81%AB%E3%81%99%E3%82%8B/</link><pubDate>Sun, 09 Apr 2017 00:00:00 +0000</pubDate><guid>/post/reaper%E3%81%A7record-monitoring%E3%82%92%E6%9C%89%E5%8A%B9%E3%81%AB%E3%81%99%E3%82%8B/</guid><description>はじめに 昔買った某ゲーム用のリアルトーンケーブルがあるので
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Reaper on メモ帳</title><link>/tags/reaper/</link><description>Recent content in Reaper on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 09 Apr 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/reaper/index.xml" rel="self" type="application/rss+xml"/><item><title>ReaperでRecord Monitoringを有効にする</title><link>/post/reaper%E3%81%A7record-monitoring%E3%82%92%E6%9C%89%E5%8A%B9%E3%81%AB%E3%81%99%E3%82%8B/</link><pubDate>Sun, 09 Apr 2017 00:00:00 +0000</pubDate><guid>/post/reaper%E3%81%A7record-monitoring%E3%82%92%E6%9C%89%E5%8A%B9%E3%81%AB%E3%81%99%E3%82%8B/</guid><description>
+はじめに 昔買った某ゲーム用のリアルトーンケーブルがあるので
 ギター→リアルトーンケーブル→PCと繋いでDAWでPCをアンプとして使えないかなって画策した
 無料でやるにはReaper＋フリーのアンプシミュを使うのが良さげだったのでその辺を利用した
 ド素人なのでもっと良い方法があるのかもしれない
@@ -24,8 +25,4 @@ Output Deviceはスピーカーやヘッドホンやら適当に
 リアルタイムに聞く場合 こっちでハマった
 デフォルトだとこのようになってるがこれだとRecord Monitoringのボタンが出てこない
 このように画面比を変えて縦長にすると出て来る
-このボタンをクリックにして有効にすることでリアルタイムで音が聞けるようになる
-あとは共通で先程追加したトラックのFXをクリックして先程追加したプラグインを選ぶ
-これでプラグインのエフェクトが掛かるようになる
-のであとは良い感じに調整する
-ただギターが弾けるわけではない</description></item></channel></rss>
+このボタンをクリックにして有効にすることでリアルタイムで音が聞けるようになる</description></item></channel></rss>

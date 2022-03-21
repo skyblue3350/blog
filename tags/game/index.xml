@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Game on メモ帳</title><link>/tags/game/</link><description>Recent content in Game on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 10 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/game/index.xml" rel="self" type="application/rss+xml"/><item><title>Falcon BMS 4.33で遊ぶ</title><link>/post/falcon-bms-4.33%E3%81%A7%E9%81%8A%E3%81%B6/</link><pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate><guid>/post/falcon-bms-4.33%E3%81%A7%E9%81%8A%E3%81%B6/</guid><description>プレイ動画を見て興味を持ったのでFalcon BMSで遊んでみた．
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Game on メモ帳</title><link>/tags/game/</link><description>Recent content in Game on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 10 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/game/index.xml" rel="self" type="application/rss+xml"/><item><title>Falcon BMS 4.33で遊ぶ</title><link>/post/falcon-bms-4.33%E3%81%A7%E9%81%8A%E3%81%B6/</link><pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate><guid>/post/falcon-bms-4.33%E3%81%A7%E9%81%8A%E3%81%B6/</guid><description>
+プレイ動画を見て興味を持ったのでFalcon BMSで遊んでみた．
 詰まりそうなところが多かったので適宜メモしておく．
 環境 Windows 10 Home GTX 1070（Driver 416.34） Saitek Cyborgの安いやつ
 大昔に買ったので細かい型番がわからない… 必要なもの Falcon4.0
@@ -21,7 +22,8 @@ SETUP -&amp;gt; GRAPHICSと移動して
 RESOLUTIONをディスプレイの解像度にしておく．
 MULTISAMPLINGにチェックを入れ適用可能なものの中から一番良いものを選んでおく．
 SETUP -&amp;gt; CONTROLLERSと移動して
-使ってるジョイスティックを各種割り当てておく．</description></item><item><title>The ship Remasterでサーバーを建てる</title><link>/post/the-ship-remaster%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E5%BB%BA%E3%81%A6%E3%82%8B/</link><pubDate>Tue, 02 Oct 2018 00:00:00 +0000</pubDate><guid>/post/the-ship-remaster%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E5%BB%BA%E3%81%A6%E3%82%8B/</guid><description>はじめに 今更ながらに購入して遊びました．
+使ってるジョイスティックを各種割り当てておく．</description></item><item><title>The ship Remasterでサーバーを建てる</title><link>/post/the-ship-remaster%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E5%BB%BA%E3%81%A6%E3%82%8B/</link><pubDate>Tue, 02 Oct 2018 00:00:00 +0000</pubDate><guid>/post/the-ship-remaster%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E5%BB%BA%E3%81%A6%E3%82%8B/</guid><description>
+はじめに 今更ながらに購入して遊びました．
 身内で遊ぶためにサーバーを建てたのですがぼちぼち詰まったので備忘録として残しておきます．
 今の所Winしか提供されていないようなので他のプラットフォームで動かしたい時は頑張るしかなさそう．
 手段 サーバーファイルを落としてきて使う
