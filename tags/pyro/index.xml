@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Pyro on メモ帳</title><link>/tags/pyro/</link><description>Recent content in Pyro on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Tue, 12 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/pyro/index.xml" rel="self" type="application/rss+xml"/><item><title>Pyro4の使い方</title><link>/post/pyro4%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9/</link><pubDate>Tue, 12 Jul 2016 00:00:00 +0000</pubDate><guid>/post/pyro4%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9/</guid><description>Pyro4 異なるアーキテクチャ間でリモートでメソッドコールできるライブラリ
+あんまり日本語の情報がないのでメモ程度に書いておく
+日本語の情報はほとんどないから諦めて英語で探す
+https://pythonhosted.org/Pyro4/
+公式のGithubのExampleとか参考にする
+https://github.com/delmic/Pyro4/
+インストール 1$ pip install Pyro4 Pyroだと古いバージョンが入るので注意がいる
+ネームサーバーなし ネームサーバーがあると裏で勝手に名前解決してくれるので楽になるけどなしでもできる
+基本的に自分がクライアント側になるはず
+ホスト側 1import Pyro4 23def getHoge(): 4return &amp;#34;test&amp;#34; 56Pyro4.Daemon.serveSimple( 7{getHoge:&amp;#39;HogeMethod&amp;#39;}, 8host=&amp;#34;自分のIP&amp;#34;, 9port=9090,#適当なポート 10ns=False, 11) クライアント側 1import Pyro4 23name = &amp;#34;HogeMethod&amp;#34; 4ip = &amp;#34;相手のIP&amp;#34; 5port = 9090#適当なポート　合わせる 6s = &amp;#34;PYRO:%s@%s:%s&amp;#34; % (name, ip, port) 7remote = Pyro4.Proxy(s) 8remote.getHoge() みたいな感じで呼べる
+ネームサーバあり ネームサーバ 用意されてるものを使う場合は
+1$ python -m Pyro4.naming 随時オプションをつける
+WindowsだとCtrl+Cとかで抜けられないので不便
+自分でコードを書くなら
+1import Pyro4 2import socket 34host = socket.</description></item></channel></rss>

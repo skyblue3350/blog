@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OpenCV on メモ帳</title><link>/tags/opencv/</link><description>Recent content in OpenCV on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 10 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/opencv/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu16.04のPython3でOpenCV3を使う</title><link>/post/ubuntu16.04%E3%81%AEpython3%E3%81%A7opencv3%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Sun, 10 Jul 2016 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04%E3%81%AEpython3%E3%81%A7opencv3%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>OpenCVについて 画像処理するライブラリ
+2系入れたいならディストリビューションごとにパッケージあるからそっち使いましょう
+3系はパッケージが現時点（2016/06/24）でないから自分でビルドする
+3.1.0しか検証してないけど多分ほかでも問題ないはず
+Windowsは某所でwhl配布されてるからそれを使うと楽
+ダウンロード Sourceforgeからソースを落とせみたいな記事がたくさんあるけど罠です
+makeでコケるのでGithubからcloneすると良いです
+1$ cd ~ 2$ git clone https://github.com/Itseez/opencv.git 3$ cd opencv 4$ git tag 5タグ一覧が出るから使いたいバージョンを探す 6$ git checkout 3.1.0 7ダメだったらcloneしたやつそのまま使えばいけるかもね（今回の記事ではcloneしたのをそのまま使用） 2016年11月24日 追記
+バニラな環境でやったらハマったのでメモ
+1-D PYTHON_EXECUTABLE=$(which python) $(which python) は単にパス探してるだけなので
+バニラだとpythonじゃなくてpython3で探さないとダメだった
+ビルド 1$ pwd 2/home/hoge/opencv 3$ mkdir build 4$ cd build 5$ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D WITH_FFMPEG=OFF -D BUILD_opencv_python2=ON -D BUILD_opencv_python3=ON -D PYTHON_EXECUTABLE=$(which python) .. 6ログの途中にちゃんとPythonが対象に含まれてるか確認しておく 7これはpyenvでの結果だけどノーマルのPythonでもこんな感じで含まれてるはず 8-- Python 2: 9-- Interpreter: /usr/local/pyenv/shims/python (ver 3.</description></item></channel></rss>

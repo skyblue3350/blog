@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>結月ゆかり on メモ帳</title><link>/tags/%E7%B5%90%E6%9C%88%E3%82%86%E3%81%8B%E3%82%8A/</link><description>Recent content in 結月ゆかり on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 08 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/%E7%B5%90%E6%9C%88%E3%82%86%E3%81%8B%E3%82%8A/index.xml" rel="self" type="application/rss+xml"/><item><title>Pythonから結月ゆかりを喋らせる</title><link>/post/python%E3%81%8B%E3%82%89%E7%B5%90%E6%9C%88%E3%82%86%E3%81%8B%E3%82%8A%E3%82%92%E5%96%8B%E3%82%89%E3%81%9B%E3%82%8B/</link><pubDate>Fri, 08 Jul 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%8B%E3%82%89%E7%B5%90%E6%9C%88%E3%82%86%E3%81%8B%E3%82%8A%E3%82%92%E5%96%8B%E3%82%89%E3%81%9B%E3%82%8B/</guid><description>この前結月ゆかりさんをお迎えしてしまいました　ほぼノリです
+昨日の夜ポチってしまった pic.twitter.com/AKEhQQ9VVE
+&amp;mdash; スカイ (@skyblue3350) March 10, 2016 というわけでこれをPythonから操作して喋らせます
+他の言語だと誰かしら書いてるようですがPythonだとどうも見つからないので自分で書きました
+コード自体はこんな感じ
+あとは
+1voiceroid.say(u&amp;#34;文字列&amp;#34;) とかで喋ってくれる
+コード見ればわかるけどgetVolueとかメソッド実装したけど動かない
+音程とかのキーボックスにキー入力までは送れるけどsubmitイベント？とかが発生しないらしく値が反映されない
+そのうち解決して実装しよう
+んでここまで出来たので試しにSlackにストリーミング接続して来たチャット通知を片っ端から喋らせるスクリプト書いてみたけど結構面白かった
+今のところは通知用の用途での使用を考えてるのでTwitterのリプライとかSlackの通知とか読み上げてくれるBot的なものを作成しようかなぁ</description></item></channel></rss>

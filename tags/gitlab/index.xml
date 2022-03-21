@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gitlab on メモ帳</title><link>/tags/gitlab/</link><description>Recent content in Gitlab on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 14 Sep 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/gitlab/index.xml" rel="self" type="application/rss+xml"/><item><title>GitlabをPrometheusで監視する</title><link>/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</link><pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</guid><description>9.3からサポートされているGitlabのPrometheusのメトリクス公開を試してみた．
+環境はsameersbn/docker-gitlabの11.2.3です．
+公式イメージでもできるらしいですが未検証なので参考サイトのとこに情報だけ置いておきます．
+Gitlab WebUI側での設定 Webから管理者アカウントでログインして管理画面へアクセスします．
+Settings-&amp;gt;Metricsの項目にPrometheusがあるのでそこを開きます．
+prometheus_multiproc_dirの環境変数が未定義との警告がありますがひとまず有効にします．
+有効にした後再起動しないと利用出来ないので再起動する際に設定します．
+コンソール側での設定 prometheus_multiproc_dirとモニタリング用のエンドポイントへアクセスできるようにホワイトリストへ追加します．
+今回はGitlabのDockerイメージを使用しているので
+1gitlab:2restart:always3image:sameersbn/gitlab:11.2.34...5environment:6...7# Prometheus Config8- prometheus_multiproc_dir=/dev/shm9- GITLAB_MONITORING_IP_WHITELIST=192.168.xxx.xxxのように必要な環境変数を設定します．
+あとはコンテナに設定を適用して終わりです．
+1$ docker-compose up -d これで
+http://gitlab-host/-/metrics
+からPrometheus用のフォーマットでメトリクスを収集することができます．
+Prometheus 監視対象としていつも通り登録すれば終わりですがいつもと違い/metricsではなく/-/metricsとなるのでそこだけリラベルする必要があります．
+1- targets:2- gitlab.local:100803labels:4__metrics_path__:/-/metrics参考サイト Gitlab doc GitLab Prometheus metrics Gitlab doc IP whitelist [SOLVED] Gitlab Docker prometheus_multiproc_dir and /-/metrics</description></item><item><title>Gitlabを8系から10系までアップデートする</title><link>/post/gitlab%E3%82%928%E7%B3%BB%E3%81%8B%E3%82%8910%E7%B3%BB%E3%81%BE%E3%81%A7%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%81%99%E3%82%8B/</link><pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%82%928%E7%B3%BB%E3%81%8B%E3%82%8910%E7%B3%BB%E3%81%BE%E3%81%A7%E3%82%A2%E3%83%83%E3%83%97%E3%83%87%E3%83%BC%E3%83%88%E3%81%99%E3%82%8B/</guid><description>はじめに 手元にsameersbn氏作成のGitlabの環境が2つあって双方ともアップデートするの忘れてたので最新版まであげる
+現在の最新リリースが10.6.4なのでここまであげる
+ダウンタイムはある程度生まれるけど1秒落ちたら殺される環境でもないので許容する
+環境 以下2環境が動いてる
+8.17.4 9.2.7 バックアップ 定時バックアップしてたら不要ですが片方別の方法でバックアップしてたので手動でバックアップ取る
+この段階で一応Gitlabを落とした方が多分良いけど落とさなくてもできました（ドキュメントにも記述あるけど多分落とした方が安全です
+1$ docker-compose down gitlab 2$ docker-compose run --rm gitlab app:rake gitlab:backup:create アップデート image書き換えたら勝手にやってくれます　楽ですね
+一応以下を確認してバージョン間の問題があるか事前に調べます
+https://github.com/sameersbn/docker-gitlab#upgrading
+今回のバージョンは問題なさそうなので最新までそのままあげます
+ダメな場合は間のバージョンに一度上げてから最新まであげれば大丈夫です
+docker-compose.ymlを以下のように書き換えます
+1- image: sameersbn/gitlab:8.17.4 2+ image: sameersbn/gitlab:10.6.4 3$ docker-compose up -d 4docker-compose logs -f gitlab 5gitlab_1 | Migrating database... 6gitlab_1 | Missing Rails.application.secrets.jws_private_key for production environment. The secret will be generated and stored in config/secrets.yml. 7gitlab_1 | Recompiling assets (relative_url in use), this could take a while.</description></item><item><title>自前運用のGitlabでパスワード認証ができない</title><link>/post/%E8%87%AA%E5%89%8D%E9%81%8B%E7%94%A8%E3%81%AEgitlab%E3%81%A7%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E8%AA%8D%E8%A8%BC%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</link><pubDate>Sat, 14 Apr 2018 00:00:00 +0000</pubDate><guid>/post/%E8%87%AA%E5%89%8D%E9%81%8B%E7%94%A8%E3%81%AEgitlab%E3%81%A7%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E8%AA%8D%E8%A8%BC%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</guid><description>表題の通りですがcloneとかする時にhttpsでユーザー認証しようとすると
+1remote: HTTP Basic: Access denied と怒られてしまう
+構成はNginx -&amp;gt; Docker Gitlabって感じでhttpsでリバースプロキシしてる環境
+nginxのconfで
+1proxy_set_header X-Scheme $scheme; してないといけない
+何故か抜けてて認証通らなくて唸ってた
+追記　2018年4月17日
+余談ですがこのような構成下でアクセストークン等を利用した認証をしようとすると通らなくてかなり悩んでいたんですがドキュメントの「Using HTTPS with a load balancer」の最後に
+In case GitLab responds to any kind of POST request (login, OAUTH, changing settings etc.) with a 422 HTTP Error, consider adding this to your reverse proxy configuration:
+proxy_set_header X-Forwarded-Ssl on; (nginx format)
+とあって追加でこのヘッダをつける必要がありました
+以下を追記しておきます
+1proxy_set_header X-Forwarded-SSL on;</description></item><item><title>gitlab-ci-multi-runnerの動作確認をする</title><link>/post/gitlab-ci-multi-runner%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D%E3%82%92%E3%81%99%E3%82%8B/</link><pubDate>Tue, 22 Aug 2017 00:00:00 +0000</pubDate><guid>/post/gitlab-ci-multi-runner%E3%81%AE%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D%E3%82%92%E3%81%99%E3%82%8B/</guid><description>はじめに Sphinx用のGitlabタスクランナーを久しぶりに作ってたらどうもうまく動かなくて困った
+原因としては他のプロジェクトのランナーが有効になってたのを見落としてただけだった
+良く見ればわかるんだけどもうちょっと直感的にわかりやすく表示して欲しいなって…
+環境 こんな感じのDockerコンテナが動いてる状況
+1FROM gitlab/gitlab-runner:v9.2.0 23RUN apt-get update 4RUN wget https://bootstrap.pypa.io/get-pip.py \ 5&amp;amp;&amp;amp; python3 get-pip.py \ 6&amp;amp;&amp;amp; apt-get install python3.4-venv -y \ 7&amp;amp;&amp;amp; apt-get clean \ 8&amp;amp;&amp;amp; apt-get autoremove 910ENTRYPOINT [&amp;#34;/usr/bin/dumb-init&amp;#34;, &amp;#34;/entrypoint&amp;#34;] 11CMD [&amp;#34;run&amp;#34;, &amp;#34;--user=gitlab-runner&amp;#34;, &amp;#34;--working-directory=/home/gitlab-runner&amp;#34;] デバッグする 対象のコンテナで
+1# docker-compose exec gitlab-runner bash 2# su - gitlab-runner 3$ gitlab-ci-multi-runner --debug run 4Checking for jobs... nothing runner=[ランナーID] 5Feeding runners to channel builds=0 と監視してる状況を見れるのでGitlab上でjobを動かして見てみる
+今回はこれでそもそも違うコンテナで動いてることに気付いた
+蓋をあけると一瞬で片がついたけど時間かかったなぁ…
+おまけ この後無事venv環境に切り替えて作業出来たのですが
+1$ pip install -r requirements.</description></item><item><title>Gitlab pagesをサブディレクトリで公開する</title><link>/post/gitlab-pages%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E5%85%AC%E9%96%8B%E3%81%99%E3%82%8B/</link><pubDate>Sun, 25 Jun 2017 00:00:00 +0000</pubDate><guid>/post/gitlab-pages%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E5%85%AC%E9%96%8B%E3%81%99%E3%82%8B/</guid><description>はじめに Gitlab CE版でも8.17辺りからGitlab Pagesが使えます．
+前提としてGitLab Runnerが使える必要があります．
+※そちらの設定も詰まったのでぼちぼち時間ある時に書きます．
+本来Gitlab pagesはサブドメイン上で利用される機能ですが今回これを諸般の事情からサブディレクトリで動かします．
+今回も使うのはsameersbn氏のsameersbn/docker-gitlabです．
+検証環境 docker
+Docker version 17.03.1-ce, build c6d412e docker-compose
+docker-compose version 1.13.0, build 1719ceb Gitlab
+9.2.7 CE Gitlab Runner（Dockerイメージを使用）
+gitlab/gitlab-runner:v9.2.0 設定方法 pages の設定 docker-compose.ymlに以下を追記します．
+1- GITLAB_PAGES_ENABLED=true 2- GITLAB_PAGES_DOMAIN=pages.hoge.jp 3- GITLAB_PAGES_HTTPS=false 4- GITLAB_PAGES_PORT=80 本来であれば*.pages.hoge.jpを本コンテナまでリバースプロキシで繋げば終わりです.
+今回は適当な名前をつけておきます.
+DNSの設定 内向きだけでいいので
+*.pages.hoge.jp
+をコンテナのホストのIPを向くように設定します.
+リバースプロキシの設定 今回はサブドメイン上ではなくサブディレクトリ上で公開します.
+本来であればhttp://username.domain/projectname/で公開されるものをhttp://domain/pages/username/projectname/で公開します.
+リバースプロキシを以下のように設定します.
+どうするのがお作法的に良いのかわからないのでひとまず正規表現でゴリ押しな感じになってます.
+1location ~ ^/pages/(?&amp;lt;user&amp;gt;[\w-]+)/(?&amp;lt;project&amp;gt;[\w-]+)(?&amp;lt;path&amp;gt;\S*)$ { 2resolver 192.xxx.xxx.xxx; 3proxy_redirect off; 4proxy_set_header Host $user.pages.hoge.jp; 5proxy_pass http://$user.pages.hoge.jp:10080/$project/$path; 6} タスクの登録 予めタスクランナーをプロジェクトで有効にしておくか新規登録しておいて下さい．</description></item><item><title>GitlabのLDAP連携</title><link>/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</link><pubDate>Sun, 02 Apr 2017 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</guid><description>はじめに sameersbn/docker-gitlabでLDAP連携するメモ
+環境 Docker-compose version 1.11.2, build dfed245 Docker version 17.03.1-ce, build c6d412e sameersbn/docker-gitlab 8.17.4 設定 レポジトリにあるdocker-compose.xmlを参考に記述する
+docker-gitlab/docker-compose.yml ※余談ですがバックアップがdailyになっててテスト環境でテストしてたら死にました
+設定値例 LDAPホスト：192.168.1.30 LDAPポート：389 認証ユーザーグループ：dc=hoge,dc=fuga,dc=foo,dc=co,dc=jp ユーザー名：uid 必要部分だけ抜粋
+1～略～ 2gitlab: 3restart: always 4image: sameersbn/gitlab:8.17.4 5～中略～ 6environment: 7- DEBUG=false 8～中略～ 9- LDAP_ENABLED=true 10- LDAP_LABEL=えるだっぷ 11- LDAP_HOST=192.168.1.30 12- LDAP_PORT=389 13- LDAP_BASE=dc=hoge,dc=fuga,dc=foo,dc=co,dc=jp 14- LDAP_UID=uid LDAP_LABELはトップページのログイン方式選択のラベルで表示される
+LDAP_BASEは””とかで囲む必要はない　これでハマったので今回の記事書いたところもある
+LDAP_UIDはLDAP側ユーザー名として設定してるものに合わせる
+確認 コンテナを起動して確かめる
+1$ cd gitlab 2$ docker-compose up -d このように表示されてればとりあえずおっけー
+あとはログインしてみて正しくログイン出来れば終わり
+設定値の確認 ダメそうだったらコンテナの中に入って確認してみる</description></item><item><title>GitlabのWebAPIを使う話</title><link>/post/gitlab%E3%81%AEwebapi%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</link><pubDate>Sat, 29 Oct 2016 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%81%AEwebapi%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</guid><description>WebAPI Webhook触ったついでに試す
+バージョンの差異でないことがあったりするのであれ？って思ったらドキュメントを読む
+https://github.com/gitlabhq/gitlabhq/tree/master/doc/api
+左上からブランチを適宜自分のバージョンに変更して読むと捗ります
+適当に検索して見つけたAPI叩こうとしたら使用しようと思ったGitlabが古すぎて使えなかったりしました
+試す Google Chromeの拡張機能のPostmanとかが気軽に試せてオススメ
+抑えるべき点はヘッダーにPRIVATE-TOKENが必要だということ
+これは自分のユーザーページに飛べばあります　コピペして使います
+ハマりどころ GET /projects/:id/repository/commitsでレポジトリ名で指定したい時
+:idのところにNAMESPACE/PROJECT_NAMEで書けとドキュメントにあります
+この間のスペースはエンコードした「%2F」で書く必要があります
+つまりユーザー名がhogeでレポジトリ名がfugaの場合
+/projects/hoge%2Ffuga/repository/commits
+となります</description></item><item><title>GitlabのWebhookを使う話</title><link>/post/gitlab%E3%81%AEwebhook%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</link><pubDate>Fri, 28 Oct 2016 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%81%AEwebhook%E3%82%92%E4%BD%BF%E3%81%86%E8%A9%B1/</guid><description>はじめに GitlabでWebhook使ってSlackにでも投稿しようか、という試み
+Gitlabに限らずGithubにもあるのでそちらの場合は適宜ドキュメントを読む
+ドキュメント読もうにもバージョンが分からん…って時は
+https://ドメイン名/help
+とか見れば分かる
+※そもそもSlackへの通知は公式でサポートされてるのでわざわざ作る必要ないです
+追記
+Gitlabをオンプレで運用しててローカルネットへのWebhookが動かない！って場合は管理コンソールで内側ネットワークへのアクセスを許可しないと動きません．
+バージョン 8.5.1 Webhookとは コミットとか各種イベントが発生した時に向こうからURLを叩いてくれる
+のでURLの用意とそこで動くWebアプリだけ用意しておけば良い感じに受け取って処理出来る
+Webhookの登録 どのバージョンのGitlabも
+https://ドメイン名/ユーザー名/レポジトリ名/hooks
+に登録画面がある
+適宜必要なイベントにチェックする
+今回はコミットログだけ拾えれば良いのでpushだけセレクト　URLは適当に
+チャンネル名を指定してもらうついでにただ適当にURL叩かれて動いても困るので適当なクエリをひっつけて一応Gitlabからってことを確認しておく
+http://ドメイン名/パス/?channel=チャンネル名&amp;amp;secretkey=hogehoge
+みたいな感じにした
+アプリの作成 コード とりあえずFlaskでサクッと作る
+Jsonのフォーマットは
+https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/web_hooks/web_hooks.md
+こことか読みましょう
+1# -*- coding:utf-8 -*- 23import json 4import requests 5from flask import Flask, request, abort 6app = Flask(__name__) 78secretkey = &amp;#34;hogehoge&amp;#34; 910@app.route(&amp;#34;/&amp;#34;, methods=[&amp;#34;POST&amp;#34;]) 11def index(): 12if secretkey != request.args.get(&amp;#34;secretkey&amp;#34;, &amp;#34;&amp;#34;): 13abort(400) 1415data = json.loads(request.data) 1617temp = u&amp;#34;&amp;#34;&amp;#34;レポジトリ「{repo}」に{name}がコミットしました 18{msg}19{url}&amp;#34;&amp;#34;&amp;#34; 20message = temp.</description></item></channel></rss>

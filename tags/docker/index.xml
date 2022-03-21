@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on メモ帳</title><link>/tags/docker/</link><description>Recent content in Docker on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Mon, 23 Jul 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>dockerの実行グループを変更する</title><link>/post/docker%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%82%B0%E3%83%AB%E3%83%BC%E3%83%97%E3%82%92%E5%A4%89%E6%9B%B4%E3%81%99%E3%82%8B/</link><pubDate>Mon, 23 Jul 2018 00:00:00 +0000</pubDate><guid>/post/docker%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%82%B0%E3%83%AB%E3%83%BC%E3%83%97%E3%82%92%E5%A4%89%E6%9B%B4%E3%81%99%E3%82%8B/</guid><description>はじめに dockerコマンドを実行する際に実行ユーザーがdockerグループに所属していない場合sudoをつけて実行する必要があります．
+ユーザーをdockerグループに所属させれば済む話ではありますが既にある程度の数のユーザーとそのユーザーが所属するグループがある場合いちいちdockerグループにユーザーを追加させるのは面倒です．
+今回はdockerの実行グループを変更して解決します．
+今回はserviceファイルに追記しますがdaemon.jsonに書いた方が良い気がします…
+共通でやっておくこと まず目的のグループのIDをidコマンドかgetent辺りを使って確認します．
+1$ getent group hoge 2hoge:*:9999:foo,bar serviceファイルに追記する場合 次にdocker.serviceを編集します．
+Gオプションでデフォルトグループから変更出来るので変更します．
+グループ名でも指定できますが当該グループがLDAPで管理されたグループの場合参照エラーが発生してサービスが起動しなかったためグループIDで指定しています．
+1$ sudo vi /usr/lib/systemd/system/docker.service 2- ExecStart=/usr/bin/dockerd 3+ ExecStart=/usr/bin/dockerd -G 9999 サービスを再起動します
+1$ sudo service docker restart これでグループhogeに所属しているユーザーはコマンドを実行できるようになったはずです．
+daemon.jsonを利用する場合 /etc/docker/daemon.jsonがない場合は作成
+何かしら書いている場合は整合性を保って以下を追記
+1{ 2&amp;#34;group&amp;#34;: &amp;#34;9999&amp;#34; 3} あとはdockerサービスを上げ直して終了
+1$ sudo service docker restart 参考記事 以下の記事が参考になりました．
+low order magic docker -G and non-local groups</description></item><item><title>Grafana v4.6.3からv5.2.1まであげる</title><link>/post/grafana-v4.6.3%E3%81%8B%E3%82%89v5.2.1%E3%81%BE%E3%81%A7%E3%81%82%E3%81%92%E3%82%8B/</link><pubDate>Mon, 16 Jul 2018 00:00:00 +0000</pubDate><guid>/post/grafana-v4.6.3%E3%81%8B%E3%82%89v5.2.1%E3%81%BE%E3%81%A7%E3%81%82%E3%81%92%E3%82%8B/</guid><description>Docker版のGrafana v4.6.3を使用していましたが使いたいダッシュボードがv5系で作られていてインポートにコケたのでアップデートしました．
+そのまま素直にあげるとコケるのでその辺のメモ
+まず元のdocker-compose.ymlが以下
+1grafana:2image:grafana/grafana:4.6.33container_name:grafana4restart:always5ports:6- 3000:30007volumes:8- ./grafana:/var/lib/grafanaこのまま動かすDockerイメージのバージョンをあげると
+1grafana | t=2018-07-16T09:51:34+0000 lvl=info msg=&amp;#34;Starting DB migration&amp;#34; logger=migrator 2grafana | t=2018-07-16T09:51:34+0000 lvl=info msg=&amp;#34;Executing migration&amp;#34; logger=migrator id=&amp;#34;Migrate all Read Only Viewers to Viewers&amp;#34; 3grafana | t=2018-07-16T09:51:34+0000 lvl=eror msg=&amp;#34;Executing migration failed&amp;#34; logger=migrator id=&amp;#34;Migrate all Read Only Viewers to Viewers&amp;#34; error=&amp;#34;attempt to write a readonly database&amp;#34; 4grafana | t=2018-07-16T09:51:34+0000 lvl=eror msg=&amp;#34;Exec failed&amp;#34; logger=migrator error=&amp;#34;attempt to write a readonly database&amp;#34; sql=&amp;#34;UPDATE org_user SET role = &amp;#39;Viewer&amp;#39; WHERE role = &amp;#39;Read Only Editor&amp;#39;&amp;#34; 5grafana | t=2018-07-16T09:51:34+0000 lvl=eror msg=&amp;#34;Server shutdown&amp;#34; logger=server reason=&amp;#34;Service init failed: Migration failed err: attempt to write a readonly database&amp;#34; と出てコケます</description></item><item><title>LunaMultiplayerをDockerで起動する</title><link>/post/lunamultiplayer%E3%82%92docker%E3%81%A7%E8%B5%B7%E5%8B%95%E3%81%99%E3%82%8B/</link><pubDate>Fri, 06 Jul 2018 00:00:00 +0000</pubDate><guid>/post/lunamultiplayer%E3%82%92docker%E3%81%A7%E8%B5%B7%E5%8B%95%E3%81%99%E3%82%8B/</guid><description>はじめに KSPのマルチMOD LunaMultiplayerのサーバー側をDockerコンテナで立ち上げる方法のメモ
+monoのruntimeだけあれば動きますがUbuntuの公式レポから提供されてるmonoはバージョンが古く新しいの入れるのが面倒そうだったので…
+ちなみに古いバージョンだとエラー吐いて動きませんでした
+docker-compose.yml 1version:&amp;#34;3&amp;#34;23services:4ksp:5image:mono:latest6volumes:7- ./LMPServer:/LMPServer8ports:9- 8800:880010command:mono /LMPServer/Server.exeあとはzip落としてきて展開してコンテナあげて終わりです
+1$ wget [リリースページの最新版のZip] 2$ unzip LunaMultiplayer-Release.zip 3$ docker-compose up -d</description></item><item><title>NFS上でCUDAが上手く動かない</title><link>/post/nfs%E4%B8%8A%E3%81%A7cuda%E3%81%8C%E4%B8%8A%E6%89%8B%E3%81%8F%E5%8B%95%E3%81%8B%E3%81%AA%E3%81%84/</link><pubDate>Fri, 04 May 2018 00:00:00 +0000</pubDate><guid>/post/nfs%E4%B8%8A%E3%81%A7cuda%E3%81%8C%E4%B8%8A%E6%89%8B%E3%81%8F%E5%8B%95%E3%81%8B%E3%81%AA%E3%81%84/</guid><description>症状 Nvidia Docker2で作ったコンテナの/homeにNFSマウントした状態でChainerを使うと
+1CUDARuntimeError: cudaErrorUnknown: unknown error と怒られて動かない
+解決方法 NFSマウントを外すと上手く動くのでNFSによるものらしい
+ので以下のようにNFSのバージョンを明示的に最新の4を指定する
+デフォルトだとどうも3でマウントしてるっぽい
+1version:&amp;#34;3&amp;#34;23services:4sample:5build:.6tty:true7volumes:8- nfs:/home910volumes:11nfs:12driver:local13driver_opts:14type:nfs15o:addr=192.168.1.xxx,hard,rsize=1048576,wsize=1048576,nfsvers=416device::/homeその他試したこと Problem with CUDA 8 with 381.09 drivers on Ubuntu 16.04, GTX 1080Ti
+CUDA_CACHE_PATHを指定することで他の場所に作れるらしい
+元の位置は~/.nv
+変更したがダメだった
+投稿者と同じくドライバが384系だったので390系まであげたものの解決せず メモ 多分Dockerに限らず起きる気がする
+Dockerを使っていないベタな環境で似たような環境がありますがそちらではこのエラーが出ないので比較したらそちらはNFSがバージョン4でマウントされてました</description></item><item><title>nvidia-dockerで特定のバージョンが動作しない</title><link>/post/nvidia-docker%E3%81%A7%E7%89%B9%E5%AE%9A%E3%81%AE%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%81%8C%E5%8B%95%E4%BD%9C%E3%81%97%E3%81%AA%E3%81%84/</link><pubDate>Sun, 08 Apr 2018 00:00:00 +0000</pubDate><guid>/post/nvidia-docker%E3%81%A7%E7%89%B9%E5%AE%9A%E3%81%AE%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%81%8C%E5%8B%95%E4%BD%9C%E3%81%97%E3%81%AA%E3%81%84/</guid><description>Nvidia-docker2で特定のバージョン以降が動作しない
+例えばCUDA9.0のイメージは
+1$ docker run --runtime=nvidia --rm nvidia/cuda:9.0-devel-ubuntu16.04 nvidia-smi 2Sun Apr 8 03:27:41 2018 3+-----------------------------------------------------------------------------+ 4| NVIDIA-SMI 384.111 Driver Version: 384.111 | 5|-------------------------------+----------------------+----------------------+ 6| GPU Name Persistence-M| Bus-Id Disp.A | Volatile Uncorr. ECC | 7| Fan Temp Perf Pwr:Usage/Cap| Memory-Usage | GPU-Util Compute M. | 8|===============================+======================+======================| 9| 0 GeForce GTX 980 Ti Off | 00000000:01:00.0 On | N/A | 10| 0% 36C P8 14W / 250W | 32MiB / 6075MiB | 1% Default | 11+-------------------------------+----------------------+----------------------+ 12| 1 GeForce GTX 980 Ti Off | 00000000:02:00.</description></item><item><title>コンテナが起動した瞬間に死ぬ</title><link>/post/%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%8C%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%9F%E7%9E%AC%E9%96%93%E3%81%AB%E6%AD%BB%E3%81%AC/</link><pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate><guid>/post/%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%8C%E8%B5%B7%E5%8B%95%E3%81%97%E3%81%9F%E7%9E%AC%E9%96%93%E3%81%AB%E6%AD%BB%E3%81%AC/</guid><description>前も同じことして悩んだので戒めも含めてメモ．
+コンテナを立ち上げた瞬間に落ちて無限にリスタート地獄に陥った．
+ログ見ると
+1$ docker-compose ps 2sample | standard_init_linux.go:178: exec user process caused &amp;#34;exec format error&amp;#34; 3sample | standard_init_linux.go:178: exec user process caused &amp;#34;exec format error&amp;#34; 4sample | standard_init_linux.go:178: exec user process caused &amp;#34;exec format error&amp;#34; 5sample | standard_init_linux.go:178: exec user process caused &amp;#34;exec format error&amp;#34; 6... なエラーが出てた．
+entrypoint用に書いてるシェルスクリプトに問題があった
+1FROM ubuntu 23～中略～ 45COPY entrypoint.sh / 6ENTRYPOINT [&amp;#34;/entrypoint.sh&amp;#34;] 7CMD [&amp;#34;something&amp;#34;] みたいなDockerfileを書いてた．
+entrypoint.shは軽く前処理をしたら引数にもらったCMDを実行するだけのシンプルなシェルスクリプト
+1if [ ${MASTER} = &amp;#34;yes&amp;#34; ]; then 2cat &amp;lt;&amp;lt; EOS &amp;gt; /etc/powerdns/pdns.</description></item><item><title>DockerでXWindowを使う</title><link>/post/docker%E3%81%A7xwindow%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate><guid>/post/docker%E3%81%A7xwindow%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>はじめに UbuntuでDockerで建てたコンテナからXWindowを飛ばしてみたくなったのでメモ．
+SSHは使わずにTCPでXWindowを飛ばします．
+環境 今回は同一のマシン上で行います．
+1$ cat /etc/lsb-release 2DISTRIB_ID=Ubuntu 3DISTRIB_RELEASE=16.04 4DISTRIB_CODENAME=xenial 5DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 16.04 LTS&amp;#34; 6$ docker -v 7Docker version 17.03.1-ce, build c6d412e 8$ docker-compose -v 9docker-compose version 1.14.0-rc1, build c18a7ad ホスト側 設定の変更 Ubuntuはlightdmが上がってる想定で書いてますが違う場合はそれぞれの環境に合わせて下さい．
+デフォルトではTCPでListenするようになってないので設定を加えます．
+ファイルがない場合は作成し，ある場合は追記します．
+1$ sudo vi /etc/lightdm/lightdm.conf 2[SeatDefaults] 3xserver-allow-tcp=true システムを再起動して変更を適用します．
+正しく設定出来ている場合は6000番のポートが開放されているはずです．
+1$ netstat -anp | grep 6000 2tcp 0 0 0.0.0.0:6000 0.0.0.0:* LISTEN - 3tcp6 0 0 :::6000 :::* LISTEN - 最後にこのXWindowサーバーにアクセス可能なクライアントの許可を出します．
+とりあえず動作確認に無制限にしますが適宜制限を設けた方が良いです．
+1$ xhost + クライアント側 ディレクトリ構成 適当に配置します．</description></item><item><title>docker hubにイメージを公開してみた</title><link>/post/docker-hub%E3%81%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%82%92%E5%85%AC%E9%96%8B%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F/</link><pubDate>Sun, 04 Jun 2017 00:00:00 +0000</pubDate><guid>/post/docker-hub%E3%81%AB%E3%82%A4%E3%83%A1%E3%83%BC%E3%82%B8%E3%82%92%E5%85%AC%E9%96%8B%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F/</guid><description>はじめに Docker hubにイメージを公開してみた
+今まで個人的にビルドして使ってるだけだったので試験も兼ねて公開してみた
+結構手軽に出来たので今後のぼちぼち公開していこうかな
+https://hub.docker.com/r/skyblue3350/alpine-pukiwiki/
+公開方法 Githubでレポジトリを作る いつも通りレポジトリを作ります
+ただしレポジトリのルートディレクトリにDockerfileを置きましょう
+それ以外の構成でもビルド出来るようですが面倒っぽいので大人しく置いた方が良さげ
+Docker hubのアカウントを作る あれば良いです
+今回はなかったので作りました
+特に苦労することもないと思います
+アカウントを紐付ける 上部メニューの Create -&amp;gt; Create Automated Build を選びます
+アカウントのリンクが出て来るので好きな方のアカウントを選びます
+Githubを選ぶとリンク方式を選ぶ画面が出てきますが今回はLimited Accessの方を選んで見ます
+Public and Private
+自動ビルドに対応させることが出来ます
+また、プライベートレポジトリの場合はこちらを選ぶ必要があります Limited Access
+Docker hub側でビルドボタンを押す等の方法でビルドする必要があります
+また、レポジトリがパブリックである必要があります レポジトリを選ぶ 先程作成しておいたレポジトリを選びます
+Dockerhub側の説明文等を簡単に書きます
+Github側にREADMEがある場合はそちらも表示されるので簡潔なものでかまわないでしょう
+ビルドしてみる Build Settingsからデフォルトで用意されてるmasterブランチのビルド設定を走らせます
+Triggerボタンを押すとそのうちビルドされます
+数分待ったらビルドされました</description></item><item><title>sharelatexでjarticleをつかえるようにする その2</title><link>/post/sharelatex%E3%81%A7jarticle%E3%82%92%E3%81%A4%E3%81%8B%E3%81%88%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B-%E3%81%9D%E3%81%AE2/</link><pubDate>Sun, 16 Apr 2017 00:00:00 +0000</pubDate><guid>/post/sharelatex%E3%81%A7jarticle%E3%82%92%E3%81%A4%E3%81%8B%E3%81%88%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B-%E3%81%9D%E3%81%AE2/</guid><description>はじめに 前回の記事からバージョン上がったりしてそのままじゃいけなかったので改めて検証してDockerfileを書いた
+LDAPやアカウント管理機能がPro版でしか対応されてないみたいなので利用するか迷うところ
+アカウントを作成するだけならadminのアカウントで/admin/registerから作成できます
+ただ作成したアカウントの一覧は見れません 不便
+DBを直に見に行けば見えるでしょうけど…
+環境 Docker version 17.03.1-ce Docker-compose version 1.12.0 sharelatex/sharelatex:0.6.1 ディレクトリツリー data以下に各コンテナをマウントさせる
+1. 2├─ data 3├─ docker-compose.yml 4└─ sharelatex 5├─ Dockerfile 6└─ jlisting.sty Dockerfile platexが使えるようにするのとソースコードを貼る際に困るのでjlistingを導入する
+1FROM sharelatex/sharelatex:0.6.1 23# platex install 4RUN apt-get update \ 5&amp;amp;&amp;amp; apt-get install texlive-lang-cjk -y \ 6&amp;amp;&amp;amp; apt-get clean \ 7&amp;amp;&amp;amp; apt-get autoremove 89# latexmk 10RUN cd /usr/local/texlive/2016/bin/x86_64-linux/ \ 11&amp;amp;&amp;amp; sed -ri &amp;#34;s/$latex = &amp;#39;latex %O %S&amp;#39;;/$latex = &amp;#39;platex -shell-escape %O %S&amp;#39;;/g&amp;#34; latexmk \ 12&amp;amp;&amp;amp; sed -ri &amp;#34;s/$bibtex = &amp;#39;bibtex %O %B&amp;#39;;/$bibtex = &amp;#39;pbibtex %O %B&amp;#39;;/g&amp;#34; latexmk \ 13&amp;amp;&amp;amp; sed -ri &amp;#34;s/$dvipdf = &amp;#39;dvipdf %O %S %D&amp;#39;;/$dvipdf = &amp;#39;dvipdfmx %O -o %D %S&amp;#39;;/g&amp;#34; latexmk 1415# jlisting 16ADD jlisting.</description></item><item><title>JenkinsのLDAP連携</title><link>/post/jenkins%E3%81%AEldap%E9%80%A3%E6%90%BA/</link><pubDate>Tue, 11 Apr 2017 00:00:00 +0000</pubDate><guid>/post/jenkins%E3%81%AEldap%E9%80%A3%E6%90%BA/</guid><description>はじめに 前回GitlabをLDAP連携したので今度はJenkinsでもLDAP連携してみる
+こちらも例の如くDocker上で動かす
+環境 Docker version 17.03.1-ce Docker-compose version 1.12.0 jenkinsci/jenkins:2.54-alpine 構築 Jenkinsの起動 何はともあれdocker-compose.ymlを書く
+1version:&amp;#34;2&amp;#34;23services:4jenkins:5restart:always6image:jenkinsci/jenkins:2.54-alpine7ports:8- &amp;#34;50000:50000&amp;#34;9- &amp;#34;8080:8080&amp;#34;10volumes:11- /home/jenkins:/var/jenkins_home実行する
+1$ docker-compose up -d 8080ポートをブラウザ上で開いたら初期登録のウィザードが始まるのでウィザードに従っていく
+最初のパスワードはブラウザ上で指定された場所に一時キーが書き込まれたファイルがあるので確認する
+1$ docker exec -it jenkins_jenkins_1 bash 2# cat /var/jenkins_home/secrets/initialAdminPassword 確認したキーをブラウザ上に貼り付けユーザー作成や各種プラグインのインストール等を済ませる
+これでひとまず終わり
+LDAP 設定 Jenkinsの管理 -&amp;gt; グローバルセキュリティの設定 と移動する
+JenkinsのユーザーデータベースからLDAPに変更し
+サーバー
+LDAP認証を提供しているサーバーを指定する
+例）ldap://192.168.1.123
+[高度な設定]ボタンをクリック root DN
+対象となるLDAPグループのDNを入力する
+例）dc=hoge,dc=fuga,dc=com User search base
+ユーザーの検索に使われる
+LDAP側の設定に合わせる
+例）ou=people User search filter
+ユーザー名の検索に使用される
+LDAP側の設定に合わせる
+例）uid={0} 権限管理
+この時点ではまだ「全員に許可」にしておく
+ログイン方式を1つしか選択出来ない？ようなので設定漏れがあった際にログイン出来なくなってしまうため ここまで設定したら保存する</description></item><item><title>GitlabのLDAP連携</title><link>/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</link><pubDate>Sun, 02 Apr 2017 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%81%AEldap%E9%80%A3%E6%90%BA/</guid><description>はじめに sameersbn/docker-gitlabでLDAP連携するメモ
+環境 Docker-compose version 1.11.2, build dfed245 Docker version 17.03.1-ce, build c6d412e sameersbn/docker-gitlab 8.17.4 設定 レポジトリにあるdocker-compose.xmlを参考に記述する
+docker-gitlab/docker-compose.yml ※余談ですがバックアップがdailyになっててテスト環境でテストしてたら死にました
+設定値例 LDAPホスト：192.168.1.30 LDAPポート：389 認証ユーザーグループ：dc=hoge,dc=fuga,dc=foo,dc=co,dc=jp ユーザー名：uid 必要部分だけ抜粋
+1～略～ 2gitlab: 3restart: always 4image: sameersbn/gitlab:8.17.4 5～中略～ 6environment: 7- DEBUG=false 8～中略～ 9- LDAP_ENABLED=true 10- LDAP_LABEL=えるだっぷ 11- LDAP_HOST=192.168.1.30 12- LDAP_PORT=389 13- LDAP_BASE=dc=hoge,dc=fuga,dc=foo,dc=co,dc=jp 14- LDAP_UID=uid LDAP_LABELはトップページのログイン方式選択のラベルで表示される
+LDAP_BASEは””とかで囲む必要はない　これでハマったので今回の記事書いたところもある
+LDAP_UIDはLDAP側ユーザー名として設定してるものに合わせる
+確認 コンテナを起動して確かめる
+1$ cd gitlab 2$ docker-compose up -d このように表示されてればとりあえずおっけー
+あとはログインしてみて正しくログイン出来れば終わり
+設定値の確認 ダメそうだったらコンテナの中に入って確認してみる</description></item><item><title>sharelatexでjarticleをつかえるようにする</title><link>/post/sharelatex%E3%81%A7jarticle%E3%82%92%E3%81%A4%E3%81%8B%E3%81%88%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B/</link><pubDate>Sun, 19 Feb 2017 00:00:00 +0000</pubDate><guid>/post/sharelatex%E3%81%A7jarticle%E3%82%92%E3%81%A4%E3%81%8B%E3%81%88%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B/</guid><description>ShareLatex とは Web上でLatexが書けるオープンソースプロジェクト
+Webサービスとしても提供されてるけどオープンソースなので自前のサーバーで動かすこともできる
+ただCloud LaTeXと違ってjarticleが使えないのでその辺もなんとかします
+大体参考元記事のままです
+というか大人しくDockerfile書いた方が早いです
+環境 Docker
+1.13.1 build 092cba3 Docker-compose
+1.11.1 build 7c5d5e4 環境構築 イメージの用意 公式がDockerイメージを提供しているのでこちらを利用します
+1$ mkdir sharelatex 2$ cd sharelatex 3$ wget https://raw.githubusercontent.com/sharelatex/sharelatex/master/docker-compose.yml 4$ docker-compose up -d 80番にフォワーディングされてるので一度アクセスして動作することを確認します
+起動直後は502 bad gatewayが出ますがしばらく待てばログイン画面がでます
+アカウント設定 docker execで管理用アカウントのIDを発行します
+1$ docker exec sharelatex /bin/bash -c &amp;#34;cd /var/www/sharelatex; grunt user:create-admin --email joe@example.com&amp;#34; 登録用 URL
+登録用URLにアクセスしてパスワードを設定しサンプルプロジェクトを作って問題なく動作することを確認します
+イメージの編集 コンテナ内に入って作業します
+1$ docker exec -it sharelatex bash platexのインストール 何はともあれplatexがないことには始まらないのでインストールします
+1# apt-add-repository ppa:texlive-backports/ppa 2# apt-get install texlive-lang-cjk ここまででかなり時間かかるのでここで一度適当にコンテナをcommitしておくと失敗した時のダメージが軽くなります</description></item><item><title>Dockerでマインクラフトのサーバーを建てる</title><link>/post/docker%E3%81%A7%E3%83%9E%E3%82%A4%E3%83%B3%E3%82%AF%E3%83%A9%E3%83%95%E3%83%88%E3%81%AE%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E5%BB%BA%E3%81%A6%E3%82%8B/</link><pubDate>Sat, 09 Jul 2016 00:00:00 +0000</pubDate><guid>/post/docker%E3%81%A7%E3%83%9E%E3%82%A4%E3%83%B3%E3%82%AF%E3%83%A9%E3%83%95%E3%83%88%E3%81%AE%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E5%BB%BA%E3%81%A6%E3%82%8B/</guid><description>いろいろ投げやり
+こんな感じでDockerfile書いて
+docker build -t hoge/minecraft .
+で終わり
+適当にJavaに投げるオプションを適宜変更してビルドする
+実行は
+1docker run -d -p 25565:25565 -v /hoge/fuga:/home/minecraft hoge/minecraft するだけ
+ボリュームで置いたファイルを呼んでるだけの手抜きイメージを走らせてる　最高に手抜き
+参考サイトみたいにした方がいいと思うけどとりあえずJava動くイメージが作ってみたかっただけなんだ…
+とりあえずイメージの作り方の勉強にお試しでという感じ
+参考 DockerでMinecraft forgeのマルチサーバを立てる</description></item><item><title>Docker環境の構築</title><link>/post/docker%E7%92%B0%E5%A2%83%E3%81%AE%E6%A7%8B%E7%AF%89/</link><pubDate>Sun, 03 Jul 2016 00:00:00 +0000</pubDate><guid>/post/docker%E7%92%B0%E5%A2%83%E3%81%AE%E6%A7%8B%E7%AF%89/</guid><description>はじめに とりあえず使ってみたので今後使うことがあった時のためにメモ
+インストール 1$ wget -qO- https://get.docker.com/ | sh アプデの時は
+1$ wget -N https://get.docker.com/ | sh ユーザーの追加 1$ sudo usermod -aG docker user名 でユーザーをグループに追加
+その後再起動で反映（重要）
+Cannot connect to the Docker daemon. Is the docker daemon running on this host?
+とか出て怒られる
+イメージの取得 とりあえず今回は試したいものがあったのでそれを拾ってくる
+https://hub.docker.com　から拾ってくる時はページの右上にあるコマンドをそのまま投入する
+1$ docker pull イメージ名 DLとpullが完了したら確認する
+1$ docker images 使い方 実行 1$ docker run -it イメージ名 で実行と同時にログインするからCtrl+P、Qで離脱
+1$ docker ps でプロセスを確認
+終了 1$ docker stop ID IDはプロセス確認の時見れる</description></item></channel></rss>

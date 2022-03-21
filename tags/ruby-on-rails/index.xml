@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ruby on Rails on メモ帳</title><link>/tags/ruby-on-rails/</link><description>Recent content in Ruby on Rails on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 06 Aug 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/ruby-on-rails/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu16.04でRuby on Railsのチュートリアルをする</title><link>/post/ubuntu16.04%E3%81%A7ruby-on-rails%E3%81%AE%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB%E3%82%92%E3%81%99%E3%82%8B/</link><pubDate>Sun, 06 Aug 2017 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04%E3%81%A7ruby-on-rails%E3%81%AE%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB%E3%82%92%E3%81%99%E3%82%8B/</guid><description>はじめに https://railsguides.jp/getting_started.html
+こちらのチュートリアルをやる上で詰まったところとかのメモ
+環境 検証はDockerのUbuntu16.04で行いました
+最終的にこうなりました
+1$ ruby -v 2ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu] 3$ rails -v 4Rails 5.1.3 環境構築 Rubyのインストール 後者4つのパッケージはいれておかないとnokogiriとsqlite3のインストール時にコケます
+1$ sudo apt-get install ruby ruby-dev build-essential zlib1g-dev libsqlite3-dev Railsのインストール 1$ gem install rails とりあえずこれだけで終わり
+プロジェクト作成 チュートリアル通り作る
+1$ rails new blog プロジェクトの実行 チュートリアル通りサーバーを立ち上げようとするとエラーで止まる
+1$ rails server 2えらー ので
+1$ vi Gemfile 2- # gem &amp;#39;therubyracer&amp;#39;, platforms: :ruby 3+ gem &amp;#39;therubyracer&amp;#39;, platforms: :ruby 4$ bundle install のようにコメントを外しておく
+ただこのまま実行しても
+1$ rails server 2/var/lib/gems/2.</description></item><item><title>rails-erdで多対多のリレーションの描画</title><link>/post/rails-erd%E3%81%A7%E5%A4%9A%E5%AF%BE%E5%A4%9A%E3%81%AE%E3%83%AA%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E6%8F%8F%E7%94%BB/</link><pubDate>Wed, 01 Feb 2017 00:00:00 +0000</pubDate><guid>/post/rails-erd%E3%81%A7%E5%A4%9A%E5%AF%BE%E5%A4%9A%E3%81%AE%E3%83%AA%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E6%8F%8F%E7%94%BB/</guid><description>tl;dr rails-erdでE-R図描いたら多対多のリレーションが表示されない
+→rails-erdはhas_manyやthroughを使ったリレーションは一方向にしか表示されない
+らしいので結局railroadyを使った
+使った環境がだいぶ前に構築したものだからかもしれないので備忘録の側面が強い
+初めてrails触ってるのでそもそも何か間違ってるのかもしれない
+以下備忘録代わりのメモ
+作業内容 例えば記事に複数のカテゴリをつけられるようなリレーションモデルを作成する
+プロジェクト生成と設定 生成と必要なライブラリの追加とか
+1$ rails new blog 2$ vi Gemfile 3gem &amp;#34;railroady&amp;#34; 4gem &amp;#34;rails-erd&amp;#34; 5を末尾に追加 6$ bundle install 7$ rake db:create:all DBの設定 DBの設定をする
+1$ vi config/database.yml モデルの生成 記事としてArticle　カテゴリとしてCategoryモデルを作る
+そして これらをつなぐ中間モデルArticleCategoryを作成する
+1$ rails g scaffold Article title:text date:datetime body:text 2$ rails g scaffold Category name:text description:text 3$ rails g scaffold ArticleCategory article:references category:references 各モデルのリレーションを記述する
+1$ vi app/models/article.rb 2class Article &amp;lt; ActiveRecord::Base 3has_many :ArticleCategorys 4has_many :Categorys, through: :ArticleCategorys 5end 67$ vi app/models/category.</description></item></channel></rss>

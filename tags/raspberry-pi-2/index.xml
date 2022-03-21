@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Raspberry Pi 2 on メモ帳</title><link>/tags/raspberry-pi-2/</link><description>Recent content in Raspberry Pi 2 on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 10 Feb 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/raspberry-pi-2/index.xml" rel="self" type="application/rss+xml"/><item><title>Raspberry PiでUSBヘッドセットを使う</title><link>/post/raspberry-pi%E3%81%A7usb%E3%83%98%E3%83%83%E3%83%89%E3%82%BB%E3%83%83%E3%83%88%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Sat, 10 Feb 2018 00:00:00 +0000</pubDate><guid>/post/raspberry-pi%E3%81%A7usb%E3%83%98%E3%83%83%E3%83%89%E3%82%BB%E3%83%83%E3%83%88%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>はじめに Raspberry PiでUSBヘッドセットを使いたいって相談を受けて試してみたのでメモ．
+Raspberry Pi2で検証しましたが基本的にはどれでも同じはず．
+Raspberry Pi2はクリーンインストールしたキレイな状態です．
+環境 Raspberry Pi 2 1pi@raspberrypi:~ $ cat /etc/debian_version 29.3 3pi@raspberrypi:~ $ lsb_release -a ※lsb-releaseパッケージ入れました 4No LSB modules are available. 5Distributor ID: Raspbian 6Description: Raspbian GNU/Linux 9.3 (stretch) 7Release: 9.3 8Codename: stretch ヘッドセット（バッファロー BUFFALO BSHSUH12BK） 環境構築 パッケージのアップデート いつも通りアプデします．
+1pi@raspberrypi:~ $ sudo apt-get update -y 2pi@raspberrypi:~ $ sudo apt-get upgrade -y スピーカーで音を聞くまで Raspberry Piを起動した状態でUSB接続します．
+認識したか確認します．大体末尾の番号のやつがそうです．
+1pi@raspberrypi:~ $ lsusb 2Bus 001 Device 005: ID 046d:c52b Logitech, Inc.</description></item><item><title>RaspberryPi2でrootなしでGPIOを操作する</title><link>/post/raspberrypi2%E3%81%A7root%E3%81%AA%E3%81%97%E3%81%A7gpio%E3%82%92%E6%93%8D%E4%BD%9C%E3%81%99%E3%82%8B/</link><pubDate>Sun, 06 Nov 2016 00:00:00 +0000</pubDate><guid>/post/raspberrypi2%E3%81%A7root%E3%81%AA%E3%81%97%E3%81%A7gpio%E3%82%92%E6%93%8D%E4%BD%9C%E3%81%99%E3%82%8B/</guid><description>はじめに RaspberryPi2のApache上でWebからGPIOを操作する際に詰まったのでメモ
+前回の方法で使ってるWiringPi2だとGPIOを利用する際に
+1wiringpi2.wiringPiSetupGpio() するとroot権が必要とのエラーが出て止まります
+1wiringpi2.wiringPiSetupSys() だとroot権なしで実行出来ますがこれだとdigitalWriteは出来ますがPWM等を制御することは出来ない様です
+というわけで使うモジュールを変えました
+元々入ってるRPi.GPIOで簡単にroot権なしでPWM制御出来たのでコードを載せておきます
+1import RPi.GPIO as GPIO 23PIN1 = 13 45GPIO.setmode(GPIO.BCM) 6GPIO.setup(PIN1, GPIO.OUT) 7servo = GPIO.PWM(PIN1, 50) 89getDuty = lambda angle: (1.0 + angle/180.0)/20.0*100.0 1011while True: 12i = raw_input() 13if i == &amp;#34;e&amp;#34;: 14break 15servo.start(getDuty(int(i))) 1617servo.stop() 18GPIO.cleanup() これでmod_wsgi使いつつFlaskでWebから操作出来る監視カメラもどきが出来ました
+前はrootでapp.runして強引に動かしてました
+もしダメだったらApacheの実行ユーザー（www-data）をgpioグループに追加するとうまくいくと思います
+1$ sudo cat /etc/apache2/envvars | grep APACHE_RUN_USER 2とかして確認する 3$ sudo gpasswd -a www-data gpio 4$ sudo service apache2 restart</description></item><item><title>Raspberry Pi2でサーボを動かす</title><link>/post/raspberry-pi2%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%9C%E3%82%92%E5%8B%95%E3%81%8B%E3%81%99/</link><pubDate>Sun, 24 Jul 2016 00:00:00 +0000</pubDate><guid>/post/raspberry-pi2%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%9C%E3%82%92%E5%8B%95%E3%81%8B%E3%81%99/</guid><description>はじめに Raspberry Pi2でサーボを動かします
+このカメラマウントを動かすので制御するサーボは2つになります 1つを制御する記事は多かったけど2つのサーボを制御する記事があんま見つかりませんでした ちなみにこのカメラマウントレビューにもある通りサーボ付属のホーンが使えず少し加工が必要です 大した手間じゃないですが若干面倒
+必要なもの Raspberry Pi2 SG90*2 カメラマウント 作業 組み立て カメラマウントは説明書もないっぽいので適当にググって先人の知恵をお借りして頑張って組み立てます
+配線 この辺とかが実際のRaspberryPi2の画像とかあって見やすいです
+Pin Numbering - Raspberry Pi 2 Model B GPIOの配置はこんな感じ
+https://www.raspberrypi.org/documentation/usage/gpio/README.md
+サーボ側のデータは秋月電子で公開されてるPDFを読む
+SG90 9 g Micro Servo
+2ページ目に線の説明がある　実物だと色が見づらいけど束ねられてる線の真ん中が赤色 ここを参考にすると下記の通り
+オレンジ
+PWM レッド
+Vcc（+） ブラウン
+Ground（-） やることとしては5VとGNDに繋いでPWMをクロック違うところに繋ぐだけ
+GPIO図のPWM0とかPWM1とかがクロックが違うのでうっかりPWM0とPWM0に繋ぐと2つのサーボが同じ挙動して焦る（実際にやった）
+実際の配置はこんな感じ
+サーボ1
+オレンジ　→　PIN32
+レッド　→　PIN2
+ブラウン　→　PIN30 サーボ2
+オレンジ　→　PIN33
+レッド　→　PIN4</description></item><item><title>Raspberry Pi2でPHP7のビルド・インストール</title><link>/post/raspberry-pi2%E3%81%A7php7%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</link><pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate><guid>/post/raspberry-pi2%E3%81%A7php7%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</guid><description>はじめに PHP7が出たので自鯖のPHPを5.3から7へ移行しました
+自鯖で稼働しているPHP関連のものはowncloudとWordpressですが移行後特にこれといった問題は起きていません
+PHP7のインストールからMySQLの接続確認まで行います
+インストールした環境はRaspberry Pi2 Wheezy上になります
+Debian系やその他OSでも前提パッケージ名が違う程度だと思います
+前提パッケージのインストール 1$ sudo apt-get install libxml2 libxml2-dev pkg-config libssl-dev libreadline5 libreadline-gplv2-dev libpspell-dev apache2-dev libcurl4-openssl-devもいるかもしれません
+コンパイル　インストール 適当に公式からアーカイブファイルを落として展開する
+その後
+1$sudosh./configure\2--with-readline\3--enable-pcntl\4--with-gettext\5--enable-phpdbg\6--enable-phpdbg-webhelper\7--enable-mbstring\8--enable-zip\9--enable-bcmath\10--enable-ftp\11--enable-exif\12--enable-calendar\13--enable-sockets\14--enable-sysvmsg\15--enable-sysvsem\16--enable-sysvshm\17--enable-wddx\18--with-curl\19--with-mcrypt\20--with-iconv\21--with-pspell\22--with-gd\23--enable-gd-native-ttf\24--enable-gd-jis-conv\25--with-openssl\26--enable-soap\27--with-zlib-dir=/usr\28--with-zlib=/usr\29--with-bz2=/usr\30--with-apxs2\31--with-mysqli=mysqlnd\32--with-pdo-mysql=mysqlnd\33--with-mysql-sock=/var/run/mysqld/mysqld.sock34$sudomake-j`nproc`35$sudoapt-getremovephp*36$sudomakeinstallnprocはそのPC上の最大を表すらしい　知らなかった
+おそらくconfigureは前提パッケージを全て入れていれば通るはず
+トラブった時は以下のページが参考になった
+https://blog.flowl.info/2015/how-to-install-php7-on-ubuntu-or-debian/
+各種設定 設定ファイルのコピー パスを調べてからそこにファイルを配置する
+1$ php -i | grep php.ini 2$ sudo cp ./hoge/php-7.0.3/php.ini-production /usr/local/lib/php.ini 1$ vi /usr/local/lib/php.ini 2必要な設定をする 3必要な項目を検索して適宜書き換え 4expose_php = On → Offに 5;date.timezone = → date.timezone = &amp;#39;Asia/Tokyo&amp;#39; 6;error_log = php_errors.log → error_log = &amp;#34;適当なパス/error.log&amp;#34;//対象ファイルの所有者をdaemonに権限を755にしておく 7mysqli.default_socket = → mysqli.</description></item><item><title>サーバーが飛んだので再設定した話</title><link>/post/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%8C%E9%A3%9B%E3%82%93%E3%81%A0%E3%81%AE%E3%81%A7%E5%86%8D%E8%A8%AD%E5%AE%9A%E3%81%97%E3%81%9F%E8%A9%B1/</link><pubDate>Fri, 01 Jul 2016 00:00:00 +0000</pubDate><guid>/post/%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%8C%E9%A3%9B%E3%82%93%E3%81%A0%E3%81%AE%E3%81%A7%E5%86%8D%E8%A8%AD%E5%AE%9A%E3%81%97%E3%81%9F%E8%A9%B1/</guid><description>経緯 WordPressのレスポンスが遅いので色々入れた途中でRaspberry Pi 2のオーバークロックしたら起動しなくなった。
+起動しなくなった場合はShiftキーを押しながら起動すればオーバークロックせずに起動出来るので回避出来ますが昨日時点では知りませんでした。
+ので1からインストールし直したのでブログを移転したついでにRaspberry Piの設定をメモし直す
+データ救出 DiskInternals Linux Readerを使用して予めファイルの救出を行っておきます。
+MicroSDのフォーマット 既にOSをインストール済みのMicroSDはパーティションが切られていてWinのクイックフォーマットではWinから見える領域しかフォーマットできません。
+そのためにSDCardFormatterを使用してフォーマットを掛けます。
+OSのダウンロード OSを公式サイトからダウンロードしてきます。
+今回はRASPBIANをインストールするのでRASPBIAN JESSIE LITEをダウンロード。
+OSのインストール Win32DiskImagerを使用してダウンロードしてきたイメージファイルを書き込む。
+初期設定 HDMI・USBキーボード・電源を接続して起動します。ログイン画面には以下のIDとPWでログイン
+ユーザー：pi
+パスワード：raspberry
+でログイン出来るのでログインする。
+1$ sudo raspi-config して初期設定をする。
+Internationalisation Optionsから
+Change Local -&amp;gt; es_US.UTF-8とja_JP.UTF-8 を選択 -&amp;gt; es_US.UTF-8をデフォルトにする
+Change Timezone -&amp;gt; Asia -&amp;gt; Tokyoを選択
+Change keyboard layout -&amp;gt; Generic 105-key(intl) PC -&amp;gt; Other -&amp;gt; Japanese -&amp;gt; Japanese
+Finishしてrebootしておく
+再起動してログインしたら
+1$ sudo adduser hoge 2$ sudo visudo 3#pi ALL=(ALL) NOPASSWD: ALL 4hoge ALL=(ALL) PASSWD:ALL して保存</description></item></channel></rss>

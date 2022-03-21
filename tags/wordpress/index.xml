@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WordPress on メモ帳</title><link>/tags/wordpress/</link><description>Recent content in WordPress on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Wed, 06 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/wordpress/index.xml" rel="self" type="application/rss+xml"/><item><title>WordPress移行まとめ</title><link>/post/wordpress%E7%A7%BB%E8%A1%8C%E3%81%BE%E3%81%A8%E3%82%81/</link><pubDate>Wed, 06 Jul 2016 00:00:00 +0000</pubDate><guid>/post/wordpress%E7%A7%BB%E8%A1%8C%E3%81%BE%E3%81%A8%E3%82%81/</guid><description>概要 当初ラズパイで建ててたサーバー（Apache）から物理マシンのサーバー（nginx）へ移行しました
+その時のメモ
+環境 引越元環境
+サーバー：Apache
+URL：http://sky-net.pw/blog
+引越先環境
+サーバー：Nginx
+URL：http://blog.sky-net.pw
+作業 再インストール 引越自体はファイルを移動させるのみ
+その後適切なパーミッションと所有者に変更する
+DB移行 エクスポート もしサイトのURLを変更する場合は先に元環境で設定→一般→サイトURLを予め移転先へ変更してからMySQLのエクスポートをする
+元の状態のままエクスポートして移転先にインポートしたらCookieが無効になっていてどうのでログインすることが出来なかった
+エクスポート自体は
+1$ mysqldump -h ホスト名 -u ユーザー名 -p DB名 &amp;gt; 書き出しファイル名 で出来る　設定値はconfig.php見ればわかる
+インポート インポートは予め受け入れ先DBを作成した上でインポート
+1$ mysql -u root -p 2mysql&amp;gt; create database DB名 default character set utf8 default collate utf8_general_ci; 3mysql&amp;gt; create user ユーザー名@ホスト名 IDENTIFIED BY パスワード; 4mysql&amp;gt; grant all privileges on DB名.* TO ユーザー名@ホスト名; 5mysql&amp;gt; exit 1$ mysql -h ホスト名 -u ユーザー名 -p DB名 &amp;lt; ファイル名 ここまででトップページの表示は問題なく行えるようになったはず</description></item><item><title>WordPress設置まとめ</title><link>/post/wordpress%E8%A8%AD%E7%BD%AE%E3%81%BE%E3%81%A8%E3%82%81/</link><pubDate>Thu, 30 Jun 2016 00:00:00 +0000</pubDate><guid>/post/wordpress%E8%A8%AD%E7%BD%AE%E3%81%BE%E3%81%A8%E3%82%81/</guid><description>はじめに FC2のブログをやめて自鯖にWordPressを設置したので最初の記事はWordPress設置についてのまとめ
+ApacheとMySQLだけ予めインストールしておく
+MySQLの設定 適当な名前で必要なテーブルやパスワードを作成する
+今回は以下の設定での例
+項目 設定値 データベース名 wp_hogehoge ユーザー名 fuga パスワード aiueo ホスト名 l ocalhost 1$ mysql -u root -p 2mysql&amp;gt; create database wp_hogehoge; 3mysql&amp;gt; grant all on wp_hogehoge.* to &amp;#39;fuga&amp;#39;@&amp;#39;localhost&amp;#39; identified by &amp;#39;aiueo&amp;#39;; 4mysql&amp;gt; exit 5Bye WordPressのダウンロード 次に公式サイトからWordPressをダウンロードしておく
+ダウンロードしたものを解凍してブログを設置するディレクトリにアップロードしておく
+もし実ディレクトリとURLを別にするならドキュメント読んで適当に設置する
+最後にオーナーをApacheの実行ユーザーに変更する
+1$ wget URL 2$ unzip hoge.zip 3$ mv hoge /var/www/blog 4$ sudo chown -R www-data /var/www/blog WordPressのインストール アップロードしたURLにアクセスして初期設定を行う</description></item></channel></rss>

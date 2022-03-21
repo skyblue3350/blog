@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ESXi on メモ帳</title><link>/tags/esxi/</link><description>Recent content in ESXi on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 07 Dec 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/esxi/index.xml" rel="self" type="application/rss+xml"/><item><title>ESXi6.5でUbuntuがネットワークに繋がらない</title><link>/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</link><pubDate>Fri, 07 Dec 2018 00:00:00 +0000</pubDate><guid>/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</guid><description>ESXi上で動かしているとあるVMでパッケージのアップデートを適用して再起動したらネットワークに繋がらなくなってしまった．
+ただ，他のVMでは問題なくネットワークに接続できているので設定の問題かな？と思ってDHCPに戻したりして検証していたが，一行に接続できず参ってしまったのでその時のメモ．
+環境 ホスト
+ESXi 6.5 ゲスト Ubuntu16.04（4.4.0-62-generic）
+問題なく接続できていたVM Ubuntu16.04（4.4.0-140-generic）
+接続できなくなったVM 原因（推測） 技術力不足でログを追うところまではいけませんでしたが，カーネルのアップデートでドライバが対応しきれなくなったのかなと思います．
+一応lsmodした感じ対応したドライバが読み込まれているようでしたが動作しませんでした．
+接続できなかったVMにはE1000eのNICが接続されていたのでe1000のドライバを拾ってきて入れてやれば多分動いたと思います．
+一応，手元にあったカーネルで動作チェックしたところ，こんな感じでした．
+4.4.0-140-generic 4.4.0-139-generic 4.4.0-137-generic
+接続不可能 4.4.0-104-generic 4.4.0-62-generic
+接続可能 解決方法 今回は対応するドライバを入れ直す方法ではなく，ESXiのアダプタタイプを変更することで解決しました．
+ESXiの管理コンソールに入り，ネットワークアダプタの設定項目を開いて当該アダプタのアダプタタイプをVMXNET 3に変更することでドライバも併せたものに変更されました．
+変更したところ上記の接続不可能だったカーネルでも問題なく接続できるようになったのを確認しました．</description></item><item><title>ESXiでghettoVCBを導入する</title><link>/post/esxi%E3%81%A7ghettovcb%E3%82%92%E5%B0%8E%E5%85%A5%E3%81%99%E3%82%8B/</link><pubDate>Sun, 13 May 2018 00:00:00 +0000</pubDate><guid>/post/esxi%E3%81%A7ghettovcb%E3%82%92%E5%B0%8E%E5%85%A5%E3%81%99%E3%82%8B/</guid><description>はじめに ESXiでバックアップを取るためにghettoVCBを導入する
+環境 ESXi 6.5 事前準備 SSHの有効化 SSHを有効にしないと各種操作が行えないので予めSSHを有効にしておく
+WebUIにログインし
+ホスト-&amp;gt;アクション-&amp;gt;サービス-&amp;gt;SSHの有効化
+からSSHを有効化にしておく
+インストール データストアブラウザから
+https://github.com/lamw/ghettoVCB/blob/master/vghetto-ghettoVCB.vib
+上記をダウンロードしたものをアップロードしておく
+SSHでログインし
+1# esxcli software vib install -v /path/to/vghetto-ghettoVCB.vib -f としてインストールを行う
+インストールが出来た場合
+1Installation Result 2Message: Operation finished successfully. 3Reboot Required: false 4VIBs Installed: virtuallyGhetto_bootbank_ghettoVCB_1.0.0-0.0.0 5VIBs Removed: 6VIBs Skipped: と結果が表示される
+次にシェルスクリプトをコピーする
+1# cp /opt/ghettovcb/bin/ghettoVCB.sh /path/to/ あとは環境に合わせて編集しdry-runしてテストした後に実際に実行してみて問題ないかテストする
+ひとまず必要なのはバックアップデータの書き出し先なのでここだけ変更してみる
+1- VM_BACKUP_VOLUME=/vmfs/volumes/mini-local-datastore-hdd/backups 2+ VM_BACKUP_VOLUME=/vmfs/volumes/ds2/backup dry-runして問題ないか確認する
+1# ./ghettoVCB.sh -m VM名 -d dryrun 2Logging output to &amp;#34;/tmp/ghettoVCB-2018-05-13_02-00-31-1436833.log&amp;#34; ... 32018-05-13 02:00:31 -- info: = ghettoVCB LOG START = 4～略～ 52018-05-13 02:00:32 -- info: ###### Final status: OK, only a dryrun.</description></item><item><title>ESXi6.5まとめ</title><link>/post/esxi6.5%E3%81%BE%E3%81%A8%E3%82%81/</link><pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate><guid>/post/esxi6.5%E3%81%BE%E3%81%A8%E3%82%81/</guid><description>ESXi6.5を使い始めるにあたって気になった点とか使って困った点とかのまとめ
+インストール前の話 利用料金 無償版か有償版か選べる
+ただし無償版でもVMwareに登録必須
+登録するとライセンスキーが発行される
+インストーラーは一緒だけど無償版のライセンスキーをいれない場合は30日の体験版扱いになる
+機器 出来れば公式で対応を謳っているものを使用した方がトラブルは少ない（らしい
+今回は公式対応が表明されているものを利用した
+自分でドライバを追加して使うことも出来るようなのでその辺は調べてみて下さい
+管理 6.5から？WebUIに統一されたようです
+5.5時代にお世話になっていたVSphereでアクセスすると一部機能が使えないなどWebUI推奨なようです
+インストールイメージ もし公式が対応を歌っている製品の場合はそのメーカーが専用のカスタムイメージを配布している場合があるので探すことを推奨する
+なければ公式のをインストール
+インストールメディアはCD・DVDなどのディスクにダウンロードしたisoを焼くかUSB等のメディアもBIOSが対応していれば使える
+今回はUnetbootinを利用しました
+RAID ハードウェアRAIDしか対応していないそうです
+今回はソフトウェアRAIDしか用意できなかったため諦めました
+インストール後の話 再インストールしたい 一般のディストリビューションならインストール時にパーティション構成が変更出来ますがESXiの場合既にインストールしていることを検知すると上書きでしかインストールできない様子
+ファイル破損時とかには便利かもしれない
+一度クリーンにしたい状況になったので他のディストリビューションを利用してパーティションを再構成しました
+NICが1つしか認識しない 今回公式対応のNICを2つ用意して構築しましたが初回インストール時はなぜか1つしか認識しませんでした
+NIC2つにLANケーブルを指した状態で再度インストールを行うことで認識されました
+※一応SSHで入って確認すると認識はしてるようですが管理画面の選択リストに表示されませんでした
+ライセンスキーを入力したい メンテナンスモードに変更して入力
+ファイル転送時などにエラーが出て転送出来ない IP直打ちでログインしているとそういったことが起きるようです
+DNSサーバーを置くかローカルのhostsファイルの編集で適当な名前を与えて接続することで解消
+SSH接続したい トップ画面から有効にしてSSHログイン
+デフォルトならrootで22番ポートから入れます
+Teratermの場合はチャレンジレスポンス認証です
+使う時だけオンにした方が良さ気
+ドメイン名をなんとかしたい デフォルトだとlocalhost.localdomainになっていてかっこ悪いです
+SSHを有効にしてログインし
+1# esxcli system hostname set --host=&amp;#34;esxi&amp;#34; --domain=&amp;#34;hoge&amp;#34; 2or 3# esxcli system hostname set --host=&amp;#34;esxi&amp;#34; などとして設定できます
+VM名を変更したい WebUIから変更出来ますがその場合は表示名のみ変更されます
+実ファイルがあるディレクトリ名は変わらないため今後不都合が生じる可能性があります
+例）hogeからfugaに変える場合
+予めVMは停止しておきます
+1# cd /vmfs/volumes/datastore1/ 2# cd hoge 3# vmkfstools -E hoge_0.</description></item></channel></rss>

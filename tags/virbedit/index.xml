@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>VIRBEdit on メモ帳</title><link>/tags/virbedit/</link><description>Recent content in VIRBEdit on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 12 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/virbedit/index.xml" rel="self" type="application/rss+xml"/><item><title>VIRB Editでプレビューできない</title><link>/post/virb-edit%E3%81%A7%E3%83%97%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</link><pubDate>Sun, 12 Dec 2021 00:00:00 +0000</pubDate><guid>/post/virb-edit%E3%81%A7%E3%83%97%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84/</guid><description>GoPro で撮影した動画に Garmin サイコンで取ったデータをオーバーレイで載せてみたい！と思って VIRB Edit を触ったところ、VIRB Editで動画や画像がプレビューできない事象に遭遇したのでメモ
+環境 発生バージョン
+5.4.3 GPU Driver
+30.0.14.9709 事象 動画や画像を読み込ませてプレビューしようとすると以下のようにエラー表示が出てしまい何も映らず…
+何もわからん…になった pic.twitter.com/4hFOOTNblU
+&amp;mdash; スカイ (@skyblue3350) December 12, 2021 エラー文の案内ではグラボのドライバ更新が案内されているがグラフィックカードのドライバは今日時点で最新のものを適用済み。
+https://forums.garmin.com/ などを彷徨ってみましたが類似事象の報告はなし。
+解消のため色々触っていたところ UI 表示が日本語以外だと問題なく動作することに気付き、インストール先（例 C:\Program Files\Garmin\VIRB Edit ）にある ja ディレクトリの名前を適当に変更し読み込めないようにすることで標準設定の英語で起動するようにできました。
+追記1
+検証で利用していた動画は再生できたのですが、GoPro で撮影した動画を読み込ませると同じエラーが発生してしまったため使用を諦めました…
+追記2
+上記に加えてVFRだとうまく再生できなさそうだったのでCFRに変換したところ再生はできました。
+ただ、VFR -&amp;gt; CFR にした際に GoPro の GPS データの Stream が失われてしまうので位置合わせを手動でやる必要がでてきます…</description></item></channel></rss>

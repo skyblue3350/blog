@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Malmo on メモ帳</title><link>/tags/malmo/</link><description>Recent content in Malmo on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 15 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/malmo/index.xml" rel="self" type="application/rss+xml"/><item><title>PythonでMalmoを試してみた Windows編</title><link>/post/python%E3%81%A7malmo%E3%82%92%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F-windows%E7%B7%A8/</link><pubDate>Fri, 15 Jul 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7malmo%E3%82%92%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F-windows%E7%B7%A8/</guid><description>Malmoとは マインクラフトで人工知能を育てる「Project Malmo」、MicrosoftがGitHubで一般公開
+Microsoftが3月に「Project AIX」としてプライベートプレビューを開始した「Minecraft（マインクラフト）」で人工知能（AI）を訓練するプロジェクト「Project Malmo」を一般公開した。GitHubからmodとコードをダウンロードできる。
+ITMediaニュース
+というわけでこれをチュートリアルのテストコードの動作確認まで試します
+環境 Win7 64bit Python2.7 32bit64bit環境が必要でした
+マインクラフトは普通に購入したのインストールしてあったけど不要っぽい？ 環境構築 基本的には公式のドキュメント通り
+https://github.com/Microsoft/malmo
+各プラットフォーム向けの実行環境をダウンロードする 下記から各プラットフォーム向けのものをダウンロードする
+https://github.com/Microsoft/malmo/releases
+各プラットフォームで必要な環境の構築
+Windowsの場合は下記を参考に構築する
+https://github.com/Microsoft/malmo/blob/master/doc/install_windows.md
+7-zip インストールするだけ
+FFMPEG 公式から64bit版のexeをダウンロードしてからC:\FFMEPG\ffmpeg.exeとか適当なところに配置してパスを通す
+1&amp;gt; ffmpeg -version 2&amp;#39;ffmpeg&amp;#39; は、内部コマンドまたは外部コマンド、 3操作可能なプログラムまたはバッチ ファイルとして認識されていません。 パスが通ってないとこうなる
+コマンド・プロンプト起動時に読み込まれるので環境変数の編集前に開いてたなら開き直すこと
+1&amp;gt; ffmpeg -version 2ffmpeg version N-80129-ga1953d4 Copyright (c) 2000-2016 the FFmpeg developers 3built with gcc 5.3.0 (GCC) 4... って感じなら問題なし
+CodeSynthesis http://www.codesynthesis.com/products/xsd/download.xhtml
+ここからxsd-4.0.msiをダウンロード・インストール
+インストール時のオプションは特に変更しなかった
+パスを通すってオプションだけチェック入ってるか確認しておくこと
+Python 公式から落としてパスを通すだけ
+※64bit版をインストールして下さい
+その他メモ 1ImportError: DLL load failed: %1 は有効なWin32 アプリケーションではありません 32bit版のPythonから起動しているとimport MalmoPythonの時点で上記エラーが出ます</description></item></channel></rss>

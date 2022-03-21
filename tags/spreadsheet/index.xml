@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SpreadSheet on メモ帳</title><link>/tags/spreadsheet/</link><description>Recent content in SpreadSheet on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Thu, 22 Sep 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/spreadsheet/index.xml" rel="self" type="application/rss+xml"/><item><title>ゲームのスコアをスプレッドシートに書き出す</title><link>/post/%E3%82%B2%E3%83%BC%E3%83%A0%E3%81%AE%E3%82%B9%E3%82%B3%E3%82%A2%E3%82%92%E3%82%B9%E3%83%97%E3%83%AC%E3%83%83%E3%83%89%E3%82%B7%E3%83%BC%E3%83%88%E3%81%AB%E6%9B%B8%E3%81%8D%E5%87%BA%E3%81%99/</link><pubDate>Thu, 22 Sep 2016 00:00:00 +0000</pubDate><guid>/post/%E3%82%B2%E3%83%BC%E3%83%A0%E3%81%AE%E3%82%B9%E3%82%B3%E3%82%A2%E3%82%92%E3%82%B9%E3%83%97%E3%83%AC%E3%83%83%E3%83%89%E3%82%B7%E3%83%BC%E3%83%88%E3%81%AB%E6%9B%B8%E3%81%8D%E5%87%BA%E3%81%99/</guid><description>はじめに ゲームのスコアをスプレッドシートに書き出しといたらあとで振り返りとか成長が見れて面白いんじゃないかなって思ったのでやってみた
+仕組みはシンプルでスプレッドシートのGASを使ってAPIを叩いてその結果をシートに書き込むだけ
+GASはcronみたいに定期的に呼び出すことが出来るので一度設置したらひたすら書き出してくれる
+あとはグラフを作るなりGASでAPI化して自サイトで公開するなり色々出来る　LineBotも作れるしGASっょぃ
+とりあえず今回はosuのスコアを保存してみる
+APIさえあれば適宜取るとこと保存するとこ変えるだけ
+ファイルの作成 Google Driveから新しくスプレッドシートを作成する
+シートの作成 シート名をゲーム名に変えておく　今回は「osu」
+1行目に適当にデータ名を入れとく
+GAS 上のメニューの「ツール」→「スクリプトエディタ」を開く
+スクリプトを作成する　ゲーム名.gsとかで
+コードはこんな感じにする
+1function getScore() { 2// ユーザーのスコアデータ取得 3 var baseurl = &amp;#34;https://osu.ppy.sh&amp;#34;; 4var getuser = &amp;#34;/api/get_user&amp;#34;; 56var req = [ 7&amp;#34;k=&amp;#34; + &amp;#34;APIキー&amp;#34;, 8&amp;#34;u=&amp;#34; + &amp;#34;ユーザー名&amp;#34;, 9] 1011var url = baseurl + getuser + &amp;#34;?&amp;#34; + req.join(&amp;#34;&amp;amp;&amp;#34;); 12var res = UrlFetchApp.fetch(url); 13var data = JSON.parse(res)[0]; 1415// Spreadsheetに書き出し 16 var sheet = SpreadsheetApp.getActive().getSheetByName(&amp;#34;osu&amp;#34;); 17var row = sheet.</description></item></channel></rss>

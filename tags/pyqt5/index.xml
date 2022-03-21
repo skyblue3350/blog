@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PyQt5 on メモ帳</title><link>/tags/pyqt5/</link><description>Recent content in PyQt5 on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Thu, 08 Sep 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/pyqt5/index.xml" rel="self" type="application/rss+xml"/><item><title>PyQt5でメインウィンドウの表示</title><link>/post/pyqt5%E3%81%A7%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E8%A1%A8%E7%A4%BA/</link><pubDate>Thu, 08 Sep 2016 00:00:00 +0000</pubDate><guid>/post/pyqt5%E3%81%A7%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E8%A1%A8%E7%A4%BA/</guid><description>はじめに 今更ながらにPyQt5に移行したのでメモ
+PyQt4から少し変わってるのでそのままだと動かない
+インストール pipからできようになった
+1$ pip3 install pyqt5 2または 3$ python3 -m pip install pyqt5 とかでインストール出来る
+～2016年9月8日現在の話～
+QtDesignerが入らないっぽいので現状Qtの公式のインストーラーからツールだけ選択して落としたQtCreatorを使うしかなさ気？
+Toolだけ選択しても2GB近くあるので心証が宜しくない
+QtDesignerと同じ画面を呼ぶにはファイル→ファイル/プロジェクトの新規作成→ファイルとクラスからQt→Qt Designer フォームを選択でいつもの慣れ親しんだ画面が出てくる
+waybackとかで見る限り5.6まではexeで配布されてたので入ってるっぽいですが5.7（7月末）から変わった？
+どこかからQtDesignerだけ落とすかと思ったけど見当たらず
+詳細分かる方教えて下さい
+～終わり～
+ウィンドウ作成 いつも通りQtDesignerを使って作成する（今回はPyQt4の時に使ってたQtDesignerで作業した）
+作るのはMainWindowの方
+uiファイル読み込む派の人はサンプル探せばあるのでそちらで
+pyファイルに変換するにはpyuic5を使う
+1$ where pyuic5 2インストールパス/Scripts/pyuic5 3$ pyuic5 hoge.ui &amp;gt; ui.py スクリプトを書く パッケージ名がPyQt4→PyQt5に変わったのと
+QtGuiから呼んでたものがQtWidgetsから呼ぶようになった感じ
+1# -*- coding: utf-8 -*- 23import sys 4from PyQt5 import QtWidgets 5from ui import Ui_MainWindow 678class Application(QtWidgets.QMainWindow): 9def __init__(self, parent=None): 10QtWidgets.QMainWindow.__init__(self, parent) 11self.ui = Ui_MainWindow() 12self.ui.setupUi(self) 1314if __name__ == &amp;#34;__main__&amp;#34;: 15app = QtWidgets.</description></item></channel></rss>

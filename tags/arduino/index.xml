@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Arduino on メモ帳</title><link>/tags/arduino/</link><description>Recent content in Arduino on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Mon, 22 Oct 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/arduino/index.xml" rel="self" type="application/rss+xml"/><item><title>ペダルとシフターを統合する</title><link>/post/%E3%83%9A%E3%83%80%E3%83%AB%E3%81%A8%E3%82%B7%E3%83%95%E3%82%BF%E3%83%BC%E3%82%92%E7%B5%B1%E5%90%88%E3%81%99%E3%82%8B/</link><pubDate>Mon, 22 Oct 2018 00:00:00 +0000</pubDate><guid>/post/%E3%83%9A%E3%83%80%E3%83%AB%E3%81%A8%E3%82%B7%E3%83%95%E3%82%BF%E3%83%BC%E3%82%92%E7%B5%B1%E5%90%88%E3%81%99%E3%82%8B/</guid><description>はじめに 前回と前々回でそれぞれの動作確認ができたが現段階だと2個それぞれProMicroに接続して使っている．
+LPST-14900をArduinoに接続する その2 G25のペダルをArduinoにつなぐ これだと2ポート＋ハンドルで1ポートで3ポート使ってて頭悪いので1つのProMicroに統合した．
+回路図 とりあえずよく見るFritzingで今後忘れないように回路図を書いてみる．
+ProMicroはデフォルトで入ってないのでGithubで公開されていたファイルを導入しました．
+コード コードはこんな感じにしました（前回の記事のコードをまとめただけ）
+あとはアクリル板でそれっぽいケースを作って終わりです．
+動作確認もできたので終わり pic.twitter.com/yagq9FarOp
+&amp;mdash; スカイ (@skyblue3350) October 8, 2018 動作確認は既にしてあるので問題なく動いた．</description></item><item><title>LPST-14900をArduinoに接続する その2</title><link>/post/lpst-14900%E3%82%92arduino%E3%81%AB%E6%8E%A5%E7%B6%9A%E3%81%99%E3%82%8B-%E3%81%9D%E3%81%AE2/</link><pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate><guid>/post/lpst-14900%E3%82%92arduino%E3%81%AB%E6%8E%A5%E7%B6%9A%E3%81%99%E3%82%8B-%E3%81%9D%E3%81%AE2/</guid><description>はじめに 前回失敗したLPST-14900の値をArduinoで取得するのに再チャレンジした．
+結果としては成功しました．
+前回記事でも参考したレポジトリのピン配置と実装をほぼそのまま借りた形になっています．
+検証はArduino Unoでやっているのでゲームパッドとして認識させられませんが前回の記事とか見て雰囲気で書けば使えます．
+手持ちのProMicroが使用中なので新しいのが来たら…
+ピン配置 ピンの位置はシフターのコネクタ側から見た時のピン番号です．
+ただの自爆ですが，何も考えずにD-subのコネクタ側から見てピンを挿して混乱しました．
+この記事のスクリプトではアナログピンをデジタルピンとして使えるので全部アナログピンを利用していますが実際に必要となるのはX/Y軸のピンだけです．
+この記事では以下のように配置しています．
+D-sub 1 -&amp;gt; A2 （デジタル入出力ピンとして使用） D-sub 2 -&amp;gt; A3 （デジタル入出力ピンとして使用） D-sub 3 -&amp;gt; A4 （デジタル入出力ピンとして使用） D-sub 4 -&amp;gt; A1 （アナログ入力ピンとして使用） D-sub 6 -&amp;gt; GND D-sub 8 -&amp;gt; A0 （アナログ入力ピンとして使用） D-sub 9 -&amp;gt; VCC プログラム 以下のような感じになりました．
+必要な情報を設定すると出力されます．
+手持ちのLPST-14900で問題なく全部取れました．
+次はG25のペダルと組み合わせて1個のProMicroで完結するようにします．
+参考記事 DIY G25 shifter interface with H-pattern, sequential and handbrake modes functionreturnfunction/G27_Pedals_and_Shifter</description></item><item><title>G25のペダルをArduinoにつなぐ</title><link>/post/g25%E3%81%AE%E3%83%9A%E3%83%80%E3%83%AB%E3%82%92arduino%E3%81%AB%E3%81%A4%E3%81%AA%E3%81%90/</link><pubDate>Sun, 30 Sep 2018 00:00:00 +0000</pubDate><guid>/post/g25%E3%81%AE%E3%83%9A%E3%83%80%E3%83%AB%E3%82%92arduino%E3%81%AB%E3%81%A4%E3%81%AA%E3%81%90/</guid><description>G25のペダルだけ入手したので独立させてPCにつなぎます．
+G25のペダルにはD-sub9pinのオスがコネクタとしてついているのでD-sub9pinのメスコネクタを購入して線をArduinoまで引っ張って良しなにします．
+https://github.com/functionreturnfunction/G27_Pedals_and_Shifter/
+こちらにG27での利用例が一式上がっているのでこちらを参考にしました．
+ペダルが5500円 ProMicroが400円しないくらい，
+ジャンパワイヤとコネクタも安いので6500円くらいになりました．
+使ったもの ブレッドボード x1 Arduino Pro Micro互換機 x1 Dsub 9pin メスコネクタ x1 ジャンパワイヤ オス-オス x10 熱収縮チューブ ハード側 7セグは外すのが面倒でつけっぱなしなだけで特に意味はありません．
+pic.twitter.com/7wAlizGKp0
+&amp;mdash; スカイ (@skyblue3350) September 29, 2018 事前準備 ジャンパワイヤを半分に切ってケーブルの被膜を向いておきます．
+Dsub側に予備ハンダをつけてからケーブルをつけます．
+使うピンは6本しかないので最低限のピンだけでも大丈夫です．下記参照
+熱収縮チューブを収縮させて終わり．
+配線 以下の表に従って配線します．
+Dsub側 pin番号 Arduino側 pin番号 用途 1 +5V(VCC) +5V 2 A0 アクセル 3 A1 ブレーキ 4 A2 クラッチ 6 GND GND 9 GND GND ソフト側 事前準備 機器によって多少差があるので予めそれぞれのペダルの値の範囲を確認します．</description></item><item><title>ArduinoJoystickLibraryを使う</title><link>/post/arduinojoysticklibrary%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Fri, 29 Jun 2018 00:00:00 +0000</pubDate><guid>/post/arduinojoysticklibrary%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>はじめに 簡単な工作したいなと思ったのでアケコンを作ってみた時に使ったArduinoJoystickLibraryの使い方のメモ
+作ったの自体は機会があればまた別に記事書きます
+必要なもの ATmega32U4を搭載したArduino
+今回はPro Microの互換品を使います 環境構築 MHeironimus/ArduinoJoystickLibrary からcloneしてJoystickディレクトリをArduino IDEのインストールディレクトリにあるlibrariesに配置します
+スケッチ あとはコード書くだけです
+サンプルは公式にあるので実際に使ったスケッチを載せておきます
+デフォルトだといろいろ有効になっているので不要なものは適宜コンストラクタでfalseにして無効にしておきます
+これだけのコードでゲームパッドとして認識されるので便利な世の中ですね
+1#include &amp;lt;Joystick.h&amp;gt;2 3Joystick_ Joystick = Joystick_( 40x03, // reportid 5 JOYSTICK_TYPE_GAMEPAD, // type 6 3, // button count 7 0, // hat switch count 8 true, // x axis enable 9 true, // y axis enable 10 false, // z axis enable 11 false, // right x axis enable 12 false, // right y axis enable 13 false, // right z axis enable 14 false, // rudder enable 15 false, // throttle enable 16 false, // accelerator enable 17 false, // brake enable 18 false // steering enable 19 ); 2021void setup(){ 22// Joystick 23 pinMode(2, INPUT_PULLUP); 24pinMode(3, INPUT_PULLUP); 25pinMode(4, INPUT_PULLUP); 26pinMode(5, INPUT_PULLUP); 2728// Switch 29 pinMode(6, INPUT_PULLUP); 30pinMode(7, INPUT_PULLUP); 31pinMode(8, INPUT_PULLUP); 3233// Joystick lib init 34 Joystick.</description></item><item><title>LPST-14900をArduinoに接続する</title><link>/post/lpst-14900%E3%82%92arduino%E3%81%AB%E6%8E%A5%E7%B6%9A%E3%81%99%E3%82%8B/</link><pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate><guid>/post/lpst-14900%E3%82%92arduino%E3%81%AB%E6%8E%A5%E7%B6%9A%E3%81%99%E3%82%8B/</guid><description>追記 上手く行ったので新しく記事を書き直しました
+LPST-14900をArduinoに接続する その2 はじめに 試行の記事なのでうまくいったら別記事でまとめます
+先に結論だけ書いとくとNと1～6速まで問題なく取れます
+Rだけ試行錯誤中
+いけました
+経緯 だいぶ前にDriving Force GTを購入してETSとかして遊んでるんですがシーケンシャルじゃなくてシフターが欲しくなった
+かといってG25等々を新規に買うのは高いのでシフター単独でUSB接続出来るものを探した
+追記　2017年9月17日
+fanatec系列ならUSB アダプター買えば使えるっぽいのでそっちの方が良いかもしれない
+シフター結構するけど…
+シフター探し
+TH8Aとかが単独で接続可能っぽかったけどいかんせん高い
+価格： ￥ 19,380
+のでもう少し安いシフターを探した
+すると尼でLPST-14900がオススメに出てきてこちらは価格が5000円ちょっとで安い
+ただG29にしか対応してない様子
+どうにかこうにか単独で接続できないか調べると
+G25やG27・G29のシフターをUSBに変換するアダプタを見つけた
+Shifter Interface USB adapter for Logitech® G25, G27 and G29 1-9 $25.72
+でありかなと思える価格 G29も対応してるっぽいのでこれでいけそうではある
+けど送料込み込みだともう少し高そうなので自作できないか調べた
+追記
+このアダプタ購入して試しましたが無事使えました
+コネクタ形状はD-subっぽいのでこれを良い感じにArduinoで読み出してLeonardoかMicroでUSBキーボードとして認識させれば実質単独でシフターとして運用出来るかもしれないと思って調べるとG25で既に動作するものを作ってる人がいる
+Arduino based G25/27 Shifter Standalone Youtube 動画の説明文に詳細な解説付きのフォーラムのページがある
+DIY G25 shifter interface with H-pattern, sequential and handbrake modes 似たような感じでいけるんじゃないかと思って早速LPST-14900を購入してみた</description></item></channel></rss>

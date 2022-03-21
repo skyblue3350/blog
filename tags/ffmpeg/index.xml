@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>FFmpeg on メモ帳</title><link>/tags/ffmpeg/</link><description>Recent content in FFmpeg on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 20 Nov 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/ffmpeg/index.xml" rel="self" type="application/rss+xml"/><item><title>FFmpegでエンコードした動画をTwitterにあげる</title><link>/post/ffmpeg%E3%81%A7%E3%82%A8%E3%83%B3%E3%82%B3%E3%83%BC%E3%83%89%E3%81%97%E3%81%9F%E5%8B%95%E7%94%BB%E3%82%92twitter%E3%81%AB%E3%81%82%E3%81%92%E3%82%8B/</link><pubDate>Sun, 20 Nov 2016 00:00:00 +0000</pubDate><guid>/post/ffmpeg%E3%81%A7%E3%82%A8%E3%83%B3%E3%82%B3%E3%83%BC%E3%83%89%E3%81%97%E3%81%9F%E5%8B%95%E7%94%BB%E3%82%92twitter%E3%81%AB%E3%81%82%E3%81%92%E3%82%8B/</guid><description>はじめに ShadowPlayで撮影したゲームの一シーンとかTwitterにあげたいなって時の話
+GUIツール入れるのめんどくさいのでFFmpegで任意部分をカットしてエンコードする
+環境 Windows 7 64bit ffmpeg version N-81609-g7b3bc36 動画の切り出し 10分30秒から2分切り出す場合
+入力ファイル
+input.mp4 出力ファイル名
+output.mp4 1$ ffmpeg -ss 00:10:30 -i input.mp4 -t 120 output.mp4 こんな感じで切り出せる
+iオプションよりssオプションを前に持ってくることでシーク時間が早くなる
+逆にするとファイルの最初から読み出すため動画が長ければ長い程シークに時間を取られる
+YouTube等の動画サイトにあげる時はこれで良いがTwitterにあげる際にはもう1つオプションを追加する必要がある
+1$ ffmpeg -ss 00:10:30 -i input.mp4 -t 120 -pix_fmt yuv420p output.mp4 これでTwitterの公式サイトの方でD&amp;amp;Dすると動画をアップロードすることが出来る
+少し前からFFmpegがCUDA対応してるからそれ込みで使えば多少長くても結構早めに切り出せるかな
+こんな感じ
+1$ ffmpeg -ss 00:10:30 -i input.mp4 -t 120 -vcodec nvenc -pix_fmt yuv420p output.mp4 もし動画連結するなら
+1$ ffmpeg -i input_1.movie -i input_2.movie -filter_complex &amp;#34;concat=n=2:v=1:a=1&amp;#34; output.mp4 参考記事 FFmpegで素早く正確に動画をカットする自分的ベストプラクティス Twitterに動画を投稿する際に行ったffmpegの設定</description></item></channel></rss>

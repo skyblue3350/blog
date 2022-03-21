@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Zabbix on メモ帳</title><link>/tags/zabbix/</link><description>Recent content in Zabbix on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 23 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/zabbix/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu16.04にZabbix3.2をインストールする</title><link>/post/ubuntu16.04%E3%81%ABzabbix3.2%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B/</link><pubDate>Sun, 23 Jul 2017 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04%E3%81%ABzabbix3.2%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B/</guid><description>はじめに Ubuntu16.04でZabbix3.2をインストールして使えるようにする
+でもこれ良く考えたらDockerで良かったのでは…？感がある
+環境 Ubuntu 16.04 4.4.0-83-generic Zabbix 3.2 環境構築 フォント グラフ描画時に必要になるとのことなのでインストールしておく
+1# apt-get install fonts-vlgothic MySQL インストール 予めインストールして設定しておく
+1# apt-get install mysql-server 2# vi /etc/mysql/mysql.conf.d/mysqld.conf 3character-set-server = utf8 4collation-server = utf8_bin 5skip-character-set-client-handshake 6innodb_file_per_table データベースとユーザー作成 zabbixで利用するデータベースを作る
+DBユーザー名：hoge
+DBパスワード：fuga
+な場合はこんな感じ
+ユーザー名はコンフィグのデフォルトがzabbixなのでその方が良いかも
+1# mysql -uroot -p 2Enter password: 3mysql&amp;gt; create database zabbix; 4mysql&amp;gt; grant all privileges on hoge.* to zabbix@localhost identified by &amp;#39;fuga&amp;#39; ; 5mysql&amp;gt; exit Zabbix レポジトリの追加 今回は3.2なので
+http://repo.zabbix.com/zabbix/3.2/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.2-1+xenial_all.deb</description></item></channel></rss>

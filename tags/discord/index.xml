@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Discord on メモ帳</title><link>/tags/discord/</link><description>Recent content in Discord on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 22 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/discord/index.xml" rel="self" type="application/rss+xml"/><item><title>Discordでボイスロイドに読み上げさせる</title><link>/post/discord%E3%81%A7%E3%83%9C%E3%82%A4%E3%82%B9%E3%83%AD%E3%82%A4%E3%83%89%E3%81%AB%E8%AA%AD%E3%81%BF%E4%B8%8A%E3%81%92%E3%81%95%E3%81%9B%E3%82%8B/</link><pubDate>Sat, 22 Jul 2017 00:00:00 +0000</pubDate><guid>/post/discord%E3%81%A7%E3%83%9C%E3%82%A4%E3%82%B9%E3%83%AD%E3%82%A4%E3%83%89%E3%81%AB%E8%AA%AD%E3%81%BF%E4%B8%8A%E3%81%92%E3%81%95%E3%81%9B%E3%82%8B/</guid><description>はじめに Discordでボイスロイドに読み上げさせてみたくなった．
+のでとりあえずやってみる
+環境 Windows7 64bit Python3.5 64bit discord.py 0.15.1
+※3.4を使う場合は記法が異なる部分があるので前回の記事を見て下さい コード voiceroid voiceroidを喋らせる部分は前回のコードを利用します．
+discord Oauth2認証挟んでtokenを発行した方が良い気もしたけどとりあえずIDとPWで認証してAPIが使えるのでひとまずこれでいく
+1import discord 23from voiceroid import VoiceRoid 45vr = VoiceRoid(&amp;#34;VOICEROID＋ 結月ゆかり EX&amp;#34;) 6client = discord.Client() 78@client.event 9async def on_ready(): 10print(&amp;#34;-&amp;#34;*20) 11print(&amp;#34;ユーザー名：&amp;#34;, client.user.name) 12print(&amp;#34;ユーザーID：&amp;#34;, client.user.id) 13print(&amp;#34;-&amp;#34;*20) 1415@client.event 16async def on_message(message): 17print(&amp;#34;投稿者：&amp;#34;, message.author) 18print(&amp;#34;メッセージ：&amp;#34;, message.content) 19print(&amp;#34;サーバー：&amp;#34;, message.server) 20print(&amp;#34;チャンネル：&amp;#34;, message.channel) 2122vr.say(message.content) 2324client.run(&amp;#34;メールアドレス&amp;#34;, &amp;#34;パスワード&amp;#34;) ところでvoiceroid2でUIが統合されてるっぽいから多分これ使えないですね
+買いたいけどぼちぼちするので難しい</description></item><item><title>DiscordでBotをつくる</title><link>/post/discord%E3%81%A7bot%E3%82%92%E3%81%A4%E3%81%8F%E3%82%8B/</link><pubDate>Sun, 04 Dec 2016 00:00:00 +0000</pubDate><guid>/post/discord%E3%81%A7bot%E3%82%92%E3%81%A4%E3%81%8F%E3%82%8B/</guid><description>はじめに DiscordのAPIを利用してオウム返しをするBotを作成してみます.
+環境 Windows7 64bit Python3.5 64bit 環境構築 discord用のライブラリがあるのでそれを利用します.
+1$ python3 -m pip install discord コード こんな感じのコードでメッセージを受信してオウム返し出来ます.
+asyncioの関係で3.4と3.5では文法が変わります.
+こんな感じ
+@asyncio.coroutine → async
+yield from → await
+まぁドキュメントに書いてあるんですけどね
+1import discord 23client = discord.Client() 45@client.event 6async def on_ready(): 7print(&amp;#34;-&amp;#34;*20) 8print(&amp;#34;ユーザー名：&amp;#34;, client.user.name) 9print(&amp;#34;ユーザーID：&amp;#34;, client.user.id) 10print(&amp;#34;-&amp;#34;*20) 1112@client.event 13async def on_message(message): 14if not message.author.id == client.user.id: 15await client.send_message(message.channel, message.content) 16print(&amp;#34;投稿しました&amp;#34;) 1718print(&amp;#34;投稿者：&amp;#34;, message.author) 19print(&amp;#34;メッセージ：&amp;#34;, message.content) 2021client.run(os.environ[&amp;#34;DISCORD_API_TOKEN&amp;#34;]) 結構簡単に出来るのが良いですね
+追記　2018-07-12
+検索で来る人が結構いるみたいなのでTOKENの取り方とBotをサーバーに参加させる方法
+DISCORD_API_TOKENは以下のURLから発行できます
+https://discordapp.com/developers/applications/me
+ここから新しいアプリ -&amp;gt; アプリを作成からアプリを作ります</description></item></channel></rss>

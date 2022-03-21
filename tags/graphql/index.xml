@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Graphql on メモ帳</title><link>/tags/graphql/</link><description>Recent content in Graphql on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 26 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/graphql/index.xml" rel="self" type="application/rss+xml"/><item><title>graphqlでファイルをアップロードする</title><link>/post/graphql%E3%81%A7%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/</link><pubDate>Sun, 26 Aug 2018 00:00:00 +0000</pubDate><guid>/post/graphql%E3%81%A7%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/</guid><description>最近graphqlを触り始めました．
+書いてて多分ぶち当たる案件にファイルのアップロードをどうするのかという問題があります．
+この件についてこちらの記事が参考になります．
+GraphQLの規格とプロダクトの隙間をどう埋めるか 〜ファイルアップロード〜 オチから書くと今回はbase64で実装しました．
+記事中やGoogleで検索してると出てくるapollo-upload-server/clientが使いやすそうで良いのですが今回の実行環境がFirebase Functionsということがありそのままでは素直に動いてくれませんでした．
+というのもapollo-upload-server/clientは以下で仕様が説明されている通りファイルをmultipartで送信します．
+jaydenseric/graphql-multipart-request-spec Firebase functionsではユーザーが使用しているexpressの前にGoogle側のexpressがいるらしくこいつがRequestを先に読み出してしまうようです．
+そのため内部で使用されているbusboyがRequestを正常にパースすることが出来ず結果として
+1Missing multipart field ‘operations’ とエラーが返ってきてアップロードすることができません．
+multipart自体は以下の記事の説明にある通りGoogle Functionsのページには説明がありましたが上手く組み込めなかったので諦めました．
+Firebaseの小ネタ集 これについては
+https://github.com/jaydenseric/apollo-upload-server/issues/19
+https://github.com/jaydenseric/apollo-upload-server/issues/21
+でも取り上げられていますが自分の技術力では解決出来なかったので誰か上手く行った方がいれば教えて欲しいです．
+apollo-upload-server/client自体は以下のようなコードで動きます（多分
+シンプルで良いですね．
+server
+1... 2import { GraphQLUpload } from &amp;#34;apollo-upload-server&amp;#34;; 3import { apolloUploadExpress } from &amp;#34;apollo-upload-server&amp;#34; 45const schema = new GraphQLSchema({ 6mutation: new GraphQLObjectType({ 7name: &amp;#34;Mutation&amp;#34;, 8fields: { 9uploadImage: { 10type: GraphQLBool, 11args: { 12image: {type: GraphQLUpload}, 13}, 14resolve: async (_, args) =&amp;gt; { 15return await uploadImage(args); 16} 17}, 18} 19}) 20}); 21const app = express(); 22.</description></item></channel></rss>

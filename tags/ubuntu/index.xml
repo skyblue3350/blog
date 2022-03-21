@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ubuntu on メモ帳</title><link>/tags/ubuntu/</link><description>Recent content in Ubuntu on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 19 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/ubuntu/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu 20.04でステルスAPに接続する</title><link>/post/ubuntu-20.04%E3%81%A7%E3%82%B9%E3%83%86%E3%83%AB%E3%82%B9ap%E3%81%AB%E6%8E%A5%E7%B6%9A%E3%81%99%E3%82%8B/</link><pubDate>Sun, 19 Jul 2020 00:00:00 +0000</pubDate><guid>/post/ubuntu-20.04%E3%81%A7%E3%82%B9%E3%83%86%E3%83%AB%E3%82%B9ap%E3%81%AB%E6%8E%A5%E7%B6%9A%E3%81%99%E3%82%8B/</guid><description>ラズパイに Ubuntu を入れて Wi-Fi 接続しようとしまったらハマったのでメモ
+環境 Raspberry Pi 4 Ubuntu 20.04 1$ cat /etc/lsb-release 2DISTRIB_ID=Ubuntu 3DISTRIB_RELEASE=20.04 4DISTRIB_CODENAME=focal 5DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 20.04 LTS&amp;#34; 接続 以下を参考に設定ファイルを作成します。
+Network - Configuration | Server documentation | Ubuntu ポイントは ssid の指定に wpa supplicant の scan_ssid を設定している点です。
+1$ sudo vim /etc/netplan/99_config.yaml 2network: 3ethernets: 4eth0: 5dhcp4: true 6optional: true 7version: 2 8wifis: 9wlan0: 10dhcp4: true 11optional: true 12access-points: 13&amp;#34;ssid\&amp;#34;\n scan_ssid=1\n#&amp;#34;: 14password: &amp;#34;password&amp;#34; ※環境によっては一度ここでrebootする必要があるかもしれません。
+ファイルを作成したら以下のコマンドで適用します。
+1$ sudo netplan apply 適用後 IP が振られていることを確認します。</description></item><item><title>ESXi6.5でUbuntuがネットワークに繋がらない</title><link>/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</link><pubDate>Fri, 07 Dec 2018 00:00:00 +0000</pubDate><guid>/post/esxi6.5%E3%81%A7ubuntu%E3%81%8C%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AB%E7%B9%8B%E3%81%8C%E3%82%89%E3%81%AA%E3%81%84/</guid><description>ESXi上で動かしているとあるVMでパッケージのアップデートを適用して再起動したらネットワークに繋がらなくなってしまった．
+ただ，他のVMでは問題なくネットワークに接続できているので設定の問題かな？と思ってDHCPに戻したりして検証していたが，一行に接続できず参ってしまったのでその時のメモ．
+環境 ホスト
+ESXi 6.5 ゲスト Ubuntu16.04（4.4.0-62-generic）
+問題なく接続できていたVM Ubuntu16.04（4.4.0-140-generic）
+接続できなくなったVM 原因（推測） 技術力不足でログを追うところまではいけませんでしたが，カーネルのアップデートでドライバが対応しきれなくなったのかなと思います．
+一応lsmodした感じ対応したドライバが読み込まれているようでしたが動作しませんでした．
+接続できなかったVMにはE1000eのNICが接続されていたのでe1000のドライバを拾ってきて入れてやれば多分動いたと思います．
+一応，手元にあったカーネルで動作チェックしたところ，こんな感じでした．
+4.4.0-140-generic 4.4.0-139-generic 4.4.0-137-generic
+接続不可能 4.4.0-104-generic 4.4.0-62-generic
+接続可能 解決方法 今回は対応するドライバを入れ直す方法ではなく，ESXiのアダプタタイプを変更することで解決しました．
+ESXiの管理コンソールに入り，ネットワークアダプタの設定項目を開いて当該アダプタのアダプタタイプをVMXNET 3に変更することでドライバも併せたものに変更されました．
+変更したところ上記の接続不可能だったカーネルでも問題なく接続できるようになったのを確認しました．</description></item><item><title>Ubuntu16.04 32bitでdnsdistをビルドする</title><link>/post/ubuntu16.04-32bit%E3%81%A7dnsdist%E3%82%92%E3%83%93%E3%83%AB%E3%83%89%E3%81%99%E3%82%8B/</link><pubDate>Tue, 23 Oct 2018 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04-32bit%E3%81%A7dnsdist%E3%82%92%E3%83%93%E3%83%AB%E3%83%89%E3%81%99%E3%82%8B/</guid><description>はじめに 様々な事情があってどうしようもないUbuntu16.04 32bit環境にdnsdistを入れることになった時の話．
+公式で提供しているレポジトリは64bit向けしか提供されていないので自分でビルドする必要がある．
+環境 Ubuntu 16.04 32bit 前提パッケージのインストール 一部不要なパッケージがある気がするが最終的に入れてパッケージ
+1$ sudo apt-get install autoconf automake libtool git make gcc g++ libsodium-dev pkg-config ragel fstrm libssl-dev libsystemd-dev libprotoc-dev protobuf-compiler libprotobuf-dev protobuf python-pip python-virtualenv dnsdistのインストール レポジトリをクローンしてから当該バージョンに切り替える．
+1$ git clone https://github.com/PowerDNS/pdns.git 2$ cd pdns 3$ git checkout refs/tags/dnsdist-1.3.2 ビルド用のディレクトリに移動してからビルドしてインストールする
+1$ cd pdns/dnsdistdist/ 2$ autoreconf --install 3$ make 4$ ./configure 5$ sudo make install バージョンを確認する．
+1$ dnsdist --version 2dnsdist 0.0.HEAD.ga63826e (Lua 5.</description></item><item><title>UbuntuがDisk fullになってapt upgradeに失敗する</title><link>/post/ubuntu%E3%81%8Cdisk-full%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%A6apt-upgrade%E3%81%AB%E5%A4%B1%E6%95%97%E3%81%99%E3%82%8B/</link><pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate><guid>/post/ubuntu%E3%81%8Cdisk-full%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%A6apt-upgrade%E3%81%AB%E5%A4%B1%E6%95%97%E3%81%99%E3%82%8B/</guid><description>はじめに 色々あって放置してたあるUbuntu Serverですが自動更新でカーネルが積み重なった結果/bootが100%になって死んでいました．
+質の悪いことにあるカーネルをインストールしてる途中でDisk fullになったらしくアンインストールしようにも途中のものがあるからそっちを先に片付けろと言われうんともすんともいかない状態になりました．
+その時のメモ
+今考えたら--force-yesとかしたらアンインストールできたのかな？
+現状確認 1$ df -h | grep /boot 2/dev/sda1 472M 472M 0M 100% /boot /bootがいっぱいになってる
+ひとまずautoremoveで古いカーネルを消すかと思ったもののapt-get install -fしろと言ってきてどうにもならない
+/bootがいっぱいなためインストール途中のカーネルインストールにこける
+ググった感じこれといった解決方法を見つけられなかったのでちょっと強引だが以下の方法で解決した
+解決まで まず現在利用しているカーネルバージョンをチェック
+1$ uname -a 2Linux hoge 4.4.0-109-generic #132-Ubuntu SMP Tue Jan 9 19:52:39 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux 次にインストール済みのカーネルをチェック
+1$ dpkg -l | grep linux-image 2rc linux-image-4.4.0-101-generic 4.4.0-101.124 amd64 Linux kernel image for version 4.4.0 on 64 bit x86 SMP 3rc linux-image-4.4.0-103-generic 4.</description></item><item><title>Ubuntuにフォントを追加する</title><link>/post/ubuntu%E3%81%AB%E3%83%95%E3%82%A9%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0%E3%81%99%E3%82%8B/</link><pubDate>Mon, 17 Sep 2018 00:00:00 +0000</pubDate><guid>/post/ubuntu%E3%81%AB%E3%83%95%E3%82%A9%E3%83%B3%E3%83%88%E3%82%92%E8%BF%BD%E5%8A%A0%E3%81%99%E3%82%8B/</guid><description>Ubuntuにフォントを入れたい用事があったのでトライしてみたメモ
+今回は全体に入れますがユーザー単位なら/.local/share/fontsに入れるだけで後同じだと思います
+環境 Ubuntu 18.04
+WSL環境です フォントの入手 今回は青柳隷書しもを導入してみます．
+otfフォントなので少し追加でパッケージ入れたりがあります
+予めDLして展開しておきます
+導入 デフォルトではotfファイルを読み込まないのでランタイムを追加します
+1$ sudo apt install libotf0 otfファイルは/usr/share/fonts/opentypeに格納するのでここにディレクトリを事前に作成しフォントファイルを配置します
+1$ sudo mkdir -p /usr/share/fonts/opentype 2$ sudo mv ~/path/to/aoyagireisyosimo_otf_2_01.otf /usr/share/fonts/opentype あとはこれを読み込ませます
+1$ sudo fc-cache -f -v 2/usr/share/fonts: caching, new cache contents: 0 fonts, 2 dirs 3/usr/share/fonts/opentype: caching, new cache contents: 1 fonts, 0 dirs &amp;lt;- これ 4/usr/share/fonts/truetype: caching, new cache contents: 0 fonts, 2 dir 5... のようにフォントが読み込まれます
+一応フォント一覧を出して確認します
+1$ fc-list | grep aoyagireisyo 2/usr/share/fonts/opentype/aoyagireisyosimo.</description></item><item><title>デバイスの再スキャンをする</title><link>/post/%E3%83%87%E3%83%90%E3%82%A4%E3%82%B9%E3%81%AE%E5%86%8D%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E3%82%92%E3%81%99%E3%82%8B/</link><pubDate>Thu, 26 Jul 2018 00:00:00 +0000</pubDate><guid>/post/%E3%83%87%E3%83%90%E3%82%A4%E3%82%B9%E3%81%AE%E5%86%8D%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E3%82%92%E3%81%99%E3%82%8B/</guid><description>はじめに ホストマシンをリブートしないでHDDを認識させたい時の話
+UbuntuとCentOSでマシンを落とさずにHDDを接続したい時があって困ったのでメモ
+基本的にはrescan-scsi-busを使う方が楽で良い
+使わない場合は手動でファイルに書き込んで再スキャンをするが接続ポートがわからないと片っ端から試さないといけないため面倒
+共通 scsitoolsをインストールした上でrescan-scsi-busコマンドを実行する
+1$ sudo apt-get install scsitools 2or 3$ sudo yum install scsitools 4$ rescan-scsi-bus Ubuntu 1$ sudo echo &amp;#39;1&amp;#39; &amp;gt; /sys/class/scsi_disk/0\:0\:0\:0/device/rescan CentOS 1$ sudo echo &amp;#34;1&amp;#34; &amp;gt; /sys/class/fc_host/hostn/issue_lip 2or 3$ sudo echo &amp;#34;- - -&amp;#34; &amp;gt; /sys/class/scsi_host/hostn/scan 参考記事 再起動なしで新規デバイスをスキャンさせる方法 How do I rescan drives I've expanded?</description></item><item><title>pyvenvで環境が作れない</title><link>/post/pyvenv%E3%81%A7%E7%92%B0%E5%A2%83%E3%81%8C%E4%BD%9C%E3%82%8C%E3%81%AA%E3%81%84/</link><pubDate>Wed, 11 Apr 2018 00:00:00 +0000</pubDate><guid>/post/pyvenv%E3%81%A7%E7%92%B0%E5%A2%83%E3%81%8C%E4%BD%9C%E3%82%8C%E3%81%AA%E3%81%84/</guid><description>はじめに Ubuntu16.04 Python3.5環境下での出来事
+新しく作った環境でいつも通り環境を作ろうとすると
+1$ python3 -m venv . 2The virtual environment was not created successfully because ensurepip is not 3available. On Debian/Ubuntu systems, you need to install the python3-venv 4package using the following command. 56apt-get install python3-venv 78You may need to use sudo with that command. After installing the python3-venv 9package, recreate your virtual environment. 1011Failing command: [&amp;#39;/home/sky/bin/python3&amp;#39;, &amp;#39;-Im&amp;#39;, &amp;#39;ensurepip&amp;#39;, &amp;#39;--upgrade&amp;#39;, &amp;#39;--default-pip&amp;#39;] 怒られる
+対処 ここまではいつも通りなのでパッケージを入れる
+1$ sudo apt-get install python3-venv これで問題なく生成できるはずですが今回はダメでした</description></item><item><title>apt updateが0% Workingで止まる</title><link>/post/apt-update%E3%81%8C0-working%E3%81%A7%E6%AD%A2%E3%81%BE%E3%82%8B/</link><pubDate>Fri, 30 Mar 2018 00:00:00 +0000</pubDate><guid>/post/apt-update%E3%81%8C0-working%E3%81%A7%E6%AD%A2%E3%81%BE%E3%82%8B/</guid><description>はじめに 表題の通りなんですが新規インストールしたマシンにNvidia-Dockerをインストールしているときにハマった
+結論としてはapt-transport-httpsが入っていなかったのが原因
+最初ansibleのテストしてたのでてっきり最初ansibleでなにか間違えてるのかと思ってた
+TL;DR 1$ sudo apt install apt-transport-https しとこうね
+症状 apt updateすると以下の状態で止まる
+1$ sudo apt update 2Hit:1 http://jp.archive.ubuntu.com/ubuntu xenial InRelease 3Get:2 http://jp.archive.ubuntu.com/ubuntu xenial-updates InRelease [102 kB] 4Get:3 http://jp.archive.ubuntu.com/ubuntu xenial-backports InRelease [102 kB] 50%[Working] で永遠に処理してる
+対策 apt cleanしてみる 効果なし curlで試しにリソース持ってきてみる できる 再起動 効果なし 次に読まれそうなnvidia-dockerのレポジトリをcurlしてみる 302が帰ってくる
+ん？
+ってところでapt-transport-httpsないじゃん…って気づいたという話 あとはこの辺のIssueとかですね…
+https://github.com/NVIDIA/nvidia-docker/issues/642
+いつも先にDocker入れてたので意識せずに使ってたので良くなかったですね</description></item><item><title>bash historyを無効にする</title><link>/post/bash_history%E3%82%92%E7%84%A1%E5%8A%B9%E3%81%AB%E3%81%99%E3%82%8B/</link><pubDate>Fri, 02 Mar 2018 00:00:00 +0000</pubDate><guid>/post/bash_history%E3%82%92%E7%84%A1%E5%8A%B9%E3%81%AB%E3%81%99%E3%82%8B/</guid><description>Ubuntuでbash historyを無効にしたい時の話
+一部のコマンドだけとかはわりと記事出て来るけど全部は需要ないのかすぐ見つからなかったのでメモ．
+setコマンドを使ってhistoryを無効にできる．
+のでこうなる．
+1$ set +o history ただこれだと入力したターミナルでのみ無効になるので次回以降も記録されないようにする．
+1$ echo &amp;#39;set +o history&amp;#39; &amp;gt;&amp;gt; ~/.bashrc 最後に既に記録されているhistoryを削除しておしまい
+1$ rm ~/.bash_history ログアウトしてコマンド打って再ログインしてみて記録されてないかチェックして問題なければおっけー</description></item><item><title>Ubuntu16.04でYoloを試す</title><link>/post/ubuntu16.04%E3%81%A7yolo%E3%82%92%E8%A9%A6%E3%81%99/</link><pubDate>Mon, 18 Sep 2017 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04%E3%81%A7yolo%E3%82%92%E8%A9%A6%E3%81%99/</guid><description>はじめに 今更ながらにYoloを試します．
+基本的には公式サイトの通りに実行するだけですが少し詰まったのでメモ．
+コンソールで結果を見るだけなら公式サイト通りやって終わりです．
+環境 Ubuntu 16.04 OpenCV 3.1.0 環境構築 OpenCV 過去記事を参考にしつつ環境構築します
+1$ sudo apt-get install cmake libgtk2.0-dev pkg-config 2$ git clone https://github.com/Itseez/opencv.git 3$ cd opencv 4$ git tag 5$ git checkout 3.1.0 6$ mkdir build &amp;amp;&amp;amp; cd build 7$ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D INSTALL_CREATE_DISRIB=ON -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D WITH_FFMPEG=OFF -D BUILD_opencv_python2=ON -D BUILD_opencv_python3=ON -D PYTHON_EXECUTABLE=$(which python) .. 8$ make 9$ sudo make install Python用のパッケージも作ってるけど特に意味はない</description></item><item><title>Ubuntu16.04にZabbix3.2をインストールする</title><link>/post/ubuntu16.04%E3%81%ABzabbix3.2%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B/</link><pubDate>Sun, 23 Jul 2017 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04%E3%81%ABzabbix3.2%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B/</guid><description>はじめに Ubuntu16.04でZabbix3.2をインストールして使えるようにする
+でもこれ良く考えたらDockerで良かったのでは…？感がある
+環境 Ubuntu 16.04 4.4.0-83-generic Zabbix 3.2 環境構築 フォント グラフ描画時に必要になるとのことなのでインストールしておく
+1# apt-get install fonts-vlgothic MySQL インストール 予めインストールして設定しておく
+1# apt-get install mysql-server 2# vi /etc/mysql/mysql.conf.d/mysqld.conf 3character-set-server = utf8 4collation-server = utf8_bin 5skip-character-set-client-handshake 6innodb_file_per_table データベースとユーザー作成 zabbixで利用するデータベースを作る
+DBユーザー名：hoge
+DBパスワード：fuga
+な場合はこんな感じ
+ユーザー名はコンフィグのデフォルトがzabbixなのでその方が良いかも
+1# mysql -uroot -p 2Enter password: 3mysql&amp;gt; create database zabbix; 4mysql&amp;gt; grant all privileges on hoge.* to zabbix@localhost identified by &amp;#39;fuga&amp;#39; ; 5mysql&amp;gt; exit Zabbix レポジトリの追加 今回は3.2なので
+http://repo.zabbix.com/zabbix/3.2/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.2-1+xenial_all.deb</description></item><item><title>TAITAN XのChainerセットアップ</title><link>/post/taitan-x%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</link><pubDate>Sun, 29 Jan 2017 00:00:00 +0000</pubDate><guid>/post/taitan-x%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</guid><description>はじめに UbuntuにTAITAN Xを載せた学習環境の構築メモ
+何故かシステムが起動しなくなったりしたのでその辺の対処も含めて
+環境 特筆すべきところだけ
+OS
+Ubuntu 14.04.05 Server GPU
+GPU TAITAN X（pascal） インストール OS インストール 特に問題なく終わる
+NVIDIAドライバインストール http://www.nvidia.co.jp/Download/index.aspx?lang=jp
+公式サイトから適宜環境にあったドライバを選択する
+製品のタイプ
+GeForce 製品シリーズ
+GeForce 10 series 製品ファミリー
+NVIDIA TAITAN X (pascal) オペレーティングシステム
+Linux 64bit 言語
+日本語 検索 -&amp;gt; ダウンロードと進み同意ボタンが出て来る画面で同意ボタンのURLをコピーしておく
+インストール先で
+1# wget コピーURL でインストーラーをダウンロードする
+1# chmod +x NVIDIA-Linux-x86_64-xxx.xx.run 2# ./NVIDIA-Linux-x86_64-xxx.xx.run あとは通常通りのインストールと同様
+インストール終了後にnvidia-smiして確認する
+1# nvidia-smi 2+-----------------------------------------------------------------------------+ 3| NVIDIA-SMI 375.26 Driver Version: 375.26 | 4|-------------------------------+----------------------+----------------------+ 5| GPU Name Persistence-M| Bus-Id Disp.</description></item><item><title>postfixでGmailのリレー設定</title><link>/post/postfix%E3%81%A7gmail%E3%81%AE%E3%83%AA%E3%83%AC%E3%83%BC%E8%A8%AD%E5%AE%9A/</link><pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate><guid>/post/postfix%E3%81%A7gmail%E3%81%AE%E3%83%AA%E3%83%AC%E3%83%BC%E8%A8%AD%E5%AE%9A/</guid><description>はじめに システムのメール送信をGmailでリレーして簡単に送信出来るように設定しておく
+mailコマンドでメールが送れるようになるので手軽にログを送ったりするのに使える
+この手の記事はたくさんあるがうまくいくものがなかなかなかったのでメモ
+環境 Ubuntu 16.04.1 LTS 64bit インストール postfixとmailをコマンドを使うためにmailutilsのパッケージを導入する
+1$ sudo apt-get install postfix mailutils インストール中のpostfixの質問では「設定なし」を選択する
+設定 gmail の事前設定 Gmailではアプリケーション側がパスワードを持つようなアプリケーションはそのままでは使えないのでGmail側の設定を変更する
+https://www.google.com/settings/u/2/security/lesssecureapps
+からアクセスをオンにしておく
+コンフィグファイルの作成 main.cfを新たに作成する
+1$ cat /etc/postfix/main.cf 2relayhost = smtp.gmail.com:587 3smtp_use_tls = yes 4smtp_sasl_auth_enable = yes 5smtp_sasl_password_maps = hash:/etc/postfix/sasl/sasl_passwd 6smtp_sasl_security_options = noanonymous 7smtp_sasl_tls_security_options = noanonymous ログイン情報の作成 1$ sudo vi /etc/postfix/sasl/sasl_passwd 2smtp.gmail.com:587 hoge@gmail.com:password 使用するユーザー名とパスワードを入力する
+これをハッシュ化する 元ファイルは不要なので削除する
+1$ sudo postmap /etc/postfix/sasl/sasl_passwd 2$ sudo rm /etc/postfix/sasl/sasl_passwd テスト mailコマンドを使用してメールの送信を確認する
+1$ mail target@example.</description></item><item><title>アップグレードしたらnvidia-smi出来なくなった話</title><link>/post/%E3%82%A2%E3%83%83%E3%83%97%E3%82%B0%E3%83%AC%E3%83%BC%E3%83%89%E3%81%97%E3%81%9F%E3%82%89nvidia-smi%E5%87%BA%E6%9D%A5%E3%81%AA%E3%81%8F%E3%81%AA%E3%81%A3%E3%81%9F%E8%A9%B1/</link><pubDate>Thu, 08 Dec 2016 00:00:00 +0000</pubDate><guid>/post/%E3%82%A2%E3%83%83%E3%83%97%E3%82%B0%E3%83%AC%E3%83%BC%E3%83%89%E3%81%97%E3%81%9F%E3%82%89nvidia-smi%E5%87%BA%E6%9D%A5%E3%81%AA%E3%81%8F%E3%81%AA%E3%81%A3%E3%81%9F%E8%A9%B1/</guid><description>経緯 別件で環境構築している時にupgradeやらdist-upgradeしたらカーネルが新しくなってnvidia-smiが実行できなくなりました
+解決に1日掛かったので一応メモ
+こんな感じ
+1$ nvidia-smi 2NVIDIA-SMI has failed because it couldn&amp;#39;t communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running. 3もしくは 4modprobe: ERROR: could not insert &amp;#39;nvidia_367&amp;#39; 5... 67$ nvcc -V 8nvcc: NVIDIA (R) Cuda compiler driver 9Copyright (c) 2005-2015 NVIDIA Corporation 10Built on Tue_Aug_11_14:27:32_CDT_2015 11Cuda compilation tools, release 7.5, V7.5.17 アップデート前環境 当初以下の環境を組んでいました
+Ubuntu14.04 LTS（64bit） GTX980 Ti nvidia-361（361.42） CUDA （7.5） ドライバ CUDA 共にnvidia公式からダウンロードしたものを使用して構築しました.</description></item><item><title>Ubuntu16.04のPython3でOpenCV3を使う</title><link>/post/ubuntu16.04%E3%81%AEpython3%E3%81%A7opencv3%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Sun, 10 Jul 2016 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04%E3%81%AEpython3%E3%81%A7opencv3%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>OpenCVについて 画像処理するライブラリ
+2系入れたいならディストリビューションごとにパッケージあるからそっち使いましょう
+3系はパッケージが現時点（2016/06/24）でないから自分でビルドする
+3.1.0しか検証してないけど多分ほかでも問題ないはず
+Windowsは某所でwhl配布されてるからそれを使うと楽
+ダウンロード Sourceforgeからソースを落とせみたいな記事がたくさんあるけど罠です
+makeでコケるのでGithubからcloneすると良いです
+1$ cd ~ 2$ git clone https://github.com/Itseez/opencv.git 3$ cd opencv 4$ git tag 5タグ一覧が出るから使いたいバージョンを探す 6$ git checkout 3.1.0 7ダメだったらcloneしたやつそのまま使えばいけるかもね（今回の記事ではcloneしたのをそのまま使用） 2016年11月24日 追記
+バニラな環境でやったらハマったのでメモ
+1-D PYTHON_EXECUTABLE=$(which python) $(which python) は単にパス探してるだけなので
+バニラだとpythonじゃなくてpython3で探さないとダメだった
+ビルド 1$ pwd 2/home/hoge/opencv 3$ mkdir build 4$ cd build 5$ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D WITH_FFMPEG=OFF -D BUILD_opencv_python2=ON -D BUILD_opencv_python3=ON -D PYTHON_EXECUTABLE=$(which python) .. 6ログの途中にちゃんとPythonが対象に含まれてるか確認しておく 7これはpyenvでの結果だけどノーマルのPythonでもこんな感じで含まれてるはず 8-- Python 2: 9-- Interpreter: /usr/local/pyenv/shims/python (ver 3.</description></item></channel></rss>

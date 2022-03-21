@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nginx on メモ帳</title><link>/tags/nginx/</link><description>Recent content in Nginx on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 03 Sep 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/nginx/index.xml" rel="self" type="application/rss+xml"/><item><title>DockerizedしたFlaskをサブディレクトリで運用する</title><link>/post/dockerized%E3%81%97%E3%81%9Fflask%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E9%81%8B%E7%94%A8%E3%81%99%E3%82%8B/</link><pubDate>Sun, 03 Sep 2017 00:00:00 +0000</pubDate><guid>/post/dockerized%E3%81%97%E3%81%9Fflask%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E9%81%8B%E7%94%A8%E3%81%99%E3%82%8B/</guid><description>はじめに DockerizedしたFlaskをサブディレクトリ等からリバースプロキシでアクセスするとリダイレクト周りでおかしくなって辛いことになります
+ベタに実行しないで大人しくApacheかNginxから動くイメージを作れば良いんですけど…
+設定 Nginx フロントのNginxからリバースプロキシするときに必要な情報を提供してあげます
+1location /hoge/fuga/service/ { 2proxy_set_header Host $host; 3proxy_set_header X-Real-IP $remote_addr; 4proxy_set_header X-Scheme $scheme; 5proxy_set_header X-Forwarded-Host $host; 6proxy_set_header X-Forwarded-Server $host; 7proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 8proxy_set_header X-Script-Name /hoge/fuga/service; 9proxy_pass http://192.168.xxx.xxx:8888; 10} Flask http://flask.pocoo.org/snippets/35/
+snippetsにあるコードを少し変更して使います
+先程もらってきた値を参照してFlask側で使用するようにします
+これで実行時にremoteの正しいIPを見るようになりURL周りの挙動も直ります
+挙動が怪しいときはprint(environ, &amp;quot;\n&amp;quot;, file=sys.stderr)辺りのコメントアウトを外してdocker log見れば直せます（適当
+reverseproxy.py
+1import sys 23class ReverseProxy(object): 4def __init__(self, app): 5self.app = app 67def __call__(self, environ, start_response): 8# print(environ, &amp;#34;\n&amp;#34;, file=sys.stderr) 910script_name = environ.get(&amp;#34;HTTP_X_SCRIPT_NAME&amp;#34;, &amp;#34;&amp;#34;) 11if script_name: 12environ[&amp;#34;SCRIPT_NAME&amp;#34;] = script_name 13path_info = environ[&amp;#34;PATH_INFO&amp;#34;] 14if path_info.</description></item><item><title>NginxでLDAPを用いた閲覧制限を設ける</title><link>/post/nginx%E3%81%A7ldap%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E9%96%B2%E8%A6%A7%E5%88%B6%E9%99%90%E3%82%92%E8%A8%AD%E3%81%91%E3%82%8B/</link><pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate><guid>/post/nginx%E3%81%A7ldap%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E9%96%B2%E8%A6%A7%E5%88%B6%E9%99%90%E3%82%92%E8%A8%AD%E3%81%91%E3%82%8B/</guid><description>LDAPを用いた管理をしていてそのグループ内専用のWebサービスを公開している場合に困るのが閲覧制限です．
+ApacheでやるにしろNginxでやるにしろ基本的に提供されているのはBasic認証を用いたシンプルな認証機構です．
+なければ作ろうな精神で作りました
+https://github.com/skyblue3350/cypress
+仕組み自体の説明は
+クックパッド開発者ブログ nginx で omniauth を利用してアクセス制御を行う にて説明されているのでこちらを参考にして下さい
+Python3系で作りましたがLDAP関連のモジュールの基幹ライブラリが2系にしか対応していないので有名どころなモジュールは軒並み使えないのが痛いです．
+早く対応してほしい．
+使い方はシンプルですのでログイン画面を良い感じのテーマに変更したい場合はHTMLの知識さえあればカスタマイズ出来ると思います
+今回もDockerを用いた開発になったのでそのうちDockerhubで公開するつもりです</description></item></channel></rss>

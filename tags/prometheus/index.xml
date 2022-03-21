@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Prometheus on メモ帳</title><link>/tags/prometheus/</link><description>Recent content in Prometheus on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Tue, 01 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/prometheus/index.xml" rel="self" type="application/rss+xml"/><item><title>Nature RemoをGrafanaで可視化する</title><link>/post/nature-remo%E3%82%92grafana%E3%81%A7%E5%8F%AF%E8%A6%96%E5%8C%96%E3%81%99%E3%82%8B/</link><pubDate>Tue, 01 Sep 2020 00:00:00 +0000</pubDate><guid>/post/nature-remo%E3%82%92grafana%E3%81%A7%E5%8F%AF%E8%A6%96%E5%8C%96%E3%81%99%E3%82%8B/</guid><description>ブログ移行中で記事にするのをすっかり忘れていたため、今更感はありますが4ヶ月前に作ったExporterの話
+出来上がったものがこちら
+適当にtokenを入れて docker-compose up すれば多分動きます
+skyblue3350/nature-exporter Grafanaで適当にダッシュボードを作ったのが以下
+前のボードそのまま流用して終わり pic.twitter.com/mbs4hWYUvI
+&amp;mdash; スカイ (@skyblue3350) May 16, 2020</description></item><item><title>GitlabをPrometheusで監視する</title><link>/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</link><pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate><guid>/post/gitlab%E3%82%92prometheus%E3%81%A7%E7%9B%A3%E8%A6%96%E3%81%99%E3%82%8B/</guid><description>9.3からサポートされているGitlabのPrometheusのメトリクス公開を試してみた．
+環境はsameersbn/docker-gitlabの11.2.3です．
+公式イメージでもできるらしいですが未検証なので参考サイトのとこに情報だけ置いておきます．
+Gitlab WebUI側での設定 Webから管理者アカウントでログインして管理画面へアクセスします．
+Settings-&amp;gt;Metricsの項目にPrometheusがあるのでそこを開きます．
+prometheus_multiproc_dirの環境変数が未定義との警告がありますがひとまず有効にします．
+有効にした後再起動しないと利用出来ないので再起動する際に設定します．
+コンソール側での設定 prometheus_multiproc_dirとモニタリング用のエンドポイントへアクセスできるようにホワイトリストへ追加します．
+今回はGitlabのDockerイメージを使用しているので
+1gitlab:2restart:always3image:sameersbn/gitlab:11.2.34...5environment:6...7# Prometheus Config8- prometheus_multiproc_dir=/dev/shm9- GITLAB_MONITORING_IP_WHITELIST=192.168.xxx.xxxのように必要な環境変数を設定します．
+あとはコンテナに設定を適用して終わりです．
+1$ docker-compose up -d これで
+http://gitlab-host/-/metrics
+からPrometheus用のフォーマットでメトリクスを収集することができます．
+Prometheus 監視対象としていつも通り登録すれば終わりですがいつもと違い/metricsではなく/-/metricsとなるのでそこだけリラベルする必要があります．
+1- targets:2- gitlab.local:100803labels:4__metrics_path__:/-/metrics参考サイト Gitlab doc GitLab Prometheus metrics Gitlab doc IP whitelist [SOLVED] Gitlab Docker prometheus_multiproc_dir and /-/metrics</description></item><item><title>blackbox_exporterで複数のmoduleを実行する</title><link>/post/blackbox_exporter%E3%81%A7%E8%A4%87%E6%95%B0%E3%81%AEmodule%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B/</link><pubDate>Sun, 09 Sep 2018 00:00:00 +0000</pubDate><guid>/post/blackbox_exporter%E3%81%A7%E8%A4%87%E6%95%B0%E3%81%AEmodule%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B/</guid><description>blackbox_exporterでDNSの監視をしているのですが前回の記事のキャッシュサーバーのダウンを検知出来ませんでした．
+使っていた設定とアラートはこんな感じです．
+1- job_name:blackbox_dns2metrics_path:/probe3params:4module:[internal_dns, external_dns, cache_dns]5static_configs:6- targets:7- ns.local8relabel_configs:9- source_labels:[__address__]10target_label:__param_target11- source_labels:[__address__]12target_label:instance13- target_label:__address__14replacement:blackbox_exporter:9115アラート
+1groups:2- name:general3rules:4- alert:DNSServiceDown5expr:probe_success{job=&amp;#34;blackbox_dns&amp;#34;} == 06for:5m7labels:8severity:critical9annotations:10summary:&amp;#34;DNSService {{ $labels.instance }} down&amp;#34;11description:&amp;#34;{{ $labels.instance }} が5分間ダウンしました&amp;#34;paramsで指定できるmoduleは1つみたいですね．
+設定時にきちんとblackbox_exporterのログを確認すれば良かったのですがきちんと見てませんでした．
+blackbox_exporterは動作してるポートにアクセスするとRecent Probesから直近のログを確認することができます．
+ここ見てようやく1つしかmoduleが実行されていないことに気付きました．
+複数個jobを作れば解決しますが今回はラベルのリライトで同一job上でmoduleを切り替えます
+1- job_name:blackbox_dns2metrics_path:/probe3params:4module:[internal_dns]5static_configs:6- targets:7- ns.local|internal_dns8- ns.local|external_dns9- ns.local|cache_dns10relabel_configs:11- source_labels:[__address__]12regex:(.*?)\|(.*)13target_label:__param_target14replacement:${1}15- source_labels:[__address__]16regex:(.*?)\|(.*)17target_label:__param_module18replacement:${2}19- source_labels:[__address__]20regex:(.*?)\|(.*)21target_label:instance22replacement:${2}23- target_label:__address__24replacement:blackbox_exporter:9115「|」で区切ってそれを正規表現で抽出し適宜replaceする感じですね．
+ルールの方は問題ないのでそのまま前回記事の方法でわざと色々落としてみて動作確認して終了．
+検出出来たので終わりです pic.twitter.com/8XjCitGl0S
+&amp;mdash; スカイ (@skyblue3350) September 8, 2018 参考記事 blackbox exporter duplicated text in configs</description></item></channel></rss>

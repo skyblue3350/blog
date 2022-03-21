@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Falcon on メモ帳</title><link>/tags/falcon/</link><description>Recent content in Falcon on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 16 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/falcon/index.xml" rel="self" type="application/rss+xml"/><item><title>PythonでFalconを試す</title><link>/post/python%E3%81%A7falcon%E3%82%92%E8%A9%A6%E3%81%99/</link><pubDate>Sat, 16 Jul 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7falcon%E3%82%92%E8%A9%A6%E3%81%99/</guid><description>Falcon 公式サイト Falcon is a very fast, very minimal Python web framework for building microservices, app backends, and higher-level frameworks.
+というわけで高速で最小なWebフレームワークです
+とりあえず実際にApache上で動かすところまで試したのでメモだけ
+Windows上でテストしてUbuntuのApacheで動かしてみた
+こちらのQiitaの記事が参考になります　というかほぼ丸パクリです
+Falconで光速のWeb APIサーバーを構築する インストール 1$ pip install falcon おわり
+テスト 公式のサンプルに参考記事の
+1if __name__ == &amp;#34;__main__&amp;#34;: 2from wsgiref import simple_server 3httpd = simple_server.make_server(&amp;#34;127.0.0.1&amp;#34;, 8000, app) 4httpd.serve_forever() の部分を借りてきて実行してlocalhost:8000/quoteを見て問題なければOK
+Apache上で動かす とりあえずこんな感じの想定で
+設置場所：/var/falcon/fuga
+URL：http://serverurl/falcon/fuga
+さっきのコードをmain.pyって名前にして/var/falcon/fuga/main.pyに配置
+1$ sudo apt-get install apache2 libapache2-mod-wsgi 2$ sudo vi /etc/apache2/sites-available/000-default.</description></item></channel></rss>

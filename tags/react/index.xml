@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>React on メモ帳</title><link>/tags/react/</link><description>Recent content in React on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Wed, 21 Jun 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/react/index.xml" rel="self" type="application/rss+xml"/><item><title>ReactをES2015で書く環境を作る その2</title><link>/post/react%E3%82%92es2015%E3%81%A7%E6%9B%B8%E3%81%8F%E7%92%B0%E5%A2%83%E3%82%92%E4%BD%9C%E3%82%8B-%E3%81%9D%E3%81%AE2/</link><pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate><guid>/post/react%E3%82%92es2015%E3%81%A7%E6%9B%B8%E3%81%8F%E7%92%B0%E5%A2%83%E3%82%92%E4%BD%9C%E3%82%8B-%E3%81%9D%E3%81%AE2/</guid><description>はじめに 大体その1と同じ内容
+ReactRouter入れたりくらいの変更
+webpackも変遷の中で今微妙とかなんとか聞くけどとりあえずこれで…
+目標 ReactとReact RouterとMaterial UIを入れてES2015で書ける環境を作る
+環境構築 プロジェクト作成 1$ npm init -yes パッケージを揃える react-routerがv3からv4に変わる過程でreact-router-domになったので注意する
+1$ npm install --save react react-dom material-ui react-router-dom 2$ npm install --save-dev webpack webpack-dev-server babel-loader babel-core babel-preset-react babel-preset-es2015 webpack.config.js とりあえずこんな感じで
+minifyする際にオプションを追加する必要があるけど今のところは置いておくのでこんな感じ
+1var path = require(&amp;#34;path&amp;#34;); 2var webpack = require(&amp;#34;webpack&amp;#34;); 34module.exports = { 5entry: &amp;#34;./src/main.jsx&amp;#34;, 6output: { path: path.join(__dirname, &amp;#34;dist&amp;#34;), filename: &amp;#34;bundle.js&amp;#34; }, 7module: { 8loaders: [{ 9test: /.jsx?$/, 10loader: &amp;#34;babel-loader&amp;#34;, 11exclude: /node_modules/, 12query: { 13presets: [&amp;#34;es2015&amp;#34;, &amp;#34;react&amp;#34;] 14} 15}] 16} 17}</description></item><item><title>React RouterでBasenameを指定する</title><link>/post/react-router%E3%81%A7basename%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%99%E3%82%8B/</link><pubDate>Mon, 19 Dec 2016 00:00:00 +0000</pubDate><guid>/post/react-router%E3%81%A7basename%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%99%E3%82%8B/</guid><description>はじめに React Routerでルート以外の時に作成したアプリを置きたい時とかの話
+1ReactDOM.render( 2&amp;lt;Router history={browserHistory}&amp;gt; 3&amp;lt;Route path=&amp;#34;/&amp;#34; component={App} /&amp;gt; 4&amp;lt;Route path=&amp;#34;/pageA&amp;#34; component={pageA} /&amp;gt; 5&amp;lt;Route path=&amp;#34;/pageB&amp;#34; component={pageB} /&amp;gt; 6&amp;lt;Route path=&amp;#34;/pageC&amp;#34; component={pageC} /&amp;gt; 7&amp;lt;/Router&amp;gt;, 8document.getElementById(&amp;#34;app&amp;#34;) 9); みたいなルーティングをした状態でルート以外に作成したアプリを配置をしたい時の話
+このままだとデプロイ先のルートにしか置けないので困る
+かといってフルパスでルーティングを書くわけにもいかない
+対処法 historyライブラリを使うことで解決出来る
+/hogeに配置するコードはこんな感じ
+1import { createHistory, useBasename } from &amp;#34;history&amp;#34;; 23let history = useBasename(createHistory)({ 4basename: &amp;#34;/hoge/&amp;#34; 5}) 67ReactDOM.render( 8&amp;lt;Router history={history}&amp;gt; 9&amp;lt;Route path=&amp;#34;/&amp;#34; component={App} /&amp;gt; 10&amp;lt;Route path=&amp;#34;/pageA&amp;#34; component={pageA} /&amp;gt; 11&amp;lt;Route path=&amp;#34;/pageB&amp;#34; component={pageB} /&amp;gt; 12&amp;lt;Route path=&amp;#34;/pageC&amp;#34; component={pageC} /&amp;gt; 13&amp;lt;/Router&amp;gt;, 14document.getElementById(&amp;#34;app&amp;#34;) 15); これで/hoge/pageAの用なルーティングを実現することが出来る
+参考記事 mjackson/history Basename Support</description></item><item><title>ReactをES2015で書く環境を作る</title><link>/post/react%E3%82%92es2015%E3%81%A7%E6%9B%B8%E3%81%8F%E7%92%B0%E5%A2%83%E3%82%92%E4%BD%9C%E3%82%8B/</link><pubDate>Sun, 04 Dec 2016 00:00:00 +0000</pubDate><guid>/post/react%E3%82%92es2015%E3%81%A7%E6%9B%B8%E3%81%8F%E7%92%B0%E5%A2%83%E3%82%92%E4%BD%9C%E3%82%8B/</guid><description>はじめに フロント界隈の変遷が激しいですね良く分からないです
+未だにjQueryでゴリゴリ書いてる人間なので少し勉強することにしたけど忘れそうなのでメモ
+ちなみにRiotとFetchくらいしか触ったことない人間です
+環境構築してチュートリアルまで流します
+Webpack + React + ES6の最小構成を考えてみる。 ほぼこちらの記事のまんまです
+環境 Windows7 64bit 環境構築 Node.js 公式から落としてきてインストールする
+パスを以下の2箇所に通す（インストーラーがやってくれてるかも）
+nodejsのインストール場所 Users/Username/AppData/Roaming/npm プロジェクト作成 1$ npm init 適当に答えてpackage.jsonを作成する
+ライブラリを揃える npm install --save 利用時に必要なライブラリを追加する
+1$ npm install --save react react-dom whatwg-fetch reactとreact-domはreactを使うために入れる
+whatwg-fetchはFetchAPIを対応してないブラウザでも使うためのpolyfill
+npm install --save-dev 開発時に必要なライブラリを追加する
+1$ npm install --save-dev webpack webpack-dev-server 2$ npm install --save-dev babel-loader babel-core babel-preset-react babel-preset-es2015 タスク コマンド打っても良いけど面倒なので何回もしそうなことは予め書いておく
+package.jsonのscriptsの項目に以下を追記する
+1&amp;#34;scripts&amp;#34;: { 2&amp;#34;test&amp;#34;: &amp;#34;echo \&amp;#34;Error: no test specified\&amp;#34; &amp;amp;&amp;amp; exit 1&amp;#34;, 3&amp;#34;build&amp;#34;: &amp;#34;webpack&amp;#34;, 4&amp;#34;server&amp;#34;: &amp;#34;webpack-dev-server --progress --colors --hot --open&amp;#34; 5}, これで</description></item></channel></rss>

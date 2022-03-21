@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Google Pay on メモ帳</title><link>/tags/google-pay/</link><description>Recent content in Google Pay on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 18 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/google-pay/index.xml" rel="self" type="application/rss+xml"/><item><title>Google Payデビューした話</title><link>/post/google-pay%E3%83%87%E3%83%93%E3%83%A5%E3%83%BC%E3%81%97%E3%81%9F%E8%A9%B1/</link><pubDate>Sat, 18 Aug 2018 00:00:00 +0000</pubDate><guid>/post/google-pay%E3%83%87%E3%83%93%E3%83%A5%E3%83%BC%E3%81%97%E3%81%9F%E8%A9%B1/</guid><description>最近kyashのリアルカードを手に入れました．
+kyash自体は送金出来たりで割り勘する時に役立ってます．
+ただリアルカードはサイン求められることがぼちぼちあるらしいのであんまり実店舗では使ってなかったりします．
+Suicaとかで決済できると便利なので今年5月末にSuicaに対応したGoogle Payで使ってみることにしました．
+ただGoogle Payが使える端末の条件は
+Android 5以上 NFC対応（おサイフケータイ） です．
+手持ちの端末ではどちらかしか満たせるものがないので新規に1台用意することにしました．
+端末の探し方ですが条件に適合する型番をリストアップするのは骨が折れますがまとめて下さった方がいるので参考にします．
+Google PayでSuicaなど4つの電子マネーが使えるようになったので、対応機種を調べてみた！ Suica等はネットワークに接続されていない状態でも利用可能ですがオートチャージや出先でのチャージを考えると何かしらのネットワークへの接続手段が欲しくなります．
+運用的に通信量は極わずかなので運用する際は0SIMが良さそうです．
+ただ，0SIMはdocomo網でしか提供されていないため中古で買った端末がSIMフリーでない場合困るのでdocomo端末に絞りました．
+最後に上記のリストで注意が必要な点が1つあります．
+それはリリース当初はAndroid4だったがアップグレードでAndroid5になるタイプの端末です．
+これらの端末は修理対応期間中のみしかアップグレード用のファイルが提供されないようです．
+例えばF-04Fですが修理対応期間が2018年6月末に終了しているため現時点でAndroid5を適用済みの端末でないと利用することができません．
+逆に対応期間中であれば自分でアップグレード可能なため問題ありません．
+ここまで条件を確認したところで中古ショップやヤフオク・メルカリを巡って安い端末を探しました．
+安いのはヤフオク・メルカリですが前者はオークションなためどうしても運が良くないと落とせなかったので今回はメルカリで購入しました．
+どちらも最安3000円くらいなので粘ればどちらもありだとは思います．
+届いた端末を初期化した上でGoogle PayをインストールしてSuicaを登録します．
+クレジットカードからのチャージでGoogle Paymentsにkyashのカードを登録してチャージします．
+チャージしたら普通にSuicaとして使えるので適当に自販機とかで試してみます．
+今回購入した端末は問題なく使えたのでしばらくこのまま使ってみます．
+追記
+初回だけでした
+最後に1つ気になる点はGoogleの決済タイミング的にkyash側で余計なオートチャージが走ってしまう点です．
+一度Google Servicesから決済されたあとに改めてGoogle Payから決済を行い，そのあとに一度目の決済をキャンセルしているらしく余分なオートチャージが走ってしまいます．</description></item></channel></rss>

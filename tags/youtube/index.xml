@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Youtube on メモ帳</title><link>/tags/youtube/</link><description>Recent content in Youtube on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 24 Feb 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/youtube/index.xml" rel="self" type="application/rss+xml"/><item><title>YoutubeAPIで特定チャンネルが投稿した動画を調べる</title><link>/post/youtubeapi%E3%81%A7%E7%89%B9%E5%AE%9A%E3%83%81%E3%83%A3%E3%83%B3%E3%83%8D%E3%83%AB%E3%81%8C%E6%8A%95%E7%A8%BF%E3%81%97%E3%81%9F%E5%8B%95%E7%94%BB%E3%82%92%E8%AA%BF%E3%81%B9%E3%82%8B/</link><pubDate>Sat, 24 Feb 2018 00:00:00 +0000</pubDate><guid>/post/youtubeapi%E3%81%A7%E7%89%B9%E5%AE%9A%E3%83%81%E3%83%A3%E3%83%B3%E3%83%8D%E3%83%AB%E3%81%8C%E6%8A%95%E7%A8%BF%E3%81%97%E3%81%9F%E5%8B%95%E7%94%BB%E3%82%92%E8%AA%BF%E3%81%B9%E3%82%8B/</guid><description>はじめに YoutubeAPIで特定チャンネルの投稿一覧が取得したいけどどうすれば良い？って質問が来たので試した．
+ついでに特定期間内に投稿された動画の取得方法も試してみた．
+ソースコードはgistに置いておきます．
+動かし方は前回の記事とか見てください．
+https://gist.github.com/skyblue3350/005b65c1d2f156d872188842753c677c
+叩くAPI 基本的にSearch: listを使えば出来ます．
+https://developers.google.com/youtube/v3/docs/search/list?hl=ja
+今回は適当なvtuberのチャンネルで試します．
+チャンネルの投稿動画の取得 channelIdパラメータを使って目的のチャンネルの動画だけ検索して
+orderパラメータで日付順にすることで投稿日順にソートします．
+maxResultsパラメータで50件まで一度に取れますがそれ以上ある場合は前回と同様にpageTokenを回して2ページ目を取得します．
+特定期間の投稿の取得 期間の指定はpublishedAfterとpublishedBeforeパラメータから行います．
+publishedAfter～publishedBeforeです．
+リクエストはRFC 3339形式で送ります．
+Pythonで綺麗に文字列化する方法がわからなかったのでdt.isoformat()して末尾にZを足して誤魔化しました．
+あとはチャンネル投稿動画の取得と同様のパラメータを使えば良い感じに取得出来ます．</description></item><item><title>Youtube LiveStreaming APIで配信のコメントを取得する</title><link>/post/youtube-livestreaming-api%E3%81%A7%E9%85%8D%E4%BF%A1%E3%81%AE%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</link><pubDate>Mon, 27 Nov 2017 00:00:00 +0000</pubDate><guid>/post/youtube-livestreaming-api%E3%81%A7%E9%85%8D%E4%BF%A1%E3%81%AE%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</guid><description>はじめに 読み上げをYoutubeの配信中にもやりたいなーと思ってコメントの取得方法調べたら結構面倒なのでメモ
+大まかな流れとしては
+配信先のURLからライブのIDを取得 -&amp;gt; ライブのIDからチャットのIDを取得 -&amp;gt; チャットIDを使ってチャットの取得
+といった感じ
+ライブのIDからチャットのIDを取得するAPIにOauth認証が必要だったりで結構面倒
+環境 Python3 APIキーを用意する この辺は他のAPIと同じなので他のサイトの方を見たほうがわかりやすいです．
+いつも通りGoogle Cloud Platformへ行き新しくプロジェクトを作成し，APIの中から「YouTube Data API v3」を有効にしておく．
+その上で認証情報 -&amp;gt; Oauth同意画面と進み必要な項目を埋めておく．（最低限サービス名だけ埋まっていれば良い）
+認証情報の画面まで戻り認証情報を作成 -&amp;gt; OauthクライアントIDを選択する．
+アプリケーションの種類は「その他」にして進める．名前は適当に決める．
+作成するとIDとシークレットが表示されるが後でダウンロードするjsonに入ってるのでOKをクリックして閉じる．
+OAuth 2.0 クライアント IDの部分に今回作成したキーがあるはずなのでこれを右端のアイコンからダウンロードしておく．
+今回はclient.jsonとしてダウンロードしておく．
+ライブラリを用意する httplib2とoauth2clientを使うのでこれらを入れておく．
+1$ pip install httplib2 oauth2client 認証する 一度目はお馴染みのOauth認証画面に飛ばされるが一度認証すると不要になるのでその辺込みでこんな感じ
+client.jsonがさっき落としてきた認証情報でcredentials.jsonが認証済みの情報．
+1import httplib2 2from oauth2client import tools 3from oauth2client import client 4from oauth2client.file import Storage 56credentials_path = &amp;#34;credentials.json&amp;#34; 7if os.path.exists(credentials_path): 8# 認証済み 9store = Storage(credentials_path) 10credentials = store.</description></item></channel></rss>

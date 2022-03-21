@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dnsdist on メモ帳</title><link>/tags/dnsdist/</link><description>Recent content in dnsdist on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Mon, 03 Sep 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/dnsdist/index.xml" rel="self" type="application/rss+xml"/><item><title>dnsdistでコンソールからサーバーを操作する</title><link>/post/dnsdist%E3%81%A7%E3%82%B3%E3%83%B3%E3%82%BD%E3%83%BC%E3%83%AB%E3%81%8B%E3%82%89%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E6%93%8D%E4%BD%9C%E3%81%99%E3%82%8B/</link><pubDate>Mon, 03 Sep 2018 00:00:00 +0000</pubDate><guid>/post/dnsdist%E3%81%A7%E3%82%B3%E3%83%B3%E3%82%BD%E3%83%BC%E3%83%AB%E3%81%8B%E3%82%89%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%82%92%E6%93%8D%E4%BD%9C%E3%81%99%E3%82%8B/</guid><description>dnsdistで管理してるキャッシュDNSサーバーがダウン判定されて復旧しているが再判定とかないのかダウンのままになっているので手動でUpに戻す
+dnsdistのコンソールにアクセスする
+前回の記事とかで設定済みの前提
+1$ dnsdist -c xxx.xxx.xxx.xxx:5199 まず現在のサーバーの状態を確認する
+1&amp;gt; showServers() 2# Name Address State Qps Qlim Ord Wt Queries Drops Drate Lat Outstanding Pools 30 powerdns-master xxx.xxx.xxx.xxx:53 up 0.0 0 1 1 41116479 12 0.0 0.3 0 auth 41 powerdns-recursor yyy.yyy.yyy.yyy:5353 down 0.0 0 1 1 96579 5 0.0 124.7 0 recursor 5All downになっているサーバーを取得してupにする
+1&amp;gt; getServer(1) 2powerdns-recursor 3&amp;gt; getServer(1):setUp() 再確認する
+1&amp;gt; showServers() 2# Name Address State Qps Qlim Ord Wt Queries Drops Drate Lat Outstanding Pools 30 powerdns-master xxx.</description></item><item><title>dnsdistを試してみた</title><link>/post/dnsdist%E3%82%92%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F/</link><pubDate>Sun, 11 Mar 2018 00:00:00 +0000</pubDate><guid>/post/dnsdist%E3%82%92%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F/</guid><description>はじめに DNSロードバランサのdnsdistを試してみました．
+というのもPowerDNSを試すのがメインだったのですがBINDのようにアクセス元に応じた振り分けが欲しくて困ったときに見つけた．
+こちらのスライドで存在を知りました．ありがとうございます．
+dnsdistとNSDとUnboundでBINDのふりをさせる話
+https://dnsops.jp/bof/20161201/bind2other.pdf
+というわけで使ってみます．
+環境 OS
+Ubuntu16.04 内部ネットワーク
+192.168.1.0/24 インストール Ubuntu公式レポジトリから提供されているdnsdistはver1.0.0α版と古いのでdnsdistの公式レポジトリを登録して使います．
+有名どころなディストリビューションは提供されています．
+https://repo.powerdns.com/
+今回は「Ubuntu16.04 dnsdist - version 1.2.X」に従ってレポジトリを追加します．
+1$ sudo cat &amp;lt; EOS &amp;gt;&amp;gt; /etc/apt/preferences.d/dnsdist 2deb [arch=amd64] http://repo.powerdns.com/ubuntu xenial-dnsdist-12 main 3EOS 4$ sudo cat &amp;lt; EOS &amp;gt;&amp;gt; /etc/apt/sources.list.d/pdns.list 5Package: dnsdist* 6Pin: origin repo.powerdns.com 7Pin-Priority: 600 8EOS 鍵を登録してインストールします．
+1$ curl https://repo.powerdns.com/FD380FBB-pub.asc | sudo apt-key add - 2$ sudo apt-get update 3$ sudo apt-get install dnsdist 4インストールすると自動でサービスが上がるみたいです． 56$ sudo service dnsdist status 7● dnsdist.</description></item></channel></rss>

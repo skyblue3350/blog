@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Owncloud on メモ帳</title><link>/tags/owncloud/</link><description>Recent content in Owncloud on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Thu, 07 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/owncloud/index.xml" rel="self" type="application/rss+xml"/><item><title>owncloudの移行でハマった</title><link>/post/owncloud%E3%81%AE%E7%A7%BB%E8%A1%8C%E3%81%A7%E3%83%8F%E3%83%9E%E3%81%A3%E3%81%9F/</link><pubDate>Thu, 07 Jul 2016 00:00:00 +0000</pubDate><guid>/post/owncloud%E3%81%AE%E7%A7%BB%E8%A1%8C%E3%81%A7%E3%83%8F%E3%83%9E%E3%81%A3%E3%81%9F/</guid><description>ハマったというより自爆ですが一応メモ
+ラズパイから物理鯖に鋭意移転中です
+owncloudの移行をするときに9.0がリリースされていたので新規インストールで移行することにしました
+今までと特に変わりなくDBを設定しインストールしました
+ただサーバー側がApacheからNginxに変更していたため.htaccessが使えません
+そこでNginxの設定ファイルに記述するのですがどうも参照していたドキュメントが古かったらしくクライアントからアクセスしようとすると
+Error downloading https://test.hoge.com/remote.php/webdav/ -server replied: Method Not Allowed
+とエラーが出て認証が進みません
+というわけで設定ファイルは正しいものを参照しましょう
+https://doc.owncloud.org/server/9.0/admin_manual/installation/nginx_configuration.html
+これにSSLの設定を書き加えて完了です</description></item></channel></rss>

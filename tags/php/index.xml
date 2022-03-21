@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PHP on メモ帳</title><link>/tags/php/</link><description>Recent content in PHP on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Tue, 05 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/php/index.xml" rel="self" type="application/rss+xml"/><item><title>Raspberry Pi2でPHP7のビルド・インストール</title><link>/post/raspberry-pi2%E3%81%A7php7%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</link><pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate><guid>/post/raspberry-pi2%E3%81%A7php7%E3%81%AE%E3%83%93%E3%83%AB%E3%83%89%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</guid><description>はじめに PHP7が出たので自鯖のPHPを5.3から7へ移行しました
+自鯖で稼働しているPHP関連のものはowncloudとWordpressですが移行後特にこれといった問題は起きていません
+PHP7のインストールからMySQLの接続確認まで行います
+インストールした環境はRaspberry Pi2 Wheezy上になります
+Debian系やその他OSでも前提パッケージ名が違う程度だと思います
+前提パッケージのインストール 1$ sudo apt-get install libxml2 libxml2-dev pkg-config libssl-dev libreadline5 libreadline-gplv2-dev libpspell-dev apache2-dev libcurl4-openssl-devもいるかもしれません
+コンパイル　インストール 適当に公式からアーカイブファイルを落として展開する
+その後
+1$sudosh./configure\2--with-readline\3--enable-pcntl\4--with-gettext\5--enable-phpdbg\6--enable-phpdbg-webhelper\7--enable-mbstring\8--enable-zip\9--enable-bcmath\10--enable-ftp\11--enable-exif\12--enable-calendar\13--enable-sockets\14--enable-sysvmsg\15--enable-sysvsem\16--enable-sysvshm\17--enable-wddx\18--with-curl\19--with-mcrypt\20--with-iconv\21--with-pspell\22--with-gd\23--enable-gd-native-ttf\24--enable-gd-jis-conv\25--with-openssl\26--enable-soap\27--with-zlib-dir=/usr\28--with-zlib=/usr\29--with-bz2=/usr\30--with-apxs2\31--with-mysqli=mysqlnd\32--with-pdo-mysql=mysqlnd\33--with-mysql-sock=/var/run/mysqld/mysqld.sock34$sudomake-j`nproc`35$sudoapt-getremovephp*36$sudomakeinstallnprocはそのPC上の最大を表すらしい　知らなかった
+おそらくconfigureは前提パッケージを全て入れていれば通るはず
+トラブった時は以下のページが参考になった
+https://blog.flowl.info/2015/how-to-install-php7-on-ubuntu-or-debian/
+各種設定 設定ファイルのコピー パスを調べてからそこにファイルを配置する
+1$ php -i | grep php.ini 2$ sudo cp ./hoge/php-7.0.3/php.ini-production /usr/local/lib/php.ini 1$ vi /usr/local/lib/php.ini 2必要な設定をする 3必要な項目を検索して適宜書き換え 4expose_php = On → Offに 5;date.timezone = → date.timezone = &amp;#39;Asia/Tokyo&amp;#39; 6;error_log = php_errors.log → error_log = &amp;#34;適当なパス/error.log&amp;#34;//対象ファイルの所有者をdaemonに権限を755にしておく 7mysqli.default_socket = → mysqli.</description></item></channel></rss>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WSL on メモ帳</title><link>/tags/wsl/</link><description>Recent content in WSL on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 10 Jun 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/wsl/index.xml" rel="self" type="application/rss+xml"/><item><title>WSL環境構築まとめ</title><link>/post/wsl%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89%E3%81%BE%E3%81%A8%E3%82%81/</link><pubDate>Sun, 10 Jun 2018 00:00:00 +0000</pubDate><guid>/post/wsl%E7%92%B0%E5%A2%83%E6%A7%8B%E7%AF%89%E3%81%BE%E3%81%A8%E3%82%81/</guid><description>はじめに 記事ぼちぼち書いてるのでご存知の通り未だにcygwin使っていますがようやく引っ越しする気になったので詰まった点とかまとめます．
+WSLのインストール この辺はわかりやすい記事が色々あるので他の記事読んで下さい
+今回はUbuntu18.04で検証しています
+WSLの有効化 Winマークを右クリックして「アプリと機能」-&amp;gt;「プログラムと機能」-&amp;gt;「Windowsの機能の有効化または無効化」
+と進んで「Windows subsystem for Linux」を有効化して再起動
+開発者向け機能の有効化 Winマークを右クリックして「設定」-&amp;gt;「更新とセキュリティ」-&amp;gt;「開発者向け」から開発者モードに切り替えておく
+イメージの入手 Winマークを左クリックして「store」と入力してMicrost Storeを開く
+任意のイメージを検索してインストールする（Ubuntu18.04等）
+WSLの起動 Winマークを左クリックして任意のイメージ名を入力して起動する
+しばらく初期設定が走ったあと任意のユーザー名とパスワードを設定します
+WSLの設定 ユーザーのホームディレクトリの変更 FSの都合上かなり深いところにWSLのホームディレクトリがあります
+そのためWin側で都合が良い場所にホームディレクトリを移します
+Win側でストレージは/mnt/[DriveName]
+となっているので適宜好きな場所に変更します
+例えば「C:\wsl/」としたい場合
+1$ sudo vi /etc/passwd 2- sky:x:1000:1000:,,,:/home/sky:/bin/bash 3+ sky:x:1000:1000:,,,:/mnt/c/wsl:/bin/bash のように変更しWSLを再起動します
+マウント方法の変更 /mnt下のドライブはマウント時にメタデータオプションが無効の状態でマウントされています
+sshなどのファイルのパーミッションが重視されるものを利用しようとするとパーミッション周りでエラーがでるのでメタデータを有効にした状態でマウントするようにします
+1$ sudo vim /etc/wsl.conf 2[automount] 3enable = true 4root = /mnt/ 5options = &amp;#34;metadata&amp;#34; 6mountFsTab = false 環境構築 WSL固有でトラブったやつとかだけまとめます
+Docker どちらの方法を使用するにせよWSL上にDockerが必要なので予めインストールしておきます
+ホスト側にDockerを入れて使う ホスト側にDockerを入れてTCPを有効にしWSL側から操作します
+ただし以下に記載があるようにEnterprise、Professional、Educationでないと使うことができません
+Windows 10 上に Hyper-V をインストールする ただ一度設定したら楽に使えるのでエディションの問題がなければありだと思います</description></item></channel></rss>

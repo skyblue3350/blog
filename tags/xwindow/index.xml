@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>XWindow on メモ帳</title><link>/tags/xwindow/</link><description>Recent content in XWindow on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Thu, 18 Jan 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/xwindow/index.xml" rel="self" type="application/rss+xml"/><item><title>DockerでXWindowを使う</title><link>/post/docker%E3%81%A7xwindow%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate><guid>/post/docker%E3%81%A7xwindow%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>はじめに UbuntuでDockerで建てたコンテナからXWindowを飛ばしてみたくなったのでメモ．
+SSHは使わずにTCPでXWindowを飛ばします．
+環境 今回は同一のマシン上で行います．
+1$ cat /etc/lsb-release 2DISTRIB_ID=Ubuntu 3DISTRIB_RELEASE=16.04 4DISTRIB_CODENAME=xenial 5DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 16.04 LTS&amp;#34; 6$ docker -v 7Docker version 17.03.1-ce, build c6d412e 8$ docker-compose -v 9docker-compose version 1.14.0-rc1, build c18a7ad ホスト側 設定の変更 Ubuntuはlightdmが上がってる想定で書いてますが違う場合はそれぞれの環境に合わせて下さい．
+デフォルトではTCPでListenするようになってないので設定を加えます．
+ファイルがない場合は作成し，ある場合は追記します．
+1$ sudo vi /etc/lightdm/lightdm.conf 2[SeatDefaults] 3xserver-allow-tcp=true システムを再起動して変更を適用します．
+正しく設定出来ている場合は6000番のポートが開放されているはずです．
+1$ netstat -anp | grep 6000 2tcp 0 0 0.0.0.0:6000 0.0.0.0:* LISTEN - 3tcp6 0 0 :::6000 :::* LISTEN - 最後にこのXWindowサーバーにアクセス可能なクライアントの許可を出します．
+とりあえず動作確認に無制限にしますが適宜制限を設けた方が良いです．
+1$ xhost + クライアント側 ディレクトリ構成 適当に配置します．</description></item></channel></rss>

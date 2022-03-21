@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Python on メモ帳</title><link>/tags/python/</link><description>Recent content in Python on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Tue, 01 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/python/index.xml" rel="self" type="application/rss+xml"/><item><title>Nature RemoをGrafanaで可視化する</title><link>/post/nature-remo%E3%82%92grafana%E3%81%A7%E5%8F%AF%E8%A6%96%E5%8C%96%E3%81%99%E3%82%8B/</link><pubDate>Tue, 01 Sep 2020 00:00:00 +0000</pubDate><guid>/post/nature-remo%E3%82%92grafana%E3%81%A7%E5%8F%AF%E8%A6%96%E5%8C%96%E3%81%99%E3%82%8B/</guid><description>ブログ移行中で記事にするのをすっかり忘れていたため、今更感はありますが4ヶ月前に作ったExporterの話
+出来上がったものがこちら
+適当にtokenを入れて docker-compose up すれば多分動きます
+skyblue3350/nature-exporter Grafanaで適当にダッシュボードを作ったのが以下
+前のボードそのまま流用して終わり pic.twitter.com/mbs4hWYUvI
+&amp;mdash; スカイ (@skyblue3350) May 16, 2020</description></item><item><title>Django Rest Frameworkでソーシャルログインを実装する</title><link>/post/django-rest-framework%E3%81%A7%E3%82%BD%E3%83%BC%E3%82%B7%E3%83%A3%E3%83%AB%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%82%92%E5%AE%9F%E8%A3%85%E3%81%99%E3%82%8B/</link><pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate><guid>/post/django-rest-framework%E3%81%A7%E3%82%BD%E3%83%BC%E3%82%B7%E3%83%A3%E3%83%AB%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%82%92%E5%AE%9F%E8%A3%85%E3%81%99%E3%82%8B/</guid><description>Django Rest Framework（以降DRF）でソーシャルログインを実装したい時の話
+色々試したものの上手いこと設定出来ず手こずったのでまとめ
+DRFのドキュメントにあるソーシャルログインを試しました．
+今回はGithubでテストしました．
+環境 Python 3.7.3 パッケージ 1$ pip list 2Django 2.2.1 3django-allauth 0.39.1 4django-rest-auth 0.9.5 5djangorestframework 3.9.4 設定 DRFが動くところまでは済んでる前提です．
+上記のパッケージのインストール
+1$ pip install django-allauth django-rest-auth settings.pyにインストールしたアプリを追加
+1INSTALLED_APPS = ( 2..., 3&amp;#39;django.contrib.sites&amp;#39;, # 設定してない場合追加しておく 4&amp;#39;rest_framework&amp;#39;, 5&amp;#39;rest_framework.authtoken&amp;#39;, 6&amp;#39;rest_auth&amp;#39; 7&amp;#39;allauth&amp;#39;, 8&amp;#39;allauth.account&amp;#39;, 9&amp;#39;allauth.socialaccount&amp;#39;, 10&amp;#39;allauth.socialaccount.providers.github&amp;#39;, 11) 12SITE_ID = 1 # 同上 データベースに反映します
+1$ python manage.py migrate Github用の認証ビューを作ります
+1class GithubLogin(SocialLoginView): 2adapter_class = GitHubOAuth2Adapter 3callback_url = &amp;#34;Githubのアプリ側で設定したコールバックURLと合わせる&amp;#34; 4client_class = OAuth2Client 適当なURLと紐づけます</description></item><item><title>k8sでPod内からAPIを叩く</title><link>/post/k8s%E3%81%A7pod%E5%86%85%E3%81%8B%E3%82%89api%E3%82%92%E5%8F%A9%E3%81%8F/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>/post/k8s%E3%81%A7pod%E5%86%85%E3%81%8B%E3%82%89api%E3%82%92%E5%8F%A9%E3%81%8F/</guid><description>k8sでAPIを叩く記事をだいぶ前に書きましたが最終的にPodとして配置することになりました．
+この場合はtokenをベタに書かなくてももっと手軽に認証できるので試します．
+環境はk8s v1.9.3で検証しています．
+Goだと下記みたいなやつをPythonでやりたいというお話です．
+https://github.com/kubernetes/client-go/tree/master/examples/in-cluster-client-configuration
+ちなみにexampleの中にありました．
+https://github.com/kubernetes-client/python/blob/master/examples/in_cluster_config.py
+ほぼ前回のGKEでAPIを利用してみると同じです．
+PodからAPIを利用するためにServiceAccountが必要となるのでまずServiceAccountを作成します．
+今回以下の条件で作成します
+Namespace
+ns_sample ServiceAccount
+sa_sample ClusterRole
+cr_sample ClusterRoleBinding
+crb_sample この条件でapi.ymlを作ってリソースを作成します．
+1apiVersion:v12kind:Namespace3metadata:4name:ns_sample56---78apiVersion:v19kind:ServiceAccount10metadata:11name:sa_sample12namespace:ns_sample1314---1516kind:ClusterRole17apiVersion:rbac.authorization.k8s.io/v118metadata:19name:cr_sample20namespace:magi2122rules:23- apiGroups:[&amp;#34;*&amp;#34;]24resources:[&amp;#34;*&amp;#34;]25verbs:[&amp;#34;*&amp;#34;]2627---2829kind:ClusterRoleBinding30apiVersion:rbac.authorization.k8s.io/v131metadata:32name:crb_sample33namespace:ns_sample3435subjects:36- kind:ServiceAccount37name:sa_sample38namespace:ns_sample39roleRef:40kind:ClusterRole41name:cr_sample42apiGroup:rbac.authorization.k8s.ioリソースを作成します
+1$ kubectl create -f api.yml 各リソースの状態に関しては前回の記事を参考に確認します．
+最後にこれをPodから利用します．
+Pod内部からの認証は下記コードでできます．
+1from kubernetes import client, config 23config.load_incluster_config() このコードを実行するPodにServiceAccountを紐付ければ自動でSecretを読み込み認証が行われます．
+1apiVersion:v12kind:Pod3metadata:4name:sample5spec:6serviceAccountName:sa_sample7containers:8- name:sample9image:sample/image既存の認証との切り替えは環境変数にKUBERNETES_SERVICE_HOSTがあるかを基準にすると良さそうです
+1if os.environ.get(&amp;#34;KUBERNETES_SERVICE_HOST&amp;#34;): 2configuration = config.load_incluster_config()</description></item><item><title>Windowsにインストールされたアプリケーションのパスを探す</title><link>/post/windows%E3%81%AB%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%95%E3%82%8C%E3%81%9F%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E3%83%91%E3%82%B9%E3%82%92%E6%8E%A2%E3%81%99/</link><pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate><guid>/post/windows%E3%81%AB%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%95%E3%82%8C%E3%81%9F%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AE%E3%83%91%E3%82%B9%E3%82%92%E6%8E%A2%E3%81%99/</guid><description>今書いてるスクリプトでWindowsで特定のアプリケーションのインストール場所を探す用事があったのでメモ．
+Uninstall用のレジストリを探していって見つける．
+レジストリキーを総なめしていって一致する名前を見つけたらそのキーのInstallLocationを取得してるだけ．
+1$ python find_app.py 2Beat Saber 3C:\Program Files(x86)\Steam\steamapps\common\Beat Saber って感じで取れる．</description></item><item><title>Camera Remote APIを利用してILCE-6000のライブビューを取得する</title><link>/post/camera-remote-api%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6ilce-6000%E3%81%AE%E3%83%A9%E3%82%A4%E3%83%96%E3%83%93%E3%83%A5%E3%83%BC%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</link><pubDate>Fri, 14 Dec 2018 00:00:00 +0000</pubDate><guid>/post/camera-remote-api%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6ilce-6000%E3%81%AE%E3%83%A9%E3%82%A4%E3%83%96%E3%83%93%E3%83%A5%E3%83%BC%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</guid><description>存在だけ知って触ったことのなかったCamera Remote APIを触ってみました．
+環境 ILCE-6000
+α6000
+本体ソフトウェア Ver3.20 ドキュメントとか https://developer.sony.com/ja/develop/cameras/
+公式ページのDownload SDKからドキュメント落とせるので基本的にはそれを見てHTTPを叩きます．
+カメラがAPIに対応しているかは以下から確認できます．
+https://developer.sony.com/ja/develop/cameras/api-information/supported-features-and-compatible-cameras
+接続する まず，同じネットワークにつなぎます．
+カメラ側を宅内のネットワークにつなげれば良いのですがAPの登録はできても接続し続けておく方法がわからなかった．
+のでAP化する方法で進める．
+カメラのAP化 MENU -&amp;gt; 設定 -&amp;gt; アプリ一覧からリモートコントロールを選択．
+カメラのモニタにAP名とパスワードが出るのでPCを接続．
+カメラのIPを調べる SSDPを使ってカメラのIPアドレスを教えてもらいます．
+ただ，カメラをAPとして使っている場合は返ってくる値に変化はないのであんまりやる意味ないです．
+上手く返ってくるパケットが捕まえられなかったので今回はWiresharkを使って戻ってきたパケットを読みました．
+1import socket 23request = &amp;#34;\r\n&amp;#34;.join([ 4&amp;#34;M-SEARCH * HTTP/1.1&amp;#34;, 5&amp;#34;HOST: 239.255.255.250:1900&amp;#34;, 6&amp;#34;MAN: \&amp;#34;ssdp:discover\&amp;#34;&amp;#34;, 7&amp;#34;MX: 1&amp;#34;, 8&amp;#34;ST: urn:schemas-sony-com:service:ScalarWebAPI:1&amp;#34;]) 910sock = socket.socket(socket.AF_INET , socket.SOCK_DGRAM) 11sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL , 2) 1213msg_bytes = bytearray(request, &amp;#34;utf8&amp;#34;) 14sock.sendto(msg_bytes, (&amp;#34;239.255.255.250&amp;#34;, 1900)) 15sock.close() 送ってしばらくすると4種類くらいのフォーマットでカメラから応答が来るのでそこからXMLを返してくれるエンドポイントへアクセスします．
+多分レスポンスの中に以下のURLがあります．
+1192.168.122.1:61000/scalarwebapi_dd.xml これにアクセスするとこんな感じで欲しい情報が取れます．
+何故かスクリプトから引っ張ってこれないのでパケットキャプチャして見た情報から叩いたけど一応取れた pic.twitter.com/VJCglZxtgT</description></item><item><title>GKEでAPIを利用してみる</title><link>/post/gke%E3%81%A7api%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B/</link><pubDate>Tue, 27 Nov 2018 00:00:00 +0000</pubDate><guid>/post/gke%E3%81%A7api%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B/</guid><description>GKEのAPIを利用してリソースの操作してみるメモ．
+多分オンプレも同じですがまだ検証してないので動作確認したら追記します．
+追記　2019/03/06
+オンプレ環境下でも問題なく動きました
+環境 環境は以下です．
+1$ kubectl version 2Client Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;10&amp;#34;, GitVersion:&amp;#34;v1.10.7&amp;#34;, GitCommit:&amp;#34;0c38c362511b20a098d7cd855f1314dad92c2780&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-08-20T10:09:03Z&amp;#34;, GoVersion:&amp;#34;go1.9.3&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 3Server Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9+&amp;#34;, GitVersion:&amp;#34;v1.9.7-gke.11&amp;#34;, GitCommit:&amp;#34;dc4f6dda6a08aae2108d7a7fdc2a44fa23900f4c&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-11-10T20:22:02Z&amp;#34;, GoVersion:&amp;#34;go1.9.3b4&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} APIの利用 とりあえず叩いてみる 公式ドキュメント記載の方法でひとまず叩いてみます
+https://kubernetes.io/docs/tasks/administer-cluster/access-cluster-api/ 1$ APISERVER=$(kubectl config view | grep server | cut -f 2- -d &amp;#34;:&amp;#34; | tr -d &amp;#34; &amp;#34;) 2$ TOKEN=$(kubectl describe secret $(kubectl get secrets | grep default | cut -f1 -d &amp;#39; &amp;#39;) | grep -E &amp;#39;^token&amp;#39; | cut -f2 -d&amp;#39;:&amp;#39; | tr -d &amp;#39;\t&amp;#39;) 3$ echo ${APISERVER} 4$ echo ${TOKEN} 取得できたら試しに叩いてみます．</description></item><item><title>お名前.comのDDNSをスクリプトから行う</title><link>/post/%E3%81%8A%E5%90%8D%E5%89%8D.com%E3%81%AEddns%E3%82%92%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%8B%E3%82%89%E8%A1%8C%E3%81%86/</link><pubDate>Thu, 01 Nov 2018 00:00:00 +0000</pubDate><guid>/post/%E3%81%8A%E5%90%8D%E5%89%8D.com%E3%81%AEddns%E3%82%92%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%8B%E3%82%89%E8%A1%8C%E3%81%86/</guid><description>滅多に変わらないので放置してたけど宅内の環境を整え直すついでに前々からやろうかなぁと思って放置してたDDNS周りにトライした．
+最悪ヘッドレスブラウザで更新すれば良いかなと思ったら簡単にいけそうな記事を見かけたのでスクリプトに起こした．
+標準ライブラリだけで動くので適当にcronで叩くようにして終わり．
+参考記事 LinuxやMacで お名前.com ダイナミックDNS の IPアドレスを更新する</description></item><item><title>pyenvで3.7入れて試す</title><link>/post/pyenv%E3%81%A73.7%E5%85%A5%E3%82%8C%E3%81%A6%E8%A9%A6%E3%81%99/</link><pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate><guid>/post/pyenv%E3%81%A73.7%E5%85%A5%E3%82%8C%E3%81%A6%E8%A9%A6%E3%81%99/</guid><description>はじめに 3.7リリースされてたので試そうかなと思ってpyenvで3.7インストールしたのでメモ
+きれいな環境で1からpyenvやら置いて試したので色々前提パッケージがなくてエラった
+環境 Ubuntu18.04 pyenv 1.2.5 環境構築 前提パッケージ 必要なパッケージを用意します．
+足りないとインストール時に下記にまとめたエラーが出て詰まります．
+1$ sudo apt-get install zlib1g-dev libffi-dev libbz2-dev libreadline-dev libssl-dev libsqlite3-dev インストール 1$ pyenv install 3.7.0 2Downloading Python-3.7.0.tar.xz... 3-&amp;gt; https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz 4Installing Python-3.7.0... 5Installed Python-3.7.0 to /path/to/.pyenv/versions/3.7.0 使ってみる 適当なディレクトリで
+1$ pyenv local 3.7.0 2$ python -V 3Python 3.7.0 あとは適当に
+エラーとか zipimport.ZipImportError: can't decompress data; zlib not available 必要なパッケージを入れます
+1$ sudo apt-get install zlib1g-dev ImportError: No module named _ctypes https://github.com/pyenv/pyenv/issues/785</description></item><item><title>sphinxでうまいこと仮想環境を見てくれない時</title><link>/post/sphinx%E3%81%A7%E3%81%86%E3%81%BE%E3%81%84%E3%81%93%E3%81%A8%E4%BB%AE%E6%83%B3%E7%92%B0%E5%A2%83%E3%82%92%E8%A6%8B%E3%81%A6%E3%81%8F%E3%82%8C%E3%81%AA%E3%81%84%E6%99%82/</link><pubDate>Wed, 25 Apr 2018 00:00:00 +0000</pubDate><guid>/post/sphinx%E3%81%A7%E3%81%86%E3%81%BE%E3%81%84%E3%81%93%E3%81%A8%E4%BB%AE%E6%83%B3%E7%92%B0%E5%A2%83%E3%82%92%E8%A6%8B%E3%81%A6%E3%81%8F%E3%82%8C%E3%81%AA%E3%81%84%E6%99%82/</guid><description>Sphinxで上手いこと仮想環境を見てないと
+1The &amp;#39;sphinx-build&amp;#39; command was not found. Make sure you have Sphinx 2installed, then set the SPHINXBUILD environment variable to point 3to the full path of the &amp;#39;sphinx-build&amp;#39; executable. Alternatively you 4may add the Sphinx directory to PATH. 56If you don&amp;#39;t have Sphinx installed, grab it from 7http://sphinx-doc.org/ とか出てきたりして困る
+エラーの通りSPHINXBUILDにsphinx-buildのパスを入れても良いがこれだと仮想環境使ってる時困るので
+Winならmake.batに
+1if &amp;#34;%SPHINXBUILD%&amp;#34; == &amp;#34;&amp;#34; ( 2set SPHINXBUILD=python -m sphinx 3) Linux系列ならMakefileに
+1SPHINXBUILD = python -m sphinx と書いておくと仮想環境に切り替わっていればPythonのパスは仮想環境へ向いてるはずなので良い感じに動く</description></item><item><title>pyvenvで環境が作れない</title><link>/post/pyvenv%E3%81%A7%E7%92%B0%E5%A2%83%E3%81%8C%E4%BD%9C%E3%82%8C%E3%81%AA%E3%81%84/</link><pubDate>Wed, 11 Apr 2018 00:00:00 +0000</pubDate><guid>/post/pyvenv%E3%81%A7%E7%92%B0%E5%A2%83%E3%81%8C%E4%BD%9C%E3%82%8C%E3%81%AA%E3%81%84/</guid><description>はじめに Ubuntu16.04 Python3.5環境下での出来事
+新しく作った環境でいつも通り環境を作ろうとすると
+1$ python3 -m venv . 2The virtual environment was not created successfully because ensurepip is not 3available. On Debian/Ubuntu systems, you need to install the python3-venv 4package using the following command. 56apt-get install python3-venv 78You may need to use sudo with that command. After installing the python3-venv 9package, recreate your virtual environment. 1011Failing command: [&amp;#39;/home/sky/bin/python3&amp;#39;, &amp;#39;-Im&amp;#39;, &amp;#39;ensurepip&amp;#39;, &amp;#39;--upgrade&amp;#39;, &amp;#39;--default-pip&amp;#39;] 怒られる
+対処 ここまではいつも通りなのでパッケージを入れる
+1$ sudo apt-get install python3-venv これで問題なく生成できるはずですが今回はダメでした</description></item><item><title>Seleniumあれこれ</title><link>/post/selenium%E3%81%82%E3%82%8C%E3%81%93%E3%82%8C/</link><pubDate>Wed, 11 Apr 2018 00:00:00 +0000</pubDate><guid>/post/selenium%E3%81%82%E3%82%8C%E3%81%93%E3%82%8C/</guid><description>はじめに Seleniumでちょっとあれこれした時のメモ
+インストール 各種ドライバは環境に合わせて落とす
+1$ pip install selenium 2$ wget https://chromedriver.storage.googleapis.com/2.37/chromedriver_win32.zip 3$ unzip chromedriver_win32.zip 今回の要件 スクロールに合わせてコンテンツが読み込まれていくタイプのページで何が読み込まれていったのか知りたい
+自動でスクロールさせる SeleniumでJSを実行させることができるのでJSを流し込んでスクロールさせます
+1from selenium import webdriver 23driver = webdriver.Chrome() 4driver.get(&amp;#34;http://example.com&amp;#34;) 5cmd = &amp;#34;document.querySelector(\&amp;#34;.example_class\&amp;#34;).scrollTo(0, 100);&amp;#34;) 6driver.execute_script(cmd) コンテンツの高さを取得する 同じくjsを実行して取得します
+returnすると値をPython側でもらうことができます
+1from selenium import webdriver 23driver = webdriver.Chrome() 4driver.get(&amp;#34;http://example.com&amp;#34;) 5cmd = &amp;#34;return document.querySelector(\&amp;#34;.example_class\&amp;#34;).scrollHeight;&amp;#34;) 6height = driver.execute_script(cmd) バックグラウンドでアクセスしたページを調べる SeleniumはChromeのみPerformanceへのアクセスができるみたいなのでこれを使います
+いろいろデータが取れるので各自確認していただきたいですがコンテンツの取得が完了した際に「Network.responseReceived」というmethodが呼ばれるみたいなのでこれを捕まえます
+1from selenium import webdriver 2from selenium.webdriver.common.desired_capabilities import DesiredCapabilities 34caps = DesiredCapabilities.CHROME 5caps[&amp;#34;loggingPrefs&amp;#34;] = {&amp;#34;performance&amp;#34;: &amp;#34;ALL&amp;#34;} 6driver = webdriver.Chrome(desired_capabilities=caps) 78driver.</description></item><item><title>Pythonで外部プロセスを一時停止する</title><link>/post/python%E3%81%A7%E5%A4%96%E9%83%A8%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9%E3%82%92%E4%B8%80%E6%99%82%E5%81%9C%E6%AD%A2%E3%81%99%E3%82%8B/</link><pubDate>Sat, 24 Mar 2018 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7%E5%A4%96%E9%83%A8%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9%E3%82%92%E4%B8%80%E6%99%82%E5%81%9C%E6%AD%A2%E3%81%99%E3%82%8B/</guid><description>Pythonで外部プロセスを一時停止する要件できたのでメモ
+メモリ解析ツールとかでお世話になるのでスクリプトから使えたら便利かなって…
+ダメだったけどwatchdogでファイル監視しつつ変更検知したら消される前に横取りするスクリプトで使えないかなーと思って書いてた
+環境はWindows10 Python3です
+使うのはpsutilで以下のレポジトリ参照です
+https://github.com/giampaolo/psutil
+pipで入るので入れます
+1$ pip install psutil READMEに全部書いてあるので読んだ方が早いですが停止と再開のサンプルはこんな感じ
+プロセスIDが1234で3秒間停止させてみる
+1import time 23import psutil 45pid = 1234 6p = psutil.Process(pid) 7p.suspend() 8time.sleep(3) 9p.resume() これだと不便なので特定のプロセスを3秒だけ止める（ペイント）
+1import time 23import psutil 45pid = None 6for proc in psutil.process_iter(attrs=[&amp;#34;pid&amp;#34;, &amp;#34;name&amp;#34;]): 7if proc.info[&amp;#34;name&amp;#34;] == &amp;#34;mspaint.exe&amp;#34;: 8pid = proc.info[&amp;#34;pid&amp;#34;] 910if not pid: 11exit(1) 1213p = psutil.Process(pid) 14p.suspend() 15time.sleep(3) 16p.resume()</description></item><item><title>PythonでRAWデータをjpgに変換する</title><link>/post/python%E3%81%A7raw%E3%83%87%E3%83%BC%E3%82%BF%E3%82%92jpg%E3%81%AB%E5%A4%89%E6%8F%9B%E3%81%99%E3%82%8B/</link><pubDate>Sat, 17 Mar 2018 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7raw%E3%83%87%E3%83%BC%E3%82%BF%E3%82%92jpg%E3%81%AB%E5%A4%89%E6%8F%9B%E3%81%99%E3%82%8B/</guid><description>はじめに 記事にしたか忘れましたが半年程前にSonyのα6000を購入しました．
+撮影してるとRAWで書き出したファイルが積み重なっていくわけですがどうせなら一括処理とかできないかなと思ってrawpyを使って画像変換を試してみました．
+環境 Windows10 Python3 インストール 必要なライブラリを入れます．
+1$ pip install opencv-python numpy rawpy imageio lensfunpy 処理 画像の読み込み-&amp;gt;書き出し 1filename = &amp;#34;DSC00209.ARW&amp;#34; 2raw = rawpy.imread(filename) 3# raw -&amp;gt; numpy array 4rgb = raw.postprocess( 5bright=1.3, 6use_camera_wb=True, 7) 8imageio.imsave(&amp;#34;output.jpg&amp;#34;, rgb) レンズの歪みの補正 このままだと放射状歪み？をしているので補正します．
+補正は使用しているレンズごとに変わってくるので決め打ちかEXIFから取得した値で適宜変える必要があります．
+lensfunpyというライブラリが良い感じにしてくれるのでこれを使います．
+自分のカメラだと以下のようになります．
+1# レンズ補正用設定読み込み 2db = lensfunpy.Database() 3cam = db.find_cameras(&amp;#34;SONY&amp;#34;, &amp;#34;ILCE-6000&amp;#34;)[0] 4lens = db.find_lenses(cam, &amp;#34;SONY&amp;#34;, &amp;#34;E 16-50mm f/3.5-5.6 OSS&amp;#34;)[0] 探し方ですが
+1cam = db.find_cameras(&amp;#34;SONY&amp;#34;, None) 2for c in cam: 3print(c) とかすると良い感じに見えるので参考にしつつ探します．</description></item><item><title>Youtube LiveStreaming APIで配信のコメントを取得する</title><link>/post/youtube-livestreaming-api%E3%81%A7%E9%85%8D%E4%BF%A1%E3%81%AE%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</link><pubDate>Mon, 27 Nov 2017 00:00:00 +0000</pubDate><guid>/post/youtube-livestreaming-api%E3%81%A7%E9%85%8D%E4%BF%A1%E3%81%AE%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</guid><description>はじめに 読み上げをYoutubeの配信中にもやりたいなーと思ってコメントの取得方法調べたら結構面倒なのでメモ
+大まかな流れとしては
+配信先のURLからライブのIDを取得 -&amp;gt; ライブのIDからチャットのIDを取得 -&amp;gt; チャットIDを使ってチャットの取得
+といった感じ
+ライブのIDからチャットのIDを取得するAPIにOauth認証が必要だったりで結構面倒
+環境 Python3 APIキーを用意する この辺は他のAPIと同じなので他のサイトの方を見たほうがわかりやすいです．
+いつも通りGoogle Cloud Platformへ行き新しくプロジェクトを作成し，APIの中から「YouTube Data API v3」を有効にしておく．
+その上で認証情報 -&amp;gt; Oauth同意画面と進み必要な項目を埋めておく．（最低限サービス名だけ埋まっていれば良い）
+認証情報の画面まで戻り認証情報を作成 -&amp;gt; OauthクライアントIDを選択する．
+アプリケーションの種類は「その他」にして進める．名前は適当に決める．
+作成するとIDとシークレットが表示されるが後でダウンロードするjsonに入ってるのでOKをクリックして閉じる．
+OAuth 2.0 クライアント IDの部分に今回作成したキーがあるはずなのでこれを右端のアイコンからダウンロードしておく．
+今回はclient.jsonとしてダウンロードしておく．
+ライブラリを用意する httplib2とoauth2clientを使うのでこれらを入れておく．
+1$ pip install httplib2 oauth2client 認証する 一度目はお馴染みのOauth認証画面に飛ばされるが一度認証すると不要になるのでその辺込みでこんな感じ
+client.jsonがさっき落としてきた認証情報でcredentials.jsonが認証済みの情報．
+1import httplib2 2from oauth2client import tools 3from oauth2client import client 4from oauth2client.file import Storage 56credentials_path = &amp;#34;credentials.json&amp;#34; 7if os.path.exists(credentials_path): 8# 認証済み 9store = Storage(credentials_path) 10credentials = store.</description></item><item><title>DockerizedしたFlaskをサブディレクトリで運用する</title><link>/post/dockerized%E3%81%97%E3%81%9Fflask%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E9%81%8B%E7%94%A8%E3%81%99%E3%82%8B/</link><pubDate>Sun, 03 Sep 2017 00:00:00 +0000</pubDate><guid>/post/dockerized%E3%81%97%E3%81%9Fflask%E3%82%92%E3%82%B5%E3%83%96%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E3%81%A7%E9%81%8B%E7%94%A8%E3%81%99%E3%82%8B/</guid><description>はじめに DockerizedしたFlaskをサブディレクトリ等からリバースプロキシでアクセスするとリダイレクト周りでおかしくなって辛いことになります
+ベタに実行しないで大人しくApacheかNginxから動くイメージを作れば良いんですけど…
+設定 Nginx フロントのNginxからリバースプロキシするときに必要な情報を提供してあげます
+1location /hoge/fuga/service/ { 2proxy_set_header Host $host; 3proxy_set_header X-Real-IP $remote_addr; 4proxy_set_header X-Scheme $scheme; 5proxy_set_header X-Forwarded-Host $host; 6proxy_set_header X-Forwarded-Server $host; 7proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 8proxy_set_header X-Script-Name /hoge/fuga/service; 9proxy_pass http://192.168.xxx.xxx:8888; 10} Flask http://flask.pocoo.org/snippets/35/
+snippetsにあるコードを少し変更して使います
+先程もらってきた値を参照してFlask側で使用するようにします
+これで実行時にremoteの正しいIPを見るようになりURL周りの挙動も直ります
+挙動が怪しいときはprint(environ, &amp;quot;\n&amp;quot;, file=sys.stderr)辺りのコメントアウトを外してdocker log見れば直せます（適当
+reverseproxy.py
+1import sys 23class ReverseProxy(object): 4def __init__(self, app): 5self.app = app 67def __call__(self, environ, start_response): 8# print(environ, &amp;#34;\n&amp;#34;, file=sys.stderr) 910script_name = environ.get(&amp;#34;HTTP_X_SCRIPT_NAME&amp;#34;, &amp;#34;&amp;#34;) 11if script_name: 12environ[&amp;#34;SCRIPT_NAME&amp;#34;] = script_name 13path_info = environ[&amp;#34;PATH_INFO&amp;#34;] 14if path_info.</description></item><item><title>Discordでボイスロイドに読み上げさせる</title><link>/post/discord%E3%81%A7%E3%83%9C%E3%82%A4%E3%82%B9%E3%83%AD%E3%82%A4%E3%83%89%E3%81%AB%E8%AA%AD%E3%81%BF%E4%B8%8A%E3%81%92%E3%81%95%E3%81%9B%E3%82%8B/</link><pubDate>Sat, 22 Jul 2017 00:00:00 +0000</pubDate><guid>/post/discord%E3%81%A7%E3%83%9C%E3%82%A4%E3%82%B9%E3%83%AD%E3%82%A4%E3%83%89%E3%81%AB%E8%AA%AD%E3%81%BF%E4%B8%8A%E3%81%92%E3%81%95%E3%81%9B%E3%82%8B/</guid><description>はじめに Discordでボイスロイドに読み上げさせてみたくなった．
+のでとりあえずやってみる
+環境 Windows7 64bit Python3.5 64bit discord.py 0.15.1
+※3.4を使う場合は記法が異なる部分があるので前回の記事を見て下さい コード voiceroid voiceroidを喋らせる部分は前回のコードを利用します．
+discord Oauth2認証挟んでtokenを発行した方が良い気もしたけどとりあえずIDとPWで認証してAPIが使えるのでひとまずこれでいく
+1import discord 23from voiceroid import VoiceRoid 45vr = VoiceRoid(&amp;#34;VOICEROID＋ 結月ゆかり EX&amp;#34;) 6client = discord.Client() 78@client.event 9async def on_ready(): 10print(&amp;#34;-&amp;#34;*20) 11print(&amp;#34;ユーザー名：&amp;#34;, client.user.name) 12print(&amp;#34;ユーザーID：&amp;#34;, client.user.id) 13print(&amp;#34;-&amp;#34;*20) 1415@client.event 16async def on_message(message): 17print(&amp;#34;投稿者：&amp;#34;, message.author) 18print(&amp;#34;メッセージ：&amp;#34;, message.content) 19print(&amp;#34;サーバー：&amp;#34;, message.server) 20print(&amp;#34;チャンネル：&amp;#34;, message.channel) 2122vr.say(message.content) 2324client.run(&amp;#34;メールアドレス&amp;#34;, &amp;#34;パスワード&amp;#34;) ところでvoiceroid2でUIが統合されてるっぽいから多分これ使えないですね
+買いたいけどぼちぼちするので難しい</description></item><item><title>iCloudにスクリプトから画像をアップロードする</title><link>/post/icloud%E3%81%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%8B%E3%82%89%E7%94%BB%E5%83%8F%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/</link><pubDate>Tue, 30 May 2017 00:00:00 +0000</pubDate><guid>/post/icloud%E3%81%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%8B%E3%82%89%E7%94%BB%E5%83%8F%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/</guid><description>はじめに AppleTVにはスクリーンセーバーにアルバムの写真を流す機能がある
+今回は複数人でこのアルバムに写真を追加してAppleTVのスクリーンセーバーに流したくない？という話になったけどアルバムに追加するにはWeb経由（iCloud）からかApple端末のアルバムの共有機能を使って写真を追加するしかない
+そこでスクリプトから写真をアップロードできるようにできたらSlackやらで専用チャンネルを用意しそこに写真をあげてもらうことで簡単に写真の追加が出来るんじゃないかな？と思ったのでトライしたメモ
+余談ですがpngの画像のアップロードはまた事情が異なるみたいです
+また、肝心のアルバムへの追加はできていません
+iCloud 写真の追加、アルバムの編集等の操作はWebから行うことができる
+https://www.icloud.com/
+今回はこれを利用してみることにしたがAPIなどは非公開のようなので適当にちょろめのDeveloperToolを使って解析した内容を元にスクリプトを書いてみた
+余談ですがこちらのライブラリ使うとiCloudの他の情報が欲しい場合は便利です
+写真のダウンロードしか出来なかったので今回は使用しませんでした
+https://github.com/picklepete/pyicloud
+ログイン 必要なヘッダを用意してIDとパスワードをなげるとAPIの一覧が入ったjsonが返ってくる
+1import json 2import requests 34s = requests.Session() 56data = s.post( 7&amp;#34;https://setup.icloud.com/setup/ws/1/login&amp;#34;, 8headers={ 9&amp;#34;Origin&amp;#34;: &amp;#34;https://www.icloud.com&amp;#34; 10}, 11data=json.dumps({ 12&amp;#34;apple_id&amp;#34;: &amp;#34;めーるあどれす&amp;#34;, 13&amp;#34;password&amp;#34;: &amp;#34;ぱすわーど&amp;#34; 14}) 15).json() 写真のアップロード アップロード先のAPIはjsonの中に入っているのでまずURLを抽出します
+1url = data[&amp;#34;webservices&amp;#34;][&amp;#34;uploadimagews&amp;#34;][&amp;#34;url&amp;#34;] 必要な各種パラメータを用意します
+1params = { 2&amp;#34;lastModDate&amp;#34;: 1397975488598, 3&amp;#34;timezoneOffset&amp;#34;: -540, 4&amp;#34;filename&amp;#34;: &amp;#34;test.jpg&amp;#34;, 5&amp;#34;dsid&amp;#34;: data[&amp;#34;dsInfo&amp;#34;][&amp;#34;dsid&amp;#34;] 6} 最後に用意したデータでAPIを叩きます
+1p = s.post(url + &amp;#34;/upload&amp;#34;, 2params=params, 3headers={ 4&amp;#34;Origin&amp;#34;: &amp;#34;https://www.icloud.com&amp;#34; 5}, 6data=open(&amp;#34;test.jpg&amp;#34;, &amp;#34;rb&amp;#34;).read() 7) 89print(p.text) アルバムに写真を追加する ここでコケました</description></item><item><title>Jupyter Notebook上でCanvasを利用して画像を生成する</title><link>/post/jupyter-notebook%E4%B8%8A%E3%81%A7canvas%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E7%94%9F%E6%88%90%E3%81%99%E3%82%8B/</link><pubDate>Sun, 14 May 2017 00:00:00 +0000</pubDate><guid>/post/jupyter-notebook%E4%B8%8A%E3%81%A7canvas%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E7%94%9F%E6%88%90%E3%81%99%E3%82%8B/</guid><description>はじめに Jupyter Notebook上でCanvasを使って画像を作って読み込めない？と相談を受けて調べたら
+1from IPython.core.display import HTML を使うとHTMLをセルの結果表示部分に表示させることが出来るのでトライしたメモ
+成果物はgistにあげてるのでご興味があればどうぞ
+js_canvas.ipynb Python3でテストしましたが依存してそうなのはByteIOくらいなのでStringIOに置き直せば2系でも動くと思います
+キャンバスを生成する 先程のモジュールを使って要素を生成します
+ブラウザで動かせるものならなんであれ使えるはずなのでjqueryで動作するもっと高機能なものを持ってきても良いと思います
+1&amp;lt;canvas id=&amp;#34;canvas&amp;#34; height=&amp;#34;300px&amp;#34; width=&amp;#34;300px&amp;#34; style=&amp;#34;border: 1px solid;&amp;#34;&amp;gt;&amp;lt;/canvas&amp;gt; 2&amp;lt;p&amp;gt;&amp;lt;input id=&amp;#34;variable&amp;#34; type=&amp;#34;text&amp;#34; placeholder=&amp;#34;Input python variable name&amp;#34; size=&amp;#34;30&amp;#34;&amp;gt;&amp;lt;/p&amp;gt; 3&amp;lt;p&amp;gt; 4&amp;lt;button id=&amp;#34;clear&amp;#34;&amp;gt;Clear&amp;lt;/button&amp;gt; 5&amp;lt;button id=&amp;#34;submit&amp;#34;&amp;gt;Save image to variable&amp;lt;/button&amp;gt; 6&amp;lt;/p&amp;gt; 固定の変数名に書き出す場合は不要ですがPython側の変数名を指定するインプットボックスとキャンバスをクリアするボタンを用意して置きます
+キャンバスにお絵かきできるようにする 良い感じにJSを書いてお絵かきできるようにします
+この辺のデバッグは普通にHTML書いてやった方が幸せな気がします
+1var config = { 2&amp;#34;linesize&amp;#34;: 7, 3&amp;#34;linecolor&amp;#34;: &amp;#34;#000000&amp;#34; 4} 56var mouse = { 7&amp;#34;X&amp;#34;: null, 8&amp;#34;Y&amp;#34;: null, 9} 1011var canvas = document.getElementById(&amp;#34;canvas&amp;#34;); 12var ctx = canvas.getContext(&amp;#34;2d&amp;#34;); 13canvas.</description></item><item><title>Pythonで他プロセスのメモリを読む</title><link>/post/python%E3%81%A7%E4%BB%96%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9%E3%81%AE%E3%83%A1%E3%83%A2%E3%83%AA%E3%82%92%E8%AA%AD%E3%82%80/</link><pubDate>Fri, 24 Feb 2017 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7%E4%BB%96%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9%E3%81%AE%E3%83%A1%E3%83%A2%E3%83%AA%E3%82%92%E8%AA%AD%E3%82%80/</guid><description>はじめに Windows上のPythonで他のプロセスのメモリの内容を読んで見る
+使うのはWin32apiで他の言語同様調べれば良い
+今回はなんとなく斑鳩のスコアを読み出してみる
+プレイ時間と同時に取れたらグラフ化したりしてモチベに繋がらないかなって思ったので
+予めメモリの必要な番地は適当に調べておきます
+今回はうさみみで調べておきました
+読み方 プロセスを取ってハンドルを取得したらReadProcessMemoryを呼ぶだけ
+読み出すだけならこんな感じにシンプルに書ける
+1from ctypes import windll, create_string_buffer 2import time 3import sys 45pid = 11111 67OpenProcess = windll.kernel32.OpenProcess 8ReadProcessMemory = windll.kernel32.ReadProcessMemory 9CloseHandle = windll.kernel32.CloseHandle 10PROCESS_ALL_ACCESS = 0x1F0FFF 11# ツールで見た時の番地 12address = 0x09412838 13size = 64 14buf = create_string_buffer(size) 1516processHandle = OpenProcess(PROCESS_ALL_ACCESS, False, pid) 17if ReadProcessMemory(processHandle, address, buf, size, None): 18print buf.raw 斑鳩のスコアを読む 今回の目的の斑鳩はうさみみで調べると0x09412838からリトルエンディアンで入ってるみたいなのでひたすら読み出して変換して表示するだけ
+こんな感じでスコアが取れる
+1# coding:utf-8 2from ctypes import windll, create_string_buffer 3import time 4import sys 5import struct 6import win32gui 78def getProcessId(classname): 9result = [] 1011def window(hwnd, a): 12# if win32gui.</description></item><item><title>Chainer1.19.0インストール</title><link>/post/chainer1.19.0%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</link><pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate><guid>/post/chainer1.19.0%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</guid><description>はじめに 1.15.0→1.19.0へ更新した
+環境 Windows 7 64bit GTX 1070 Python3.5 64bit Microsoft Visual Studio 14 Cuda 8.0 cudnn 8.0 v5.1 基本的に前回の記事と同一のもの
+作業 1$ python3 -m pip install -U chainer して終わりかと思ったら
+1cupy\cuda\cudnn.cpp(3650): error C3861: &amp;#39;cudnnAddTensor_v3&amp;#39;: identifier not found 2cupy\cuda\cudnn.cpp(4307): error C3861: &amp;#39;cudnnGetFilterNdDescriptor_v5&amp;#39;: identifier not found 3cupy\cuda\cudnn.cpp(5056): error C3861: &amp;#39;cudnnSetConvolutionNdDescriptor_v3&amp;#39;: identifier not found 4cupy\cuda\cudnn.cpp(6839): error C3861: &amp;#39;cudnnConvolutionBackwardFilter_v3&amp;#39;: identifier not found 5cupy\cuda\cudnn.cpp(7729): error C3861: &amp;#39;cudnnConvolutionBackwardData_v3&amp;#39;: identifier not found 6error: command &amp;#39;VSのインストールパス\\cl.exe&amp;#39; failed with exit status 2 公式レポジトリのv1.</description></item><item><title>ScapyをWindowsにインストールする</title><link>/post/scapy%E3%82%92windows%E3%81%AB%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B/</link><pubDate>Sun, 11 Dec 2016 00:00:00 +0000</pubDate><guid>/post/scapy%E3%82%92windows%E3%81%AB%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E3%81%99%E3%82%8B/</guid><description>はじめに ScapyをWindowsにインストールする記事を調べると色々面倒な手順が書いてあるが最近は楽
+ただそのまま使えないので便宜上使えるようにする
+sniff使おうとしたら出たので他の機能を使うなら出ないかもしれない
+インストール クローンするかリリースから最新のものを落とす
+今回はv2.3.3を使います
+解凍したら
+1$ python setup.py install して終わり
+修正 scapy/arch/windows/compatibility.pyを編集する
+冒頭に
+1from scapy.arch.pcapdnet import PcapTimeoutElapsed を追加する
+185行目をコメントアウト
+1if offline is None: 2# log_runtime.info(&amp;#39;Sniffing on %s&amp;#39; % conf.iface) 3if L2socket is None: 4L2socket = conf.L2listen 終わり
+エラー global name 'log_runtime' is not defined とりあえず必要ないので当該行をコメントアウトして対応
+global name 'PcapTimeoutElapsed' is not defined import文を追加して対応</description></item><item><title>DiscordでBotをつくる</title><link>/post/discord%E3%81%A7bot%E3%82%92%E3%81%A4%E3%81%8F%E3%82%8B/</link><pubDate>Sun, 04 Dec 2016 00:00:00 +0000</pubDate><guid>/post/discord%E3%81%A7bot%E3%82%92%E3%81%A4%E3%81%8F%E3%82%8B/</guid><description>はじめに DiscordのAPIを利用してオウム返しをするBotを作成してみます.
+環境 Windows7 64bit Python3.5 64bit 環境構築 discord用のライブラリがあるのでそれを利用します.
+1$ python3 -m pip install discord コード こんな感じのコードでメッセージを受信してオウム返し出来ます.
+asyncioの関係で3.4と3.5では文法が変わります.
+こんな感じ
+@asyncio.coroutine → async
+yield from → await
+まぁドキュメントに書いてあるんですけどね
+1import discord 23client = discord.Client() 45@client.event 6async def on_ready(): 7print(&amp;#34;-&amp;#34;*20) 8print(&amp;#34;ユーザー名：&amp;#34;, client.user.name) 9print(&amp;#34;ユーザーID：&amp;#34;, client.user.id) 10print(&amp;#34;-&amp;#34;*20) 1112@client.event 13async def on_message(message): 14if not message.author.id == client.user.id: 15await client.send_message(message.channel, message.content) 16print(&amp;#34;投稿しました&amp;#34;) 1718print(&amp;#34;投稿者：&amp;#34;, message.author) 19print(&amp;#34;メッセージ：&amp;#34;, message.content) 2021client.run(os.environ[&amp;#34;DISCORD_API_TOKEN&amp;#34;]) 結構簡単に出来るのが良いですね
+追記　2018-07-12
+検索で来る人が結構いるみたいなのでTOKENの取り方とBotをサーバーに参加させる方法
+DISCORD_API_TOKENは以下のURLから発行できます
+https://discordapp.com/developers/applications/me
+ここから新しいアプリ -&amp;gt; アプリを作成からアプリを作ります</description></item><item><title>SWFバイナリのパース</title><link>/post/swf%E3%83%90%E3%82%A4%E3%83%8A%E3%83%AA%E3%81%AE%E3%83%91%E3%83%BC%E3%82%B9/</link><pubDate>Sun, 27 Nov 2016 00:00:00 +0000</pubDate><guid>/post/swf%E3%83%90%E3%82%A4%E3%83%8A%E3%83%AA%E3%81%AE%E3%83%91%E3%83%BC%E3%82%B9/</guid><description>はじめに 今までバイナリに触れる機会がなかったのでとりあえずPythonでバイナリを読めるようになろうかなって思った
+とりあえず仕様が公開されてるSWFの画像・音声（動画）をバイナリから引っこ抜くところまでを目標にする
+ちなみにバイナリについてバイナリエディタで開いてほーん…ってなるくらいしか知らない
+仕様書 Adobeがファイルフォーマットの仕様書を公開しているので基本はこれを読みながらやる
+http://wwwimages.adobe.com/content/dam/Adobe/en/devnet/swf/pdf/swf-file-format-spec.pdf
+読み方としては15ページのInteger Typesは先に目を通してから27ページのSWFのフォーマットについて読むと良い
+それ以外は読み飛ばして必要に応じて読めば良い
+レポジトリ とりあえずの作業スペース
+https://github.com/skyblue3350/swf
+作業 最低限のバイナリの読み込み とりあえずバイナリエディタみたいに16進数で表示してみる
+structモジュールとかあるけど使わないで書いてみる
+1fp = open(&amp;#34;test.swf&amp;#34;, &amp;#34;rb&amp;#34;) 2while True: 3b = fp.read(1) 4if b == &amp;#34;&amp;#34;: break 5print hex(ord(b)) 6fp.close() 1バイトずつ読み出してordで10進数にしてそれをhexで16進数に変換する
+ヘッダの読み込み ヘッダは以下で構成される
+Signature
+圧縮されているかどうか Version
+このSWFファイルのバージョン情報 FileLength
+このSWFファイルの大きさ FrameSize
+フレームの縦横の大きさ FrameRate
+FPS FrameCount
+フレームの数 1個ずつ読んでいく
+Signature Sinatureは3バイトで表される
+1バイト目が圧縮 2バイト目（W）と3バイト目（S）は固定（仕様書27ページ参照）
+1バイト目がFの時 未圧縮 Cの時 zlib圧縮 Zの時 LZMA圧縮
+UI8が8bit→8*3で24ビット→8ビット1バイトで3バイトなのでreadで3バイト読み出す
+1fp = open(&amp;#34;test.swf&amp;#34;, &amp;#34;rb&amp;#34;) 23signature = fp.read(3) 4print &amp;#34;Signature&amp;#34;, signature 5fp.</description></item><item><title>pythonのslackclientでmessage buttonを作る</title><link>/post/python%E3%81%AEslackclient%E3%81%A7message-button%E3%82%92%E4%BD%9C%E3%82%8B/</link><pubDate>Fri, 11 Nov 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%AEslackclient%E3%81%A7message-button%E3%82%92%E4%BD%9C%E3%82%8B/</guid><description>はじめに チームで共有出来るTodoリスト的なものを目指してMessage Buttonの出し方を調べてみた
+結構Jsonで直にAPIを叩く記事は見つかるけどslackclientを使ったものは見かけないのでメモ
+slackclient slackapi/python-slackclient PythonからslackのAPIが叩けるライブラリ
+予めアクセストークンを用意しておく必要がある
+投稿 Basic Usage Sending a message 1from slackclient import SlackClient 23slack_token = os.environ[&amp;#34;SLACK_API_TOKEN&amp;#34;] 4sc = SlackClient(slack_token) 56sc.api_call( 7&amp;#34;chat.postMessage&amp;#34;, 8channel=&amp;#34;#python&amp;#34;, 9text=&amp;#34;Hello from Python! :tada:&amp;#34; 10) シンプル
+ボタン付き投稿 ボタンの作り方自体は
+Making messages more interactive with buttons に書いてある　これを参考に作る
+1import json 2from slackclient import SlackClient 34slack_token = os.environ[&amp;#34;SLACK_API_TOKEN&amp;#34;] 5sc = SlackClient(slack_token) 67attachments = [{ 8&amp;#34;fallback&amp;#34;: &amp;#34;&amp;#34;, 9&amp;#34;text&amp;#34;: u&amp;#34;ボタンの説明&amp;#34;, 10&amp;#34;callback_id&amp;#34;: &amp;#34;&amp;#34;, 11&amp;#34;color&amp;#34;: &amp;#34;#008000&amp;#34;, 12&amp;#34;attachment_type&amp;#34;: &amp;#34;default&amp;#34;, 13&amp;#34;actions&amp;#34;: [ 14{ 15&amp;#34;name&amp;#34;: &amp;#34;done&amp;#34;, 16&amp;#34;text&amp;#34;: &amp;#34;ボタン1&amp;#34;, 17&amp;#34;type&amp;#34;: &amp;#34;button&amp;#34; 18} 19] 20}] 2122sd.</description></item><item><title>PyQtでサブウィンドウを作る</title><link>/post/pyqt%E3%81%A7%E3%82%B5%E3%83%96%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%82%92%E4%BD%9C%E3%82%8B/</link><pubDate>Thu, 15 Sep 2016 00:00:00 +0000</pubDate><guid>/post/pyqt%E3%81%A7%E3%82%B5%E3%83%96%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%82%92%E4%BD%9C%E3%82%8B/</guid><description>はじめに いつも検索しちゃうのでメモ
+QtDesignerで作ったオリジナルなダイアログを出したい時の話
+PyQt5で書いてるけど4でも大体同じ
+ウィンドウを作る 予め2つのウィンドウを作成します
+メインの画面はMainWindowを使って作り
+サブの画面はFormを使って作成します
+コンバート いつも通りpyファイルを生成する
+1$ pyuic5 mainwindow.ui &amp;gt; ui_mainwindow.py 2$ pyuic5 subwindow.ui &amp;gt; ui_subwindow.py コード 1# -*- coding: utf-8 -*- 23import sys 4from PyQt5 import QtWidgets 567class SubWindow(QtWidgets.QDialog): 8def __init__(self, parent=None): 9QtWidgets.QDialog.__init__(self, parent) 10self.ui = Ui_SubWindow() 11self.ui.setupUi(self) 1213def show(self): 14self.exec_() 1516class MainWindow(QtWidgets.QMainWindow): 17def __init__(self, parent=None): 18QtWidgets.QMainWindow.__init__(self, parent) 19self.ui = Ui_MainWindow() 20self.ui.setupUi(self) 2122self.sub = SubWindow(self) 2324def openDialog(self): 25self.sub.show() 2627if __name__ == &amp;#34;__main__&amp;#34;: 28app = QtWidgets.QApplication(sys.argv) 29myapp = MainWindow() 30myapp.</description></item><item><title>Pythonで動画情報を取得する</title><link>/post/python%E3%81%A7%E5%8B%95%E7%94%BB%E6%83%85%E5%A0%B1%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</link><pubDate>Thu, 15 Sep 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7%E5%8B%95%E7%94%BB%E6%83%85%E5%A0%B1%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B/</guid><description>はじめに Pythonで動画情報の取得をしたかった時に色々モジュール試してみたけど大抵どれも裏でffmpegかffprobe使っててPythonで完結してるものを見つけられなかったのでメモがてら使い方を書いておく
+hachoir ファイルのメタデータの取得・編集が出来る
+対応ファイルフォーマットは以下参考
+http://hachoir3.readthedocs.io/metadata.html
+Python2 インストール pipで入れる
+幾つかにパッケージが分かれてて既に厄介　今回はhachoir_metadataを使うので
+1$ pip install hachoir_core hachoir_metadata hachoir_parser 使い方 1# -*- coding: utf-8 -*- 23from hachoir_parser import createParser 4from hachoir_metadata import extractMetadata 56filepath = u&amp;#34;ファイルパス&amp;#34; 7parser = createParser(filepath) 89meta = extractMetadata(parser) 10print meta.exportPlaintext() 11print meta.get(&amp;#34;duration&amp;#34;) 再生時間はtimedeltaで返ってくる
+素直に添字で取れれば良いのにgetメソッド使わないといけなかったりで微妙に使いづらい
+meta.dict[&amp;quot;_Metadata__data&amp;quot;].keys()
+とか使えば一応添字の一覧が見れる　なぜkeysメソッドとかがないのか
+Githubで探すとexportPlaintextの結果を「:」でsplitしたりしててみんな困ったんだろうなって
+ドキュメント見ても良い感じのやり方を見つけられなかったのでぼちぼち元のコードを見つつ・・・
+Python3 インストール pipでは入らないのでソースコードを直接落として使う
+レポジトリは
+https://bitbucket.org/haypo/hachoir3/overview
+にあるのでcloneするかファイル→ダウンロードで最新のコードを落としてくる
+必要なのはhachoirディレクトリだけ今回は試すだけなのでそれだけディレクトリにコピーした
+使い方 1from hachoir.metadata import extractMetadata 2from hachoir.parser import createParser 34filepath = u&amp;#34;ファイルパス&amp;#34; 5parser = createParser(filepath) 6meta = extractMetadata(parser) 7duration = meta.</description></item><item><title>Python3.5でexe作る話</title><link>/post/python3.5%E3%81%A7exe%E4%BD%9C%E3%82%8B%E8%A9%B1/</link><pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate><guid>/post/python3.5%E3%81%A7exe%E4%BD%9C%E3%82%8B%E8%A9%B1/</guid><description>はじめに 2系の時はpy2exeに頼りっきりだった
+インストーラー欲しい時だけ他のものに浮気してたけどzipオプション有効にすれば一塊になって配布しやすかったので
+3.5から事情が変わったらしいので少しトラブりました故にメモ
+記事書いてる時点での話なので日が経ってる様なら状況が変わってるかもしれません
+Python3.5 64bit Windows7 64bit 環境でのお話
+py2exe 今までお世話になってた
+2系の時はインストーラーを落としてきてインストールした気がする
+3系からpipで入るみたいですが3.4までしかサポートしてません
+ソース1：Is there a py2exe version that's compatible with python 3.5?
+3.5から内部仕様が変わって動かないとのこと
+run-py3.5-win-amd64.exeに変更したら動くかと思ったけどそんなに甘くなかった
+cx_Freeze pipから入れると
+1error: file &amp;#39;~\build\cx-freeze\cxfreeze-postinstall&amp;#39; does not exist. pipから入るのはバージョンが古い（4.3.4）です　公式サイトに騙されました
+ソース2：Missed cxfreeze-postinstall script in source distribution
+新しいものなら大丈夫なのでレポジトリをクローンしてきてそこからインストールします
+もしくはソース1で紹介されてるwhlを落として使えば良いと思います
+https://github.com/sekrause/cx_Freeze-Wheels</description></item><item><title>PyQt5でメインウィンドウの表示</title><link>/post/pyqt5%E3%81%A7%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E8%A1%A8%E7%A4%BA/</link><pubDate>Thu, 08 Sep 2016 00:00:00 +0000</pubDate><guid>/post/pyqt5%E3%81%A7%E3%83%A1%E3%82%A4%E3%83%B3%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%81%AE%E8%A1%A8%E7%A4%BA/</guid><description>はじめに 今更ながらにPyQt5に移行したのでメモ
+PyQt4から少し変わってるのでそのままだと動かない
+インストール pipからできようになった
+1$ pip3 install pyqt5 2または 3$ python3 -m pip install pyqt5 とかでインストール出来る
+～2016年9月8日現在の話～
+QtDesignerが入らないっぽいので現状Qtの公式のインストーラーからツールだけ選択して落としたQtCreatorを使うしかなさ気？
+Toolだけ選択しても2GB近くあるので心証が宜しくない
+QtDesignerと同じ画面を呼ぶにはファイル→ファイル/プロジェクトの新規作成→ファイルとクラスからQt→Qt Designer フォームを選択でいつもの慣れ親しんだ画面が出てくる
+waybackとかで見る限り5.6まではexeで配布されてたので入ってるっぽいですが5.7（7月末）から変わった？
+どこかからQtDesignerだけ落とすかと思ったけど見当たらず
+詳細分かる方教えて下さい
+～終わり～
+ウィンドウ作成 いつも通りQtDesignerを使って作成する（今回はPyQt4の時に使ってたQtDesignerで作業した）
+作るのはMainWindowの方
+uiファイル読み込む派の人はサンプル探せばあるのでそちらで
+pyファイルに変換するにはpyuic5を使う
+1$ where pyuic5 2インストールパス/Scripts/pyuic5 3$ pyuic5 hoge.ui &amp;gt; ui.py スクリプトを書く パッケージ名がPyQt4→PyQt5に変わったのと
+QtGuiから呼んでたものがQtWidgetsから呼ぶようになった感じ
+1# -*- coding: utf-8 -*- 23import sys 4from PyQt5 import QtWidgets 5from ui import Ui_MainWindow 678class Application(QtWidgets.QMainWindow): 9def __init__(self, parent=None): 10QtWidgets.QMainWindow.__init__(self, parent) 11self.ui = Ui_MainWindow() 12self.ui.setupUi(self) 1314if __name__ == &amp;#34;__main__&amp;#34;: 15app = QtWidgets.</description></item><item><title>GTX1070のChainerセットアップ</title><link>/post/gtx1070%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</link><pubDate>Tue, 09 Aug 2016 00:00:00 +0000</pubDate><guid>/post/gtx1070%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</guid><description>はじめに Windows7 64bit GPU GTX1070 Python2 64bit 環境でのChainerのGPU処理を有効にしてインストールする方法のメモ
+ちゃんと学習するところまでやってなかったので大幅に加筆修正した（2016/09/06）
+メモ nvcc fatal : Value 'sm_61' is not defined for option 'gpu-architecture'
+CUDA7.5がGTX1080をサポートしてない GTX1070も同様っぽい
+8.0からサポートっぽいです
+ソースは下記
+When the CUDA Toolkit will support GTX1070 Graphics Card???
+train_mnist on Chainer 1.10 + Ubuntu 16.04 + Cuda V7.5 公式を確認すると
+Out of box performance improvements on Tesla P100, supports GeForce GTX 1080
+とのこと
+インストール Python 今回は2系の64bitを使う
+既に32bitが居座ってたのでpython64.batみたいなファイルを置いて誤魔化して使ってるんですが良い解決方法ご存知の方いたら教えて下さい</description></item><item><title>Raspberry Pi2でサーボを動かす</title><link>/post/raspberry-pi2%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%9C%E3%82%92%E5%8B%95%E3%81%8B%E3%81%99/</link><pubDate>Sun, 24 Jul 2016 00:00:00 +0000</pubDate><guid>/post/raspberry-pi2%E3%81%A7%E3%82%B5%E3%83%BC%E3%83%9C%E3%82%92%E5%8B%95%E3%81%8B%E3%81%99/</guid><description>はじめに Raspberry Pi2でサーボを動かします
+このカメラマウントを動かすので制御するサーボは2つになります 1つを制御する記事は多かったけど2つのサーボを制御する記事があんま見つかりませんでした ちなみにこのカメラマウントレビューにもある通りサーボ付属のホーンが使えず少し加工が必要です 大した手間じゃないですが若干面倒
+必要なもの Raspberry Pi2 SG90*2 カメラマウント 作業 組み立て カメラマウントは説明書もないっぽいので適当にググって先人の知恵をお借りして頑張って組み立てます
+配線 この辺とかが実際のRaspberryPi2の画像とかあって見やすいです
+Pin Numbering - Raspberry Pi 2 Model B GPIOの配置はこんな感じ
+https://www.raspberrypi.org/documentation/usage/gpio/README.md
+サーボ側のデータは秋月電子で公開されてるPDFを読む
+SG90 9 g Micro Servo
+2ページ目に線の説明がある　実物だと色が見づらいけど束ねられてる線の真ん中が赤色 ここを参考にすると下記の通り
+オレンジ
+PWM レッド
+Vcc（+） ブラウン
+Ground（-） やることとしては5VとGNDに繋いでPWMをクロック違うところに繋ぐだけ
+GPIO図のPWM0とかPWM1とかがクロックが違うのでうっかりPWM0とPWM0に繋ぐと2つのサーボが同じ挙動して焦る（実際にやった）
+実際の配置はこんな感じ
+サーボ1
+オレンジ　→　PIN32
+レッド　→　PIN2
+ブラウン　→　PIN30 サーボ2
+オレンジ　→　PIN33
+レッド　→　PIN4</description></item><item><title>PythonでFalconを試す</title><link>/post/python%E3%81%A7falcon%E3%82%92%E8%A9%A6%E3%81%99/</link><pubDate>Sat, 16 Jul 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7falcon%E3%82%92%E8%A9%A6%E3%81%99/</guid><description>Falcon 公式サイト Falcon is a very fast, very minimal Python web framework for building microservices, app backends, and higher-level frameworks.
+というわけで高速で最小なWebフレームワークです
+とりあえず実際にApache上で動かすところまで試したのでメモだけ
+Windows上でテストしてUbuntuのApacheで動かしてみた
+こちらのQiitaの記事が参考になります　というかほぼ丸パクリです
+Falconで光速のWeb APIサーバーを構築する インストール 1$ pip install falcon おわり
+テスト 公式のサンプルに参考記事の
+1if __name__ == &amp;#34;__main__&amp;#34;: 2from wsgiref import simple_server 3httpd = simple_server.make_server(&amp;#34;127.0.0.1&amp;#34;, 8000, app) 4httpd.serve_forever() の部分を借りてきて実行してlocalhost:8000/quoteを見て問題なければOK
+Apache上で動かす とりあえずこんな感じの想定で
+設置場所：/var/falcon/fuga
+URL：http://serverurl/falcon/fuga
+さっきのコードをmain.pyって名前にして/var/falcon/fuga/main.pyに配置
+1$ sudo apt-get install apache2 libapache2-mod-wsgi 2$ sudo vi /etc/apache2/sites-available/000-default.</description></item><item><title>PythonでMalmoを試してみた Windows編</title><link>/post/python%E3%81%A7malmo%E3%82%92%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F-windows%E7%B7%A8/</link><pubDate>Fri, 15 Jul 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%A7malmo%E3%82%92%E8%A9%A6%E3%81%97%E3%81%A6%E3%81%BF%E3%81%9F-windows%E7%B7%A8/</guid><description>Malmoとは マインクラフトで人工知能を育てる「Project Malmo」、MicrosoftがGitHubで一般公開
+Microsoftが3月に「Project AIX」としてプライベートプレビューを開始した「Minecraft（マインクラフト）」で人工知能（AI）を訓練するプロジェクト「Project Malmo」を一般公開した。GitHubからmodとコードをダウンロードできる。
+ITMediaニュース
+というわけでこれをチュートリアルのテストコードの動作確認まで試します
+環境 Win7 64bit Python2.7 32bit64bit環境が必要でした
+マインクラフトは普通に購入したのインストールしてあったけど不要っぽい？ 環境構築 基本的には公式のドキュメント通り
+https://github.com/Microsoft/malmo
+各プラットフォーム向けの実行環境をダウンロードする 下記から各プラットフォーム向けのものをダウンロードする
+https://github.com/Microsoft/malmo/releases
+各プラットフォームで必要な環境の構築
+Windowsの場合は下記を参考に構築する
+https://github.com/Microsoft/malmo/blob/master/doc/install_windows.md
+7-zip インストールするだけ
+FFMPEG 公式から64bit版のexeをダウンロードしてからC:\FFMEPG\ffmpeg.exeとか適当なところに配置してパスを通す
+1&amp;gt; ffmpeg -version 2&amp;#39;ffmpeg&amp;#39; は、内部コマンドまたは外部コマンド、 3操作可能なプログラムまたはバッチ ファイルとして認識されていません。 パスが通ってないとこうなる
+コマンド・プロンプト起動時に読み込まれるので環境変数の編集前に開いてたなら開き直すこと
+1&amp;gt; ffmpeg -version 2ffmpeg version N-80129-ga1953d4 Copyright (c) 2000-2016 the FFmpeg developers 3built with gcc 5.3.0 (GCC) 4... って感じなら問題なし
+CodeSynthesis http://www.codesynthesis.com/products/xsd/download.xhtml
+ここからxsd-4.0.msiをダウンロード・インストール
+インストール時のオプションは特に変更しなかった
+パスを通すってオプションだけチェック入ってるか確認しておくこと
+Python 公式から落としてパスを通すだけ
+※64bit版をインストールして下さい
+その他メモ 1ImportError: DLL load failed: %1 は有効なWin32 アプリケーションではありません 32bit版のPythonから起動しているとimport MalmoPythonの時点で上記エラーが出ます</description></item><item><title>SL4Aを使ってAndroidとArduinoでシリアル通信をする</title><link>/post/sl4a%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6android%E3%81%A8arduino%E3%81%A7%E3%82%B7%E3%83%AA%E3%82%A2%E3%83%AB%E9%80%9A%E4%BF%A1%E3%82%92%E3%81%99%E3%82%8B/</link><pubDate>Wed, 13 Jul 2016 00:00:00 +0000</pubDate><guid>/post/sl4a%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6android%E3%81%A8arduino%E3%81%A7%E3%82%B7%E3%83%AA%E3%82%A2%E3%83%AB%E9%80%9A%E4%BF%A1%E3%82%92%E3%81%99%E3%82%8B/</guid><description>はじめに AndroidとArduinoでPythonを使ってシリアル通信をしたかった
+Android上でPythonを実行するアプリはいくつかあるけどQPythonのserialモジュールでは失敗した
+QRコードでコード読み込めたりして便利だったけど残念
+SL4A Android上でスクリプト言語で開発できるソフト、RubyとかPythonとかその他諸々に対応してる
+インストール SL4Aのインストール 昔はここで配布してたけどGoogle Codeはサービスを終了してるので拾えない
+こちらの方が使えるapkファイルをビルドされているので対応するアーキテクチャのものをダウンロードしてAndroid端末にインストールしておく
+https://github.com/kuri65536/sl4a/releases
+SL4Aで使うPythonのインストール アプリ内からインストールすることもできるがこの時インストールされるのはPython2.6です
+特に理由がなければ先ほどの方がPython2.7のapkファイルをビルドされてるので借りてくるのをオススメ
+https://github.com/kuri65536/python-for-android/releases
+Pythonモジュールのインストール 今回の記事で必要なものはないですが地味に引っかかるところなのでメモ代わりに
+eggファイルでのインストールしか対応してないのでzipとか投げてもダメです
+eggで配布されてなかったらeggファイルを予め作っておく必要があります
+1$ python setup.py bdist_egg dist/hoge.eggと出力されるのでそれを端末にコピってインストールします（Python2.6使用時）
+2.7を使用する場合は逆に.eggだとダメなのでこれを.zipに名前を変更して使用します
+テスト 適当にハローワールドとか書いて試す
+サンプルスクリプトが入ってるはずなのでその辺で試す
+Androidとシリアル通信をする https://github.com/kuri65536/sl4a/blob/master/android/USBHostSerialFacade/samplescripts/testusbserial.py
+基本的にはこれの通りです
+Arduinoの場合は47行目のloads後のリストの最後がArduinoになるのでこのコードを書き換えて使用します
+1# -*- encoding=utf-8 -*- 2import android as _android 3import json 4import time 56android = _android.Android() 7l = android.usbserialGetDeviceList().result.items() 8print l 910h = json.loads(l[0][1]) 11ret = android.usbserialConnect(h[-1]) 12print ret 1314uuid = json.loads(ret.result)[-1] 15print uuid 16time.sleep(5)#すぐ通信を開始すると失敗する 17while True: 18time.sleep(1) 19#読み込み 20print android.</description></item><item><title>Pyro4の使い方</title><link>/post/pyro4%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9/</link><pubDate>Tue, 12 Jul 2016 00:00:00 +0000</pubDate><guid>/post/pyro4%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9/</guid><description>Pyro4 異なるアーキテクチャ間でリモートでメソッドコールできるライブラリ
+あんまり日本語の情報がないのでメモ程度に書いておく
+日本語の情報はほとんどないから諦めて英語で探す
+https://pythonhosted.org/Pyro4/
+公式のGithubのExampleとか参考にする
+https://github.com/delmic/Pyro4/
+インストール 1$ pip install Pyro4 Pyroだと古いバージョンが入るので注意がいる
+ネームサーバーなし ネームサーバーがあると裏で勝手に名前解決してくれるので楽になるけどなしでもできる
+基本的に自分がクライアント側になるはず
+ホスト側 1import Pyro4 23def getHoge(): 4return &amp;#34;test&amp;#34; 56Pyro4.Daemon.serveSimple( 7{getHoge:&amp;#39;HogeMethod&amp;#39;}, 8host=&amp;#34;自分のIP&amp;#34;, 9port=9090,#適当なポート 10ns=False, 11) クライアント側 1import Pyro4 23name = &amp;#34;HogeMethod&amp;#34; 4ip = &amp;#34;相手のIP&amp;#34; 5port = 9090#適当なポート　合わせる 6s = &amp;#34;PYRO:%s@%s:%s&amp;#34; % (name, ip, port) 7remote = Pyro4.Proxy(s) 8remote.getHoge() みたいな感じで呼べる
+ネームサーバあり ネームサーバ 用意されてるものを使う場合は
+1$ python -m Pyro4.naming 随時オプションをつける
+WindowsだとCtrl+Cとかで抜けられないので不便
+自分でコードを書くなら
+1import Pyro4 2import socket 34host = socket.</description></item><item><title>Flaskでブログっぽいもの作ってみた</title><link>/post/flask%E3%81%A7%E3%83%96%E3%83%AD%E3%82%B0%E3%81%A3%E3%81%BD%E3%81%84%E3%82%82%E3%81%AE%E4%BD%9C%E3%81%A3%E3%81%A6%E3%81%BF%E3%81%9F/</link><pubDate>Mon, 11 Jul 2016 00:00:00 +0000</pubDate><guid>/post/flask%E3%81%A7%E3%83%96%E3%83%AD%E3%82%B0%E3%81%A3%E3%81%BD%E3%81%84%E3%82%82%E3%81%AE%E4%BD%9C%E3%81%A3%E3%81%A6%E3%81%BF%E3%81%9F/</guid><description>貧弱な自鯖だとWordPressの表示に時間が掛かるので自作してみた
+ソースコードはそのうち公開するかもしれない
+アカウントの認証はTwitterアカウント
+記事はマークダウンでGFMライクに書ける感じにしてみた
+その他いろいろ拡張機能入れてみたので便利になった
+RSSも一応書いてみたけどまともに機能してるのかわからん
+ソーシャルボタンも結構適当だけど全体を見れば良い感じに仕上がったのでしばらく使ってみることにする
+貧者なうちのサーバーではWordPressより軽快だし
+コメント機能はつけられんことはないけど需要うすそうなので実装するのをやめた</description></item><item><title>Ubuntu16.04のPython3でOpenCV3を使う</title><link>/post/ubuntu16.04%E3%81%AEpython3%E3%81%A7opencv3%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Sun, 10 Jul 2016 00:00:00 +0000</pubDate><guid>/post/ubuntu16.04%E3%81%AEpython3%E3%81%A7opencv3%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>OpenCVについて 画像処理するライブラリ
+2系入れたいならディストリビューションごとにパッケージあるからそっち使いましょう
+3系はパッケージが現時点（2016/06/24）でないから自分でビルドする
+3.1.0しか検証してないけど多分ほかでも問題ないはず
+Windowsは某所でwhl配布されてるからそれを使うと楽
+ダウンロード Sourceforgeからソースを落とせみたいな記事がたくさんあるけど罠です
+makeでコケるのでGithubからcloneすると良いです
+1$ cd ~ 2$ git clone https://github.com/Itseez/opencv.git 3$ cd opencv 4$ git tag 5タグ一覧が出るから使いたいバージョンを探す 6$ git checkout 3.1.0 7ダメだったらcloneしたやつそのまま使えばいけるかもね（今回の記事ではcloneしたのをそのまま使用） 2016年11月24日 追記
+バニラな環境でやったらハマったのでメモ
+1-D PYTHON_EXECUTABLE=$(which python) $(which python) は単にパス探してるだけなので
+バニラだとpythonじゃなくてpython3で探さないとダメだった
+ビルド 1$ pwd 2/home/hoge/opencv 3$ mkdir build 4$ cd build 5$ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D WITH_FFMPEG=OFF -D BUILD_opencv_python2=ON -D BUILD_opencv_python3=ON -D PYTHON_EXECUTABLE=$(which python) .. 6ログの途中にちゃんとPythonが対象に含まれてるか確認しておく 7これはpyenvでの結果だけどノーマルのPythonでもこんな感じで含まれてるはず 8-- Python 2: 9-- Interpreter: /usr/local/pyenv/shims/python (ver 3.</description></item><item><title>Pythonから結月ゆかりを喋らせる</title><link>/post/python%E3%81%8B%E3%82%89%E7%B5%90%E6%9C%88%E3%82%86%E3%81%8B%E3%82%8A%E3%82%92%E5%96%8B%E3%82%89%E3%81%9B%E3%82%8B/</link><pubDate>Fri, 08 Jul 2016 00:00:00 +0000</pubDate><guid>/post/python%E3%81%8B%E3%82%89%E7%B5%90%E6%9C%88%E3%82%86%E3%81%8B%E3%82%8A%E3%82%92%E5%96%8B%E3%82%89%E3%81%9B%E3%82%8B/</guid><description>この前結月ゆかりさんをお迎えしてしまいました　ほぼノリです
+昨日の夜ポチってしまった pic.twitter.com/AKEhQQ9VVE
+&amp;mdash; スカイ (@skyblue3350) March 10, 2016 というわけでこれをPythonから操作して喋らせます
+他の言語だと誰かしら書いてるようですがPythonだとどうも見つからないので自分で書きました
+コード自体はこんな感じ
+あとは
+1voiceroid.say(u&amp;#34;文字列&amp;#34;) とかで喋ってくれる
+コード見ればわかるけどgetVolueとかメソッド実装したけど動かない
+音程とかのキーボックスにキー入力までは送れるけどsubmitイベント？とかが発生しないらしく値が反映されない
+そのうち解決して実装しよう
+んでここまで出来たので試しにSlackにストリーミング接続して来たチャット通知を片っ端から喋らせるスクリプト書いてみたけど結構面白かった
+今のところは通知用の用途での使用を考えてるのでTwitterのリプライとかSlackの通知とか読み上げてくれるBot的なものを作成しようかなぁ</description></item></channel></rss>

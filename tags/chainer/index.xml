@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Chainer on メモ帳</title><link>/tags/chainer/</link><description>Recent content in Chainer on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 29 Jan 2017 00:00:00 +0000</lastBuildDate><atom:link href="/tags/chainer/index.xml" rel="self" type="application/rss+xml"/><item><title>TAITAN XのChainerセットアップ</title><link>/post/taitan-x%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</link><pubDate>Sun, 29 Jan 2017 00:00:00 +0000</pubDate><guid>/post/taitan-x%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</guid><description>はじめに UbuntuにTAITAN Xを載せた学習環境の構築メモ
+何故かシステムが起動しなくなったりしたのでその辺の対処も含めて
+環境 特筆すべきところだけ
+OS
+Ubuntu 14.04.05 Server GPU
+GPU TAITAN X（pascal） インストール OS インストール 特に問題なく終わる
+NVIDIAドライバインストール http://www.nvidia.co.jp/Download/index.aspx?lang=jp
+公式サイトから適宜環境にあったドライバを選択する
+製品のタイプ
+GeForce 製品シリーズ
+GeForce 10 series 製品ファミリー
+NVIDIA TAITAN X (pascal) オペレーティングシステム
+Linux 64bit 言語
+日本語 検索 -&amp;gt; ダウンロードと進み同意ボタンが出て来る画面で同意ボタンのURLをコピーしておく
+インストール先で
+1# wget コピーURL でインストーラーをダウンロードする
+1# chmod +x NVIDIA-Linux-x86_64-xxx.xx.run 2# ./NVIDIA-Linux-x86_64-xxx.xx.run あとは通常通りのインストールと同様
+インストール終了後にnvidia-smiして確認する
+1# nvidia-smi 2+-----------------------------------------------------------------------------+ 3| NVIDIA-SMI 375.26 Driver Version: 375.26 | 4|-------------------------------+----------------------+----------------------+ 5| GPU Name Persistence-M| Bus-Id Disp.</description></item><item><title>Chainer1.19.0インストール</title><link>/post/chainer1.19.0%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</link><pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate><guid>/post/chainer1.19.0%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB/</guid><description>はじめに 1.15.0→1.19.0へ更新した
+環境 Windows 7 64bit GTX 1070 Python3.5 64bit Microsoft Visual Studio 14 Cuda 8.0 cudnn 8.0 v5.1 基本的に前回の記事と同一のもの
+作業 1$ python3 -m pip install -U chainer して終わりかと思ったら
+1cupy\cuda\cudnn.cpp(3650): error C3861: &amp;#39;cudnnAddTensor_v3&amp;#39;: identifier not found 2cupy\cuda\cudnn.cpp(4307): error C3861: &amp;#39;cudnnGetFilterNdDescriptor_v5&amp;#39;: identifier not found 3cupy\cuda\cudnn.cpp(5056): error C3861: &amp;#39;cudnnSetConvolutionNdDescriptor_v3&amp;#39;: identifier not found 4cupy\cuda\cudnn.cpp(6839): error C3861: &amp;#39;cudnnConvolutionBackwardFilter_v3&amp;#39;: identifier not found 5cupy\cuda\cudnn.cpp(7729): error C3861: &amp;#39;cudnnConvolutionBackwardData_v3&amp;#39;: identifier not found 6error: command &amp;#39;VSのインストールパス\\cl.exe&amp;#39; failed with exit status 2 公式レポジトリのv1.</description></item><item><title>GTX1070のChainerセットアップ</title><link>/post/gtx1070%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</link><pubDate>Tue, 09 Aug 2016 00:00:00 +0000</pubDate><guid>/post/gtx1070%E3%81%AEchainer%E3%82%BB%E3%83%83%E3%83%88%E3%82%A2%E3%83%83%E3%83%97/</guid><description>はじめに Windows7 64bit GPU GTX1070 Python2 64bit 環境でのChainerのGPU処理を有効にしてインストールする方法のメモ
+ちゃんと学習するところまでやってなかったので大幅に加筆修正した（2016/09/06）
+メモ nvcc fatal : Value 'sm_61' is not defined for option 'gpu-architecture'
+CUDA7.5がGTX1080をサポートしてない GTX1070も同様っぽい
+8.0からサポートっぽいです
+ソースは下記
+When the CUDA Toolkit will support GTX1070 Graphics Card???
+train_mnist on Chainer 1.10 + Ubuntu 16.04 + Cuda V7.5 公式を確認すると
+Out of box performance improvements on Tesla P100, supports GeForce GTX 1080
+とのこと
+インストール Python 今回は2系の64bitを使う
+既に32bitが居座ってたのでpython64.batみたいなファイルを置いて誤魔化して使ってるんですが良い解決方法ご存知の方いたら教えて下さい</description></item></channel></rss>

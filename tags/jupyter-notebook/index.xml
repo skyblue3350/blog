@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jupyter NoteBook on メモ帳</title><link>/tags/jupyter-notebook/</link><description>Recent content in Jupyter NoteBook on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Wed, 11 Apr 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/jupyter-notebook/index.xml" rel="self" type="application/rss+xml"/><item><title>jupyterhubあれこれ</title><link>/post/jupyterhub%E3%81%82%E3%82%8C%E3%81%93%E3%82%8C/</link><pubDate>Wed, 11 Apr 2018 00:00:00 +0000</pubDate><guid>/post/jupyterhub%E3%81%82%E3%82%8C%E3%81%93%E3%82%8C/</guid><description>はじめに jupyterをLDAP認証と組み合わせて複数人で使えるようにしたいなと前から思ってたのをテストしたのでメモ
+jupyterを複数人で利用するにはjupyterhubを利用すれば良いらしい
+ただjupyterhubはjupyter notebookを複数人で利用できるようにするものでjupyterlabを複数人で利用するにはjupyterlab hubを利用しないといけないらしい
+正直ドキュメント読んでも？？？状態になってしまったのでそれぞれ環境を作る
+以下の2つの組み合わせでテストしました
+jupyter notebook + jupyterhub （+ ldapauthenticator） jupyter lab + jupyterhub （+ ldapauthenticator） 環境はUbuntu16.04です
+Docker上でイメージ作った際のコマンドを普通の環境用の書き直してるので素直に動かないかもしれないのでその時はrootで作業して下さい…
+jupyterhub 環境構築 必要なパッケージをそれぞれ揃えます．
+1$ sudo apt-get install -y curl python3 npm nodejs-legacy 2$ curl -kL https://bootstrap.pypa.io/get-pip.py | sudo python3 3$ sudo npm install -g configurable-http-proxy pipでjupyter notebookとhubをインストールします
+1$ sudo pip3 install jupyterhub 2$ sudo pip3 install --upgrade notebook デフォルトの認証ではシステムにいるユーザーが利用されます
+説明用にデモユーザーを作ります
+1$ sudo useradd testuser 2$ sudo passwd testuser 3Enter new UNIX password:[適当に入力] 4Retype new UNIX password:[適当に入力] 5$ sudo mkdir /home/testuser 6$ sudo chown testuser /home/testuser 実行 ここまで来たら実行します</description></item><item><title>jupyterがNFS上で動作しない</title><link>/post/jupyter%E3%81%8Cnfs%E4%B8%8A%E3%81%A7%E5%8B%95%E4%BD%9C%E3%81%97%E3%81%AA%E3%81%84/</link><pubDate>Wed, 11 Apr 2018 00:00:00 +0000</pubDate><guid>/post/jupyter%E3%81%8Cnfs%E4%B8%8A%E3%81%A7%E5%8B%95%E4%BD%9C%E3%81%97%E3%81%AA%E3%81%84/</guid><description>はじめに 一つ前の記事でjupyterlabを複数人で使える環境を作ったわけですがいざ本番環境と同等の環境でテストしたら動きませんでした．
+開発環境と違うのはホームディレクトリをNFSマウントしているかどうかだったのでその辺を調べたらjupyterやipythonがデータの管理にsqliteを使っていることが影響しているそうです．
+sqliteはNFS上では利用できないためうんともすんとも言わない状況になるとのこと．
+追記　2018年5月4日
+最近この辺の課題にリトライして気づいたのですがNFSのマウント時のバージョンが3以下だと発生するようです
+バージョン4でテストしたところ以下の設定はなくとも動作することを確認しました
+追記　終わり
+症状 ちなみに実行するとセルが実行中の状態
+[*] print(&amp;quot;hoge&amp;quot;)
+の状態で止まって5分くらい待たされます
+5分くらい待つとログに
+1[IPKernelApp] ERROR | Failed to open SQLite history /home/sky/.ipython/profile_default/history.sqlite (database is locked). 2[IPKernelApp] ERROR | History file was moved to /home/sky/.ipython/profile_default/history-corrupt.sqlite and a new file created. と表示され記事冒頭の理由が発覚します．
+対策 jupyterで生成されるファイルとipythonで生成されるファイルをそれぞれNFSボリュームの外に生成するようにすれば解決します
+前者のファイルはjupyte_notebook_config.pyに以下の設定を作ることでメモリ上に作成して誤魔化します
+jupyter ファイルパス書けば良いので適当にどっか指定した方が多分良いです
+システム全体に適用したいので/etcに置いて全ユーザーに適用させます
+1$ sudo cat &amp;lt;&amp;lt; EOS &amp;gt; /etc/jupyter/jupyter_notebook_config.py 2c.HistoryManager.hist_file = &amp;#39;:memory:&amp;#39; 3c.NotebookNotary.db_file = &amp;#39;:memory:&amp;#39; 4EOS ipython 後者は環境変数IPYTHONDIRが定義されていない時にホームディレクトリにファイルを作成するのでこれを指定して解決します．
+1$ sudo echo &amp;#34;IPYTHONDIR=/tmp/jupyter/\${USER}&amp;#34; &amp;gt;&amp;gt; /etc/environment 2$ sudo mkdir /tmp/jupyter 3$ sudo chmod 777 /tmp/jupyter とかしておきます</description></item><item><title>cygwinにjupyterlabを入れる</title><link>/post/cygwin%E3%81%ABjupyterlab%E3%82%92%E5%85%A5%E3%82%8C%E3%82%8B/</link><pubDate>Mon, 02 Apr 2018 00:00:00 +0000</pubDate><guid>/post/cygwin%E3%81%ABjupyterlab%E3%82%92%E5%85%A5%E3%82%8C%E3%82%8B/</guid><description>表題の通りです
+詰まったのでメモです
+素直に入れるとpyzmqのインストールでコケます
+1$ pip install jupyterlab 2bundled/zeromq/src/signaler.cpp:62:25: 致命的エラー: sys/eventfd.h: No such file or directory 3#include &amp;lt;sys/eventfd.h&amp;gt; 4^ 5コンパイルを停止しました。 6error: command &amp;#39;gcc&amp;#39; failed with exit status 1 なのでソースから入れます
+1$ wget https://github.com/zeromq/libzmq/releases/download/v4.2.1/zeromq-4.2.1.tar.gz 2$ tar -zxvf zeromq-4.2.1.tar.gz 3$ cd zeromq-4.2.1 4$ ./configure 5$ make 6$ make install ここまで入れたら再度入れ直します
+1$ pip install jupyterlab 入ってので終わりだけど一応動作確認
+1$ jupyter lab --no-browser 2[I 09:13:01.480 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).</description></item><item><title>Jupyter Notebook上でCanvasを利用して画像を生成する</title><link>/post/jupyter-notebook%E4%B8%8A%E3%81%A7canvas%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E7%94%9F%E6%88%90%E3%81%99%E3%82%8B/</link><pubDate>Sun, 14 May 2017 00:00:00 +0000</pubDate><guid>/post/jupyter-notebook%E4%B8%8A%E3%81%A7canvas%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E7%94%9F%E6%88%90%E3%81%99%E3%82%8B/</guid><description>はじめに Jupyter Notebook上でCanvasを使って画像を作って読み込めない？と相談を受けて調べたら
+1from IPython.core.display import HTML を使うとHTMLをセルの結果表示部分に表示させることが出来るのでトライしたメモ
+成果物はgistにあげてるのでご興味があればどうぞ
+js_canvas.ipynb Python3でテストしましたが依存してそうなのはByteIOくらいなのでStringIOに置き直せば2系でも動くと思います
+キャンバスを生成する 先程のモジュールを使って要素を生成します
+ブラウザで動かせるものならなんであれ使えるはずなのでjqueryで動作するもっと高機能なものを持ってきても良いと思います
+1&amp;lt;canvas id=&amp;#34;canvas&amp;#34; height=&amp;#34;300px&amp;#34; width=&amp;#34;300px&amp;#34; style=&amp;#34;border: 1px solid;&amp;#34;&amp;gt;&amp;lt;/canvas&amp;gt; 2&amp;lt;p&amp;gt;&amp;lt;input id=&amp;#34;variable&amp;#34; type=&amp;#34;text&amp;#34; placeholder=&amp;#34;Input python variable name&amp;#34; size=&amp;#34;30&amp;#34;&amp;gt;&amp;lt;/p&amp;gt; 3&amp;lt;p&amp;gt; 4&amp;lt;button id=&amp;#34;clear&amp;#34;&amp;gt;Clear&amp;lt;/button&amp;gt; 5&amp;lt;button id=&amp;#34;submit&amp;#34;&amp;gt;Save image to variable&amp;lt;/button&amp;gt; 6&amp;lt;/p&amp;gt; 固定の変数名に書き出す場合は不要ですがPython側の変数名を指定するインプットボックスとキャンバスをクリアするボタンを用意して置きます
+キャンバスにお絵かきできるようにする 良い感じにJSを書いてお絵かきできるようにします
+この辺のデバッグは普通にHTML書いてやった方が幸せな気がします
+1var config = { 2&amp;#34;linesize&amp;#34;: 7, 3&amp;#34;linecolor&amp;#34;: &amp;#34;#000000&amp;#34; 4} 56var mouse = { 7&amp;#34;X&amp;#34;: null, 8&amp;#34;Y&amp;#34;: null, 9} 1011var canvas = document.getElementById(&amp;#34;canvas&amp;#34;); 12var ctx = canvas.getContext(&amp;#34;2d&amp;#34;); 13canvas.</description></item></channel></rss>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>git on メモ帳</title><link>/tags/git/</link><description>Recent content in git on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Thu, 14 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/git/index.xml" rel="self" type="application/rss+xml"/><item><title>自分向けgitメモ</title><link>/post/%E8%87%AA%E5%88%86%E5%90%91%E3%81%91git%E3%83%A1%E3%83%A2/</link><pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate><guid>/post/%E8%87%AA%E5%88%86%E5%90%91%E3%81%91git%E3%83%A1%E3%83%A2/</guid><description>はじめに いろいろ毎回やらかすのでメモしておく
+ある程度まとまったらマークダウンメモの方に移動する
+clone 編 ユーザー情報の確認と設定 1$ git config --global --list 2user.email=hoge@fuga.com 3user.name=hoge このままコミットするとこのユーザー情報でコミットされる
+違うユーザー情報で使用してるレポジトリとかでやらかすと恥ずかしい
+cloneしたら意識して設定するようにする
+1$ cd プロジェクト 2$ git config user.name hogehoge 3$ git config user.email hogehoge@fuga.com 4$ git config --list 5user.email=hogehoge@fuga.com 6user.name=hogehoge commit 編 コミットメッセージ間違えた Winのコマンド・プロンプトでコミットメッセージ書いてると時々盛大にミスする
+1$ git commit --amend してから一番上の行を編集する　文字化けしてても別に気にしなくて良い
+編集後にきちんとプレビューで表示されてればおっけー
+空コミットしたい 最初は空コミットした方が気兼ねなく操作できるようになるので良いと思う
+1$ git commit --allow-empty -m &amp;#34;sky commit&amp;#34; みたいな感じ
+一時的にファイルを避難したい 空コミットし忘れた時とかその他諸々で一時的にファイルを元の状態に戻す
+1$ git stash save して一時的に避難
+いろいろ作業が終わって戻す時
+1$ git stash list 2リストが出る 3$ git stash apply stash@{0} あとはコミットするなりお好きに</description></item></channel></rss>

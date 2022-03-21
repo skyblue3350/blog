@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Java on メモ帳</title><link>/tags/java/</link><description>Recent content in Java on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Tue, 15 Nov 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/java/index.xml" rel="self" type="application/rss+xml"/><item><title>MongoDBでオートインクリメントする</title><link>/post/mongodb%E3%81%A7%E3%82%AA%E3%83%BC%E3%83%88%E3%82%A4%E3%83%B3%E3%82%AF%E3%83%AA%E3%83%A1%E3%83%B3%E3%83%88%E3%81%99%E3%82%8B/</link><pubDate>Tue, 15 Nov 2016 00:00:00 +0000</pubDate><guid>/post/mongodb%E3%81%A7%E3%82%AA%E3%83%BC%E3%83%88%E3%82%A4%E3%83%B3%E3%82%AF%E3%83%AA%E3%83%A1%E3%83%B3%E3%83%88%E3%81%99%E3%82%8B/</guid><description>はじめに MongoDBの_idにはオリジナルなObjectIDがついてるけどこれをMySQLとかでいうようなオートインクリメントさせたい時の話
+調べたら公式にドキュメントがあった
+Create an Auto-Incrementing Sequence Field のでこれをJavaで使ってみる
+ライブラリの追加 3.3.0のドライバを追加しておく
+1&amp;lt;dependency&amp;gt; 2&amp;lt;groupId&amp;gt;org.mongodb&amp;lt;/groupId&amp;gt; 3&amp;lt;artifactId&amp;gt;mongo-java-driver&amp;lt;/artifactId&amp;gt; 4&amp;lt;version&amp;gt;3.3.0&amp;lt;/version&amp;gt; 5&amp;lt;/dependency&amp;gt; countersコレクションの作成 参考ドキュメントの1番相当
+コンソールからmongoDBにアクセスしてコレクションを予め作成しておく
+1$ mongo 2&amp;gt; db.counters.insert({_id: &amp;#34;userid&amp;#34;, seq: 0}) 3WriteResult({ &amp;#34;nInserted&amp;#34; : 1 }) getNextSequenceの作成 参考ドキュメントの2番相当
+1public Object getNextSequence(DB db){ 2DBCollection counter = db.getCollection(&amp;#34;counters&amp;#34;); 3BasicDBObject find = new BasicDBObject(); 4find.put(&amp;#34;_id&amp;#34;, &amp;#34;userid&amp;#34;); 5BasicDBObject update = new BasicDBObject(); 6update.put(&amp;#34;$inc&amp;#34;, new BasicDBObject(&amp;#34;seq&amp;#34;, 1)); 7DBObject obj = counter.findAndModify(find, update); 89return obj.get(&amp;#34;seq&amp;#34;); 10} 利用する 利用する時は上で作った関数を呼んでその結果を当該ドキュメントの_idとして扱うだけで良い
+もしカウンタの値をリセットする時はdropして最初のinsertをもう1回すれば良い</description></item><item><title>JAX-RSでJsonを返す</title><link>/post/jax-rs%E3%81%A7json%E3%82%92%E8%BF%94%E3%81%99/</link><pubDate>Mon, 14 Nov 2016 00:00:00 +0000</pubDate><guid>/post/jax-rs%E3%81%A7json%E3%82%92%E8%BF%94%E3%81%99/</guid><description>はじめに JAX-RSで
+1@Path(&amp;#34;test&amp;#34;) 2@GET 3public Map hoge(){ 4Map&amp;lt;String, String&amp;gt; data = new HashMap&amp;lt;&amp;gt;(); 5data.put(&amp;#34;key&amp;#34;, &amp;#34;value&amp;#34;); 6return data; 7} とかしたい時の話
+依存性の追加 jersey-serverとjersey-jsonを追加する
+追加してからメニューの実行-&amp;gt;プロジェクトをビルド（F11）する
+pom.xmlに追記するか依存性の追加から
+1&amp;lt;dependency&amp;gt; 2&amp;lt;groupId&amp;gt;com.sun.jersey&amp;lt;/groupId&amp;gt; 3&amp;lt;artifactId&amp;gt;jersey-server&amp;lt;/artifactId&amp;gt; 4&amp;lt;version&amp;gt;1.8&amp;lt;/version&amp;gt; 5&amp;lt;/dependency&amp;gt; 6&amp;lt;dependency&amp;gt; 7&amp;lt;groupId&amp;gt;com.sun.jersey&amp;lt;/groupId&amp;gt; 8&amp;lt;artifactId&amp;gt;jersey-json&amp;lt;/artifactId&amp;gt; 9&amp;lt;version&amp;gt;1.8&amp;lt;/version&amp;gt; 10&amp;lt;/dependency&amp;gt; コード 冒頭と同じだけど
+WebApplication.java
+1import javax.ws.rs.ApplicationPath; 2import javax.ws.rs.core.Application; 34@ApplicationPath(&amp;#34;/api&amp;#34;) 5public class WebApplication extends Application { 6} Hoge.java
+1@Path(&amp;#34;/&amp;#34;) 2public class Hoge { 3@Path(&amp;#34;test&amp;#34;) 4@GET 5public Map hoge(){ 6Map&amp;lt;String, String&amp;gt; data = new HashMap&amp;lt;&amp;gt;(); 7data.put(&amp;#34;key&amp;#34;, &amp;#34;value&amp;#34;); 8return data; 9} 10} してテスト　おわり</description></item><item><title>JAX-RSを試す</title><link>/post/jax-rs%E3%82%92%E8%A9%A6%E3%81%99/</link><pubDate>Sun, 16 Oct 2016 00:00:00 +0000</pubDate><guid>/post/jax-rs%E3%82%92%E8%A9%A6%E3%81%99/</guid><description>はじめに NetBeansでJAX-RSを動かすところまでメモ
+環境 NetBeans 8.2 EE版
+https://netbeans.org/downloads/?pagelang=ja GlassFish 4.1.1
+上のに付属してるやつ プロジェクト作成 プロジェクトを選択
+ファイル→新規プロジェクト→Maven→Webアプリケーション 名前と場所
+設定値は適当に決める
+この記事の値は全部デフォルト値で作成した時の話 設定
+サーバー：GlassFish Server4.1.1
+JavaEEバージョン：JavaEE 7 Web 終了押してプロジェクトを作成する
+実装 左側のプロジェクトツリーのソース・パッケージの欄にある先ほど作成したパッケージ名の上で右クリック
+新規→Javaクラス
+WebApplicationとかで作成
+中身を
+1package com.mycompany.mavenproject1; 2import javax.ws.rs.ApplicationPath; 3import javax.ws.rs.core.Application; 45@ApplicationPath(&amp;#34;/&amp;#34;) 6public class MyWebApplication extends Application { 7} 適当にもう1個クラスを作成する
+1package com.mycompany.mavenproject1; 23import javax.ws.rs.GET; 4import javax.ws.rs.Path; 56@Path(&amp;#34;test&amp;#34;) 7public class Rest { 8@GET 9public String helloWorld() { 10return &amp;#34;Hello World!!&amp;#34;; 11} 12} 実行 ここまで作ったら保存して実行する</description></item><item><title>JSON-libを使う</title><link>/post/json-lib%E3%82%92%E4%BD%BF%E3%81%86/</link><pubDate>Sun, 16 Oct 2016 00:00:00 +0000</pubDate><guid>/post/json-lib%E3%82%92%E4%BD%BF%E3%81%86/</guid><description>はじめに 前回と同じく使い方で困ったのでメモ
+環境 NetBeans 8.2
+というか1個前の記事JAX-RSを試すと同じ インストール プロジェクトツリーのプロジェクトファイル→pom.xmlを開く
+以下を追加する
+1&amp;lt;dependencies&amp;gt; 2// ここから 3&amp;lt;dependency&amp;gt; 4&amp;lt;groupId&amp;gt;net.sf.json-lib&amp;lt;/groupId&amp;gt; 5&amp;lt;artifactId&amp;gt;json-lib&amp;lt;/artifactId&amp;gt; 6&amp;lt;version&amp;gt;2.4&amp;lt;/version&amp;gt; 7&amp;lt;classifier&amp;gt;jdk15&amp;lt;/classifier&amp;gt; 8&amp;lt;/dependency&amp;gt; 9// ここまで 10&amp;lt;dependency&amp;gt; 11&amp;lt;groupId&amp;gt;javax&amp;lt;/groupId&amp;gt; 12&amp;lt;artifactId&amp;gt;javaee-web-api&amp;lt;/artifactId&amp;gt; 13&amp;lt;version&amp;gt;7.0&amp;lt;/version&amp;gt; 14&amp;lt;scope&amp;gt;provided&amp;lt;/scope&amp;gt; 15&amp;lt;/dependency&amp;gt; 16&amp;lt;/dependencies&amp;gt; 記述元はここからJson Lib » 2.4
+ただこれだけだと動かない
+1&amp;lt;classifier&amp;gt;jdk15&amp;lt;/classifier&amp;gt; が要る
+JSON-lib Frequently Asked Questions How do I configure Json-lib as a dependency with Maven2 ?
+As Json-lib comes in two flavors (for the time being) you'll have to add to your dependency declaration, like the following:</description></item></channel></rss>

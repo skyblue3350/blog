@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CentOS on メモ帳</title><link>/tags/centos/</link><description>Recent content in CentOS on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Wed, 29 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/centos/index.xml" rel="self" type="application/rss+xml"/><item><title>modprobeに頼らずinsmodする</title><link>/post/modprobe%E3%81%AB%E9%A0%BC%E3%82%89%E3%81%9Ainsmod%E3%81%99%E3%82%8B/</link><pubDate>Wed, 29 Aug 2018 00:00:00 +0000</pubDate><guid>/post/modprobe%E3%81%AB%E9%A0%BC%E3%82%89%E3%81%9Ainsmod%E3%81%99%E3%82%8B/</guid><description>だいぶ前に書いた記事 [未解決]yum updateしたら立ち上がらなくなった話 の後日談です．
+このマシン実は未だにレスキューモードで強引に動かしています．
+今回ようやく移行機材が揃ったので移行先へファイルを移すためにNFSマウントしようとしたらモジュールが有効になってないので
+1mount.nfs4: No such device と出てマウント出来ませんでした．
+mountコマンドに-vをつけて実行した感じnfsv4が有効になってないようなのでこれを手動で有効にします．
+普通の場合なら単に
+1$ modprobe nfs として終わりですがレスキューモードだとmodules.depが読めないからか使えないので人力でやります．
+1$ insmod /lib/modules/3.10.0-327.22.2.el7.x86_64/kernel/fs/nfs/nfsv4.ko 2Unknown symbol in module と出て前提モジュールがないので調べます．
+1$ cat /lib/modules/3.10.0-327.22.2.el7.x86_64/modules.dep | grep nfsv4.ko: 2kernel/fs/nfs/nfsv4.ko: kernel/net/dns_resolver/dns_resolver.ko kernel/fs/nfs/nfs.ko kernel/fs/lockd/lockd.ko kernel/fs/nfs_common/grace.ko kernel/net/sunrpc/sunrpc.ko kernel/fs/fscache/fscache.ko で必要なものを1個ずつinsmodして繰り返していきます．
+今回はdns_resolver.ko以外は
+1$ insmod /lib/modules/3.10.0-327.22.2.el7.x86_64/kernel/fs/nfs/nfs.ko 2File exists と出て有効化してあったので
+1$ insmod /lib/modules/3.10.0-327.22.2.el7.x86_64/kernel/net/dns_resolver/dns_resolver.ko 2$ insmod /lib/modules/3.10.0-327.22.2.el7.x86_64/kernel/fs/nfs/nfsv4.ko して終わりでした．
+一応確認して無事NFSマウントできました．
+1$ cat /proc/filesystems | grep nfs 2nodev nfsd 3nodev nfs 4nodev nfs4 5$ mount -t 192.168.xxx.xxx:/path/to/dir /mnt/path/to/dir -v</description></item><item><title>デバイスの再スキャンをする</title><link>/post/%E3%83%87%E3%83%90%E3%82%A4%E3%82%B9%E3%81%AE%E5%86%8D%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E3%82%92%E3%81%99%E3%82%8B/</link><pubDate>Thu, 26 Jul 2018 00:00:00 +0000</pubDate><guid>/post/%E3%83%87%E3%83%90%E3%82%A4%E3%82%B9%E3%81%AE%E5%86%8D%E3%82%B9%E3%82%AD%E3%83%A3%E3%83%B3%E3%82%92%E3%81%99%E3%82%8B/</guid><description>はじめに ホストマシンをリブートしないでHDDを認識させたい時の話
+UbuntuとCentOSでマシンを落とさずにHDDを接続したい時があって困ったのでメモ
+基本的にはrescan-scsi-busを使う方が楽で良い
+使わない場合は手動でファイルに書き込んで再スキャンをするが接続ポートがわからないと片っ端から試さないといけないため面倒
+共通 scsitoolsをインストールした上でrescan-scsi-busコマンドを実行する
+1$ sudo apt-get install scsitools 2or 3$ sudo yum install scsitools 4$ rescan-scsi-bus Ubuntu 1$ sudo echo &amp;#39;1&amp;#39; &amp;gt; /sys/class/scsi_disk/0\:0\:0\:0/device/rescan CentOS 1$ sudo echo &amp;#34;1&amp;#34; &amp;gt; /sys/class/fc_host/hostn/issue_lip 2or 3$ sudo echo &amp;#34;- - -&amp;#34; &amp;gt; /sys/class/scsi_host/hostn/scan 参考記事 再起動なしで新規デバイスをスキャンさせる方法 How do I rescan drives I've expanded?</description></item><item><title>[未解決]yum updateしたら立ち上がらなくなった話</title><link>/post/yum-update%E3%81%97%E3%81%9F%E3%82%89%E7%AB%8B%E3%81%A1%E4%B8%8A%E3%81%8C%E3%82%89%E3%81%AA%E3%81%8F%E3%81%AA%E3%81%A3%E3%81%9F%E8%A9%B1/</link><pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate><guid>/post/yum-update%E3%81%97%E3%81%9F%E3%82%89%E7%AB%8B%E3%81%A1%E4%B8%8A%E3%81%8C%E3%82%89%E3%81%AA%E3%81%8F%E3%81%AA%E3%81%A3%E3%81%9F%E8%A9%B1/</guid><description>はじめに 未解決なので経緯と作業ログだけのメモです
+経緯 年始にサーバーのアップデートを行ったところ起動しなくなった
+BIOS起動→GRUB2メニュー→kernel選択→起動時のプログレスバーが100%になるも起動せず
+ログは手打ちなので間違ってるところあるかも
+環境 2TB HDD*4でマザボでRAID5を構成した上にCentOS7をインストール
+6TBになるためUEFI
+用途 SSH NFS LDAP 作業ログ プロセスがどこで止まってるのか調べる ※十字キーで切り替えることが出来たのでこの作業しなくても見れました
+kernel選択画面で任意kernelを選択した状態でeキーを押してオプションの編集画面へ入り
+linuxefiで始まる行の末尾にある「 rhgb quiet 」を削除してCtrl+xで起動
+しばらく待っていると以下のログまで確認出来る
+1[ OK ] Started Show Plymouth Boot Screen. 2[ OK ] Reached target Paths. 3[ OK ] Reached target Basic System. 45[ 180.055751] dracut-initqueue[334]: Warning: dracut-initqueue timeout - starting timeout scripts 6～以下時間経過して同じログが続く～ 7一定時間経つと 89[--*-- ] A start job is running for dev-mapper\x2root ( 3min 0sec / no limit) あとは無限にこの待機状態が続く</description></item><item><title>CentOS7でinitramfsを展開する</title><link>/post/centos7%E3%81%A7initramfs%E3%82%92%E5%B1%95%E9%96%8B%E3%81%99%E3%82%8B/</link><pubDate>Thu, 05 Jan 2017 00:00:00 +0000</pubDate><guid>/post/centos7%E3%81%A7initramfs%E3%82%92%E5%B1%95%E9%96%8B%E3%81%99%E3%82%8B/</guid><description>はじめに CentOS7であるモジュールがカーネルに組み込まれているか知りたくなったが従来の方法では展開出来なかったのでまとめ
+今までの手順でgunzipをcpioにパイプすると
+1gzip: initramfs.gz: not in gzip format みたいに怒られてうまくいかない
+展開方法 まずbinwalkというアプリケーションが必要なのでインストール
+インストール https://github.com/devttys0/binwalk
+からクローンしてインストールする
+1$ git clone https://github.com/devttys0/binwalk 2$ cd binwalk 3$ sudo python setup.py install 展開する バイナリでgzipが始まるところ以降を展開したいので調べる
+1$ binwalk /boot/initramfs-3.10.0-514.2.2.el7.x86_64.img 23DECIMAL HEXADECIMAL DESCRIPTION 4-------------------------------------------------------------------------------- 50 0x0 ASCII cpio archive (SVR4 with no CRC), file name: &amp;#34;.&amp;#34;, file name length: &amp;#34;0x00000002&amp;#34;, file size: &amp;#34;0x00000000&amp;#34; 6112 0x70 ASCII cpio archive (SVR4 with no CRC), file name: &amp;#34;kernel&amp;#34;, file name length: &amp;#34;0x00000007&amp;#34;, file size: &amp;#34;0x00000000&amp;#34; 7232 0xE8 ASCII cpio archive (SVR4 with no CRC), file name: &amp;#34;kernel/x86&amp;#34;, file name length: &amp;#34;0x0000000B&amp;#34;, file size: &amp;#34;0x00000000&amp;#34; 8356 0x164 ASCII cpio archive (SVR4 with no CRC), file name: &amp;#34;kernel/x86/microcode&amp;#34;, file name length: &amp;#34;0x00000015&amp;#34;, file size: &amp;#34;0x00000000&amp;#34; 9488 0x1E8 ASCII cpio archive (SVR4 with no CRC), file name: &amp;#34;kernel/x86/microcode/GenuineIntel.</description></item></channel></rss>

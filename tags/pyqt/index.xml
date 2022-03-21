@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PyQt on メモ帳</title><link>/tags/pyqt/</link><description>Recent content in PyQt on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Thu, 15 Sep 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/pyqt/index.xml" rel="self" type="application/rss+xml"/><item><title>PyQtでサブウィンドウを作る</title><link>/post/pyqt%E3%81%A7%E3%82%B5%E3%83%96%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%82%92%E4%BD%9C%E3%82%8B/</link><pubDate>Thu, 15 Sep 2016 00:00:00 +0000</pubDate><guid>/post/pyqt%E3%81%A7%E3%82%B5%E3%83%96%E3%82%A6%E3%82%A3%E3%83%B3%E3%83%89%E3%82%A6%E3%82%92%E4%BD%9C%E3%82%8B/</guid><description>はじめに いつも検索しちゃうのでメモ
+QtDesignerで作ったオリジナルなダイアログを出したい時の話
+PyQt5で書いてるけど4でも大体同じ
+ウィンドウを作る 予め2つのウィンドウを作成します
+メインの画面はMainWindowを使って作り
+サブの画面はFormを使って作成します
+コンバート いつも通りpyファイルを生成する
+1$ pyuic5 mainwindow.ui &amp;gt; ui_mainwindow.py 2$ pyuic5 subwindow.ui &amp;gt; ui_subwindow.py コード 1# -*- coding: utf-8 -*- 23import sys 4from PyQt5 import QtWidgets 567class SubWindow(QtWidgets.QDialog): 8def __init__(self, parent=None): 9QtWidgets.QDialog.__init__(self, parent) 10self.ui = Ui_SubWindow() 11self.ui.setupUi(self) 1213def show(self): 14self.exec_() 1516class MainWindow(QtWidgets.QMainWindow): 17def __init__(self, parent=None): 18QtWidgets.QMainWindow.__init__(self, parent) 19self.ui = Ui_MainWindow() 20self.ui.setupUi(self) 2122self.sub = SubWindow(self) 2324def openDialog(self): 25self.sub.show() 2627if __name__ == &amp;#34;__main__&amp;#34;: 28app = QtWidgets.QApplication(sys.argv) 29myapp = MainWindow() 30myapp.</description></item></channel></rss>

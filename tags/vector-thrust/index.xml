@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Vector Thrust on メモ帳</title><link>/tags/vector-thrust/</link><description>Recent content in Vector Thrust on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 12 Nov 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/vector-thrust/index.xml" rel="self" type="application/rss+xml"/><item><title>Vector Thrust日本語化メモ</title><link>/post/vector-thrust%E6%97%A5%E6%9C%AC%E8%AA%9E%E5%8C%96%E3%83%A1%E3%83%A2/</link><pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate><guid>/post/vector-thrust%E6%97%A5%E6%9C%AC%E8%AA%9E%E5%8C%96%E3%83%A1%E3%83%A2/</guid><description>Vector Thrust Steamで売ってるエースコンバットもどき
+日本語化してる人がいないみたいなのでチャレンジした
+手順 そのうち公開するレポジトリから落として上書きする
+公開した
+ただフォントの定義がまだ適当だからこれだと一部の文字が小さくなる
+core_font_JP.xmlのFont要素を必要な個数増やして必要な属性を修正して種類を増やした上で
+Font_Lang_JP.iniに対応するFont要素名を書けば直せる
+ただそれだと文字が欠けた時に修正が面倒なのでこういう構成になってる
+ここまでやったは良いけどしばらく時間が取れないから続きの作業が出来ないし困った
+メモ ファイル構成 ゲームのインストールディレクトリ（Steam/steamapp/common/VectorThrust/）をルートとして
+Language 翻訳ファイルとゲーム側の定義とフォントの定義の紐付けをするファイルが入ってる
+Lang_JP.iniが翻訳ファイル
+Font_Lang_JP.iniがゲーム側の定義とフォントの定義の紐付け
+1[Fonts] 2Default = &amp;#34;JP.19&amp;#34; と書くとゲーム側のDefaultフォントの参照がcore_font_JP.xmlのFont要素のname属性の対応するものが参照される
+ゲーム内で使われてるフォントは「フォント定義名」のとこで調べられる
+media/MyGUI_Media GUI周りのファイルが入ってる
+core_font_JP.xml
+1&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt; 2&amp;lt;MyGUI type=&amp;#34;Font&amp;#34;&amp;gt; 3&amp;lt;Font name=&amp;#34;JP.19&amp;#34; source=&amp;#34;jp.ttf&amp;#34; size=&amp;#34;16&amp;#34; resolution=&amp;#34;50&amp;#34; antialias_colour=&amp;#34;false&amp;#34; space_width=&amp;#34;4&amp;#34; tab_width=&amp;#34;8&amp;#34; cursor_width=&amp;#34;2&amp;#34; distance=&amp;#34;5&amp;#34; offset_height=&amp;#34;0&amp;#34;&amp;gt; 4&amp;lt;Code range=&amp;#34;33 126&amp;#34;/&amp;gt; 5&amp;lt;Code range=&amp;#34;1025 1105&amp;#34;/&amp;gt; 6&amp;lt;Code range=&amp;#34;8470&amp;#34;/&amp;gt; 7&amp;lt;!-- ぁ - ん --&amp;gt; 8&amp;lt;Code range=&amp;#34;12353 12435&amp;#34;/&amp;gt; 9&amp;lt;!-- ア - ン --&amp;gt; 10&amp;lt;Code range=&amp;#34;12449 12534&amp;#34;/&amp;gt; 11&amp;lt;!-- 亜 - 熙 --&amp;gt; 12&amp;lt;Code range=&amp;#34;19968 39640&amp;#34;/&amp;gt; 13&amp;lt;!</description></item></channel></rss>

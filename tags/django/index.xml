@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Django on メモ帳</title><link>/tags/django/</link><description>Recent content in Django on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 02 Jun 2019 00:00:00 +0000</lastBuildDate><atom:link href="/tags/django/index.xml" rel="self" type="application/rss+xml"/><item><title>Django Rest Frameworkでソーシャルログインを実装する</title><link>/post/django-rest-framework%E3%81%A7%E3%82%BD%E3%83%BC%E3%82%B7%E3%83%A3%E3%83%AB%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%82%92%E5%AE%9F%E8%A3%85%E3%81%99%E3%82%8B/</link><pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate><guid>/post/django-rest-framework%E3%81%A7%E3%82%BD%E3%83%BC%E3%82%B7%E3%83%A3%E3%83%AB%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%82%92%E5%AE%9F%E8%A3%85%E3%81%99%E3%82%8B/</guid><description>Django Rest Framework（以降DRF）でソーシャルログインを実装したい時の話
+色々試したものの上手いこと設定出来ず手こずったのでまとめ
+DRFのドキュメントにあるソーシャルログインを試しました．
+今回はGithubでテストしました．
+環境 Python 3.7.3 パッケージ 1$ pip list 2Django 2.2.1 3django-allauth 0.39.1 4django-rest-auth 0.9.5 5djangorestframework 3.9.4 設定 DRFが動くところまでは済んでる前提です．
+上記のパッケージのインストール
+1$ pip install django-allauth django-rest-auth settings.pyにインストールしたアプリを追加
+1INSTALLED_APPS = ( 2..., 3&amp;#39;django.contrib.sites&amp;#39;, # 設定してない場合追加しておく 4&amp;#39;rest_framework&amp;#39;, 5&amp;#39;rest_framework.authtoken&amp;#39;, 6&amp;#39;rest_auth&amp;#39; 7&amp;#39;allauth&amp;#39;, 8&amp;#39;allauth.account&amp;#39;, 9&amp;#39;allauth.socialaccount&amp;#39;, 10&amp;#39;allauth.socialaccount.providers.github&amp;#39;, 11) 12SITE_ID = 1 # 同上 データベースに反映します
+1$ python manage.py migrate Github用の認証ビューを作ります
+1class GithubLogin(SocialLoginView): 2adapter_class = GitHubOAuth2Adapter 3callback_url = &amp;#34;Githubのアプリ側で設定したコールバックURLと合わせる&amp;#34; 4client_class = OAuth2Client 適当なURLと紐づけます</description></item></channel></rss>

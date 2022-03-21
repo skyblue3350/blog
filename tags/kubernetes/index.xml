@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kubernetes on メモ帳</title><link>/tags/kubernetes/</link><description>Recent content in kubernetes on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Mon, 21 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/tags/kubernetes/index.xml" rel="self" type="application/rss+xml"/><item><title>CKA取得しました</title><link>/post/cka%E5%8F%96%E5%BE%97%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F/</link><pubDate>Mon, 21 Mar 2022 00:00:00 +0000</pubDate><guid>/post/cka%E5%8F%96%E5%BE%97%E3%81%97%E3%81%BE%E3%81%97%E3%81%9F/</guid><description>CKA 取りました
+公式サイトの案内通りちょうど24時間後くらいに結果が通知されました。
+66点ボーダーで90点でした。
+気になったことややったことなどを軽くまとめておきます。
+CKA受かってた
+&amp;mdash; スカイ (@skyblue3350) February 27, 2022 バッググラウンド 研究で k8s ちょっと触って2年程お仕事で k8s の管理をしています。
+基本的なリソース管理については知っていてラズパイで k8s hardway したことあるくらいの状態で勉強を始めました。
+スケジュール 2月1日
+CKA取得を決意して勉強開始 2月21日
+CKA-JP 購入 2月24日
+試験申し込み 2月26日
+CKA 受験 2月27日
+結果発表 勉強 先駆者の方々と同じく udemy の CKA コースを受けました。
+定期的にセールしているのでセールしている時に買うのが良いです。
+自分は 1500円の時に買いました。
+https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/ 一通り講義の動画を見て Practice Test をやり模擬試験を受けました。
+この際につまりそうな点とかドキュメントを見たい部分についてはメモをとっておきブックマーク整理の際に利用しました。
+恥ずかしいことに NetworkPolicy 周りについて全然知らずこの辺だけは少し勉強しました。
+余談として模擬試験環境が結構瞬断するので本番でも起きないか不安でしたが特にそういうこともありませんでした。
+ブックマークの準備 他の方が作成されたものをお借りして中身をざっと確認したあと udemy でブックマークしておきたいなと思ったページだけ追加しました。
+また、うっかり他のブックマークを開いてしまわないように Google Chrome のプロファイルを分割しておきました。
+受験 受験環境 試験の申し込みを数日前にしたせいか19時以降の時間しか取れず自宅で受験しました。</description></item><item><title>k8sでPod内からAPIを叩く</title><link>/post/k8s%E3%81%A7pod%E5%86%85%E3%81%8B%E3%82%89api%E3%82%92%E5%8F%A9%E3%81%8F/</link><pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate><guid>/post/k8s%E3%81%A7pod%E5%86%85%E3%81%8B%E3%82%89api%E3%82%92%E5%8F%A9%E3%81%8F/</guid><description>k8sでAPIを叩く記事をだいぶ前に書きましたが最終的にPodとして配置することになりました．
+この場合はtokenをベタに書かなくてももっと手軽に認証できるので試します．
+環境はk8s v1.9.3で検証しています．
+Goだと下記みたいなやつをPythonでやりたいというお話です．
+https://github.com/kubernetes/client-go/tree/master/examples/in-cluster-client-configuration
+ちなみにexampleの中にありました．
+https://github.com/kubernetes-client/python/blob/master/examples/in_cluster_config.py
+ほぼ前回のGKEでAPIを利用してみると同じです．
+PodからAPIを利用するためにServiceAccountが必要となるのでまずServiceAccountを作成します．
+今回以下の条件で作成します
+Namespace
+ns_sample ServiceAccount
+sa_sample ClusterRole
+cr_sample ClusterRoleBinding
+crb_sample この条件でapi.ymlを作ってリソースを作成します．
+1apiVersion:v12kind:Namespace3metadata:4name:ns_sample56---78apiVersion:v19kind:ServiceAccount10metadata:11name:sa_sample12namespace:ns_sample1314---1516kind:ClusterRole17apiVersion:rbac.authorization.k8s.io/v118metadata:19name:cr_sample20namespace:magi2122rules:23- apiGroups:[&amp;#34;*&amp;#34;]24resources:[&amp;#34;*&amp;#34;]25verbs:[&amp;#34;*&amp;#34;]2627---2829kind:ClusterRoleBinding30apiVersion:rbac.authorization.k8s.io/v131metadata:32name:crb_sample33namespace:ns_sample3435subjects:36- kind:ServiceAccount37name:sa_sample38namespace:ns_sample39roleRef:40kind:ClusterRole41name:cr_sample42apiGroup:rbac.authorization.k8s.ioリソースを作成します
+1$ kubectl create -f api.yml 各リソースの状態に関しては前回の記事を参考に確認します．
+最後にこれをPodから利用します．
+Pod内部からの認証は下記コードでできます．
+1from kubernetes import client, config 23config.load_incluster_config() このコードを実行するPodにServiceAccountを紐付ければ自動でSecretを読み込み認証が行われます．
+1apiVersion:v12kind:Pod3metadata:4name:sample5spec:6serviceAccountName:sa_sample7containers:8- name:sample9image:sample/image既存の認証との切り替えは環境変数にKUBERNETES_SERVICE_HOSTがあるかを基準にすると良さそうです
+1if os.environ.get(&amp;#34;KUBERNETES_SERVICE_HOST&amp;#34;): 2configuration = config.load_incluster_config()</description></item><item><title>GKEでAPIを利用してみる</title><link>/post/gke%E3%81%A7api%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B/</link><pubDate>Tue, 27 Nov 2018 00:00:00 +0000</pubDate><guid>/post/gke%E3%81%A7api%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B/</guid><description>GKEのAPIを利用してリソースの操作してみるメモ．
+多分オンプレも同じですがまだ検証してないので動作確認したら追記します．
+追記　2019/03/06
+オンプレ環境下でも問題なく動きました
+環境 環境は以下です．
+1$ kubectl version 2Client Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;10&amp;#34;, GitVersion:&amp;#34;v1.10.7&amp;#34;, GitCommit:&amp;#34;0c38c362511b20a098d7cd855f1314dad92c2780&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-08-20T10:09:03Z&amp;#34;, GoVersion:&amp;#34;go1.9.3&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 3Server Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9+&amp;#34;, GitVersion:&amp;#34;v1.9.7-gke.11&amp;#34;, GitCommit:&amp;#34;dc4f6dda6a08aae2108d7a7fdc2a44fa23900f4c&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-11-10T20:22:02Z&amp;#34;, GoVersion:&amp;#34;go1.9.3b4&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} APIの利用 とりあえず叩いてみる 公式ドキュメント記載の方法でひとまず叩いてみます
+https://kubernetes.io/docs/tasks/administer-cluster/access-cluster-api/ 1$ APISERVER=$(kubectl config view | grep server | cut -f 2- -d &amp;#34;:&amp;#34; | tr -d &amp;#34; &amp;#34;) 2$ TOKEN=$(kubectl describe secret $(kubectl get secrets | grep default | cut -f1 -d &amp;#39; &amp;#39;) | grep -E &amp;#39;^token&amp;#39; | cut -f2 -d&amp;#39;:&amp;#39; | tr -d &amp;#39;\t&amp;#39;) 3$ echo ${APISERVER} 4$ echo ${TOKEN} 取得できたら試しに叩いてみます．</description></item><item><title>k8sでノードをメンテナンスする</title><link>/post/k8s%E3%81%A7%E3%83%8E%E3%83%BC%E3%83%89%E3%82%92%E3%83%A1%E3%83%B3%E3%83%86%E3%83%8A%E3%83%B3%E3%82%B9%E3%81%99%E3%82%8B/</link><pubDate>Tue, 28 Aug 2018 00:00:00 +0000</pubDate><guid>/post/k8s%E3%81%A7%E3%83%8E%E3%83%BC%E3%83%89%E3%82%92%E3%83%A1%E3%83%B3%E3%83%86%E3%83%8A%E3%83%B3%E3%82%B9%E3%81%99%E3%82%8B/</guid><description>k8sでノードを切り離したい時やメンテナンスしたい時のメモ
+1$ kubectl get node -o wide 2NAME STATUS ROLES AGE VERSION EXTERNAL-IP OS-IMAGE KERNEL-VERSION CONTAINER-RUNTIME 3kube01 Ready &amp;lt;none&amp;gt; 195d v1.9.3 &amp;lt;none&amp;gt; Ubuntu 16.04.3 LTS 4.4.0-112-generic docker://17.12.0-ce 4kube02 Ready &amp;lt;none&amp;gt; 195d v1.9.3 &amp;lt;none&amp;gt; Ubuntu 16.04.3 LTS 4.4.0-112-generic docker://17.12.0-ce 5kubemaster Ready master 195d v1.9.3 &amp;lt;none&amp;gt; Ubuntu 16.04.5 LTS 4.4.0-112-generic docker://18.6.0 6$ kubectl get pod -o wide --all-namespaces | grep kube02 7動いてるコンテナ一覧が見える というわけでノードに配置されているコンテナを追い出す
+Deployment系は多分再配置が行われるがPOD単体のものなどは多分行われないので事前に確認しておくこと
+1$ kubectl drain --ignore-daemonsets --force kube02 メンテが終わったら再スケジュールするようにする
+1$ kubectl uncordon kube02</description></item><item><title>k8sでNFSマウント出来なくて困った話</title><link>/post/k8s%E3%81%A7nfs%E3%83%9E%E3%82%A6%E3%83%B3%E3%83%88%E5%87%BA%E6%9D%A5%E3%81%AA%E3%81%8F%E3%81%A6%E5%9B%B0%E3%81%A3%E3%81%9F%E8%A9%B1/</link><pubDate>Tue, 29 May 2018 00:00:00 +0000</pubDate><guid>/post/k8s%E3%81%A7nfs%E3%83%9E%E3%82%A6%E3%83%B3%E3%83%88%E5%87%BA%E6%9D%A5%E3%81%AA%E3%81%8F%E3%81%A6%E5%9B%B0%E3%81%A3%E3%81%9F%E8%A9%B1/</guid><description>はじめに k8sでNFSマウントしようとすると
+1Unable to mount volumes for pod &amp;#34;test_default(xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)&amp;#34;: timeout expired waiting for volumes to attach/mount for pod &amp;#34;default&amp;#34;/&amp;#34;test&amp;#34;. list of unattached/unmounted volumes=[nfs] みたいなエラーで怒られて上手くいかなかったのでその原因の調べ方と設定時の注意点のメモ
+そもそもどうやってマウントするの？みたいな話は公式のドキュメント見た方がわかりやすいのでそちらに譲ります
+DockerホストでNFSをマウントして条件に合致するpodにデータボリュームでNFSの領域をマウントしてるっぽい
+https://kubernetes.io/docs/concepts/storage/volumes/#nfs https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs 環境 相変わらずオンプレです．
+物理マシンを2台にUbuntu16.04をインストールし，それぞれMasterとClusterとして設定してあります．
+バージョンはv1.9.3です．
+1$ kubectl version 2Client Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.3&amp;#34;, GitCommit:&amp;#34;d2835416544f298c919e2ead3be3d0864b52323b&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-02-07T12:22:21Z&amp;#34;, GoVersion:&amp;#34;go1.9.2&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 3Server Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.3&amp;#34;, GitCommit:&amp;#34;d2835416544f298c919e2ead3be3d0864b52323b&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-02-07T11:55:20Z&amp;#34;, GoVersion:&amp;#34;go1.9.2&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 今回はMaster側にNFS Serverを設定しましたが適宜別のマシン等でNFSを提供できるように設定しておきます．
+一応exportsは制限なしで設定した上でこの記事を書いていますが仕組み的にDockerをホストしているマシンからさえマウントできれば問題ありません．
+1$ tail -n 1 /etc/exports 2/opt/nfs *(rw,sync,no_subtree_check,no_root_squash) 設定ファイル PVと作成してPVの条件に適合するPVCを作ってそれをpodにマウントしてやればOKです．</description></item><item><title>k8sでingress-nginxを設定する</title><link>/post/k8s%E3%81%A7ingress-nginx%E3%82%92%E8%A8%AD%E5%AE%9A%E3%81%99%E3%82%8B/</link><pubDate>Thu, 29 Mar 2018 00:00:00 +0000</pubDate><guid>/post/k8s%E3%81%A7ingress-nginx%E3%82%92%E8%A8%AD%E5%AE%9A%E3%81%99%E3%82%8B/</guid><description>はじめに オンプレk8sでingress-nginxを設定する記事があんまり見つからないので苦労したのでメモ
+環境 Master Clusterともに同じ環境です
+説明の都合上
+Masterは192.168.1.10
+Workerは192.168.1.11
+で説明します
+1$ cat /etc/lsb-release 2DISTRIB_ID=Ubuntu 3DISTRIB_RELEASE=16.04 4DISTRIB_CODENAME=xenial 5DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 16.04.3 LTS&amp;#34; 6$ kubeadm version 7kubeadm version: &amp;amp;version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.3&amp;#34;, GitCommit:&amp;#34;d2835416544f298c919e2ead3be3d0864b52323b&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-02-07T11:55:20Z&amp;#34;, GoVersion:&amp;#34;go1.9.2&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 8kubectl version 9Client Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.3&amp;#34;, GitCommit:&amp;#34;d2835416544f298c919e2ead3be3d0864b52323b&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-02-07T12:22:21Z&amp;#34;, GoVersion:&amp;#34;go1.9.2&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 10Server Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.3&amp;#34;, GitCommit:&amp;#34;d2835416544f298c919e2ead3be3d0864b52323b&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-02-07T11:55:20Z&amp;#34;, GoVersion:&amp;#34;go1.9.2&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} インストール 基本的にymlをドキュメント通り入れるだけです
+1$ curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/namespace.yaml \ 2| kubectl apply -f - 3$ curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/default-backend.yaml \ 4| kubectl apply -f - 5$ curl https://raw.</description></item><item><title>kubernetesでGPUコンテナを動かす</title><link>/post/kubernetes%E3%81%A7gpu%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E5%8B%95%E3%81%8B%E3%81%99/</link><pubDate>Sat, 13 Jan 2018 00:00:00 +0000</pubDate><guid>/post/kubernetes%E3%81%A7gpu%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E5%8B%95%E3%81%8B%E3%81%99/</guid><description>はじめに 1.7まではこちらに書いてある方法でしかGPUコンテナが扱えませんでしたが，
+k8s-device-pluginを使うことでk8s上でもう少し簡単にGPUコンテナを扱えるようになるみたいなので試してみました．
+前提 基本的に前回と同じで物理マシン2台ですがk8sのバージョンだけあげています．
+v1.9.1のk8s環境が構築されていることと各pod間とグローバルにつながっていることくらいです．
+バージョンアップ自体はドキュメント通りやればあがりますが色々検証しているうちに動かなくなってしまったので一度k8s絡みのパッケージを削除した上でクリーンなk8s環境を作り直しています．
+環境 Master 1root@kubernetes:~# cat /etc/lsb-release 2DISTRIB_ID=Ubuntu 3DISTRIB_RELEASE=16.04 4DISTRIB_CODENAME=xenial 5DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 16.04.3 LTS&amp;#34; 6root@kubernetes:~# uname -a 7Linux kubernetes 4.4.0-62-generic #83-Ubuntu SMP Wed Jan 18 14:10:15 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux 8root@kubernetes:~# kubectl version 9Client Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.1&amp;#34;, GitCommit:&amp;#34;3a1c9449a956b6026f075fa3134ff92f7d55f812&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-01-04T11:52:23Z&amp;#34;, GoVersion:&amp;#34;go1.9.2&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 10Server Version: version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.1&amp;#34;, GitCommit:&amp;#34;3a1c9449a956b6026f075fa3134ff92f7d55f812&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-01-04T11:40:06Z&amp;#34;, GoVersion:&amp;#34;go1.9.2&amp;#34;, Compiler:&amp;#34;gc&amp;#34;, Platform:&amp;#34;linux/amd64&amp;#34;} 11root@kubernetes:~# kubeadm version 12kubeadm version: &amp;amp;version.Info{Major:&amp;#34;1&amp;#34;, Minor:&amp;#34;9&amp;#34;, GitVersion:&amp;#34;v1.9.1&amp;#34;, GitCommit:&amp;#34;3a1c9449a956b6026f075fa3134ff92f7d55f812&amp;#34;, GitTreeState:&amp;#34;clean&amp;#34;, BuildDate:&amp;#34;2018-01-04T11:40:06Z&amp;#34;, GoVersion:&amp;#34;go1.</description></item><item><title>kubernetes 1.8を構築する</title><link>/post/kubernetes-1.8%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B/</link><pubDate>Sun, 12 Nov 2017 00:00:00 +0000</pubDate><guid>/post/kubernetes-1.8%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B/</guid><description>はじめに kubernetes 1.8を構築してみた
+swapが有効だと裏でサービスがコケて上手く行かなかったり権限周りでダッシュボードが動かなかったりと詰まりポイントが多かったのでメモ書き程度に残しておく
+追記
+1.8と1.9.2と1.9.3で同じ方法でセットアップできるのを確認しました．
+アップグレードはドキュメント読んでやってください．
+ドキュメント 公式を読みます
+kubernetes setup Installing kubeadm 環境 Ubuntu 16.04 x 2
+2台とも物理マシン Master 1root@kubernetes:~# cat /etc/lsb-release 2DISTRIB_ID=Ubuntu 3DISTRIB_RELEASE=16.04 4DISTRIB_CODENAME=xenial 5DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 16.04.3 LTS&amp;#34; 6root@kubernetes:~# uname -a 7Linux kubernetes 4.4.0-62-generic #83-Ubuntu SMP Wed Jan 18 14:10:15 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux Worker 1root@kubernetes-node:~# cat /etc/lsb-release 2DISTRIB_ID=Ubuntu 3DISTRIB_RELEASE=16.04 4DISTRIB_CODENAME=xenial 5DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 16.04.2 LTS&amp;#34; 6root@kubernetes-node:~# uname -a 7Linux kubernetes-node 4.4.0-92-generic #115-Ubuntu SMP Thu Aug 10 09:04:33 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux 環境構築 途中までは一緒</description></item></channel></rss>

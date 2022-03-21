@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PT3 on メモ帳</title><link>/tags/pt3/</link><description>Recent content in PT3 on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 11 Nov 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/pt3/index.xml" rel="self" type="application/rss+xml"/><item><title>PT3で録画と視聴が出来なくなった</title><link>/post/pt3%E3%81%A7%E9%8C%B2%E7%94%BB%E3%81%A8%E8%A6%96%E8%81%B4%E3%81%8C%E5%87%BA%E6%9D%A5%E3%81%AA%E3%81%8F%E3%81%AA%E3%81%A3%E3%81%9F/</link><pubDate>Fri, 11 Nov 2016 00:00:00 +0000</pubDate><guid>/post/pt3%E3%81%A7%E9%8C%B2%E7%94%BB%E3%81%A8%E8%A6%96%E8%81%B4%E3%81%8C%E5%87%BA%E6%9D%A5%E3%81%AA%E3%81%8F%E3%81%AA%E3%81%A3%E3%81%9F/</guid><description>はじめに 結論はpt3_drvが消えてたのでリビルドした
+Chinachuを利用して録画鯖を建ててるけど今日リアルタイム視聴しようとしたら視聴出来ないことに気付いた
+ここのところ放置して利用してなかったから気づかなかった
+心当たりがあるのはdist-upgradeしたことくらい
+VLCでxspf開いたら何回も認証を要求される
+最初はVLCで認証がコケてる？と思ったので試しにxspfで呼びに行くURLを叩いてみた
+1&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt; 2&amp;lt;playlist version=&amp;#34;1&amp;#34; xmlns=&amp;#34;http://xspf.org/ns/0/&amp;#34;&amp;gt; 3&amp;lt;trackList&amp;gt; 4&amp;lt;track&amp;gt; 5&amp;lt;location&amp;gt;URL&amp;lt;/location&amp;gt; 6&amp;lt;title&amp;gt;ほげほげ&amp;lt;/title&amp;gt; 7&amp;lt;/track&amp;gt; 8&amp;lt;/trackList&amp;gt; 9&amp;lt;/playlist&amp;gt; URLをブラウザで開いて認証してみたら認証は通る
+ただwatch.m2tsが空で落ちてくる
+のでそもそもPT3からデータが抜けてないんじゃないかなって思った
+試しに録画してみる のでとりあえず録画コマンドからテストしてみる
+1$ recpt1 --b25 --strip 27 20 test.ts 2using B25... 3enable B25 strip 4pid = 2787 5Cannot tune to the specified channel 録画出来ない…
+ということは録画前の環境構築かなって思って調べたらドライバを無効にして有効にすると録画出来るらしい
+1$ sudo modprobe -r pt3_drv sudo modprobe pt3_drv 2modprobe: FATAL: Module pt3_drv not found. そもそもなかった
+pt3_drvをビルドする
+1$ git clone https://github.com/m-tsudo/pt3.git 2$ cd pt3 3$ make 4$ sudo make install 5$ sudo modprobe pt3_drv これで解決した</description></item></channel></rss>

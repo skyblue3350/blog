@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Python3 on メモ帳</title><link>/tags/python3/</link><description>Recent content in Python3 on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sat, 10 Sep 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/python3/index.xml" rel="self" type="application/rss+xml"/><item><title>Unable to find vcvarsall.bat</title><link>/post/unable-to-find-vcvarsall.bat/</link><pubDate>Sat, 10 Sep 2016 00:00:00 +0000</pubDate><guid>/post/unable-to-find-vcvarsall.bat/</guid><description>問題点 Windows7 64bit Python3.5 環境でパッケージ入れようとしたら以下のエラーで怒られた
+1Unable to find vcvarsall.bat その解決策
+環境作ると毎回これやってる気がする
+解決策 コンパイラを入れる
+対応してるのは
+How to deal with the pain of “unable to find vcvarsall.bat” で確認する
+2.6 ～ 3.2 Microsoft Visual C++ Compiler for Python 2.7 3.3 ～ 3.4 Windows SDK for Windows 7 and .NET 4.0 3.5 Visual C++ Build Tools 2015
+or Visual Studio 2015 3.</description></item></channel></rss>

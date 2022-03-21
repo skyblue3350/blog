@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LimeChat on メモ帳</title><link>/tags/limechat/</link><description>Recent content in LimeChat on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Sun, 18 Sep 2016 00:00:00 +0000</lastBuildDate><atom:link href="/tags/limechat/index.xml" rel="self" type="application/rss+xml"/><item><title>LimeChatのマクロ設定メモ</title><link>/post/limechat%E3%81%AE%E3%83%9E%E3%82%AF%E3%83%AD%E8%A8%AD%E5%AE%9A%E3%83%A1%E3%83%A2/</link><pubDate>Sun, 18 Sep 2016 00:00:00 +0000</pubDate><guid>/post/limechat%E3%81%AE%E3%83%9E%E3%82%AF%E3%83%AD%E8%A8%AD%E5%AE%9A%E3%83%A1%E3%83%A2/</guid><description>ゲームの垂れ流ししてる時に滅多にないけどコメント貰っても気付け無いからどうしようかなーって思ったときに
+TwitchならIRCでチャットに接続出来るので
+Twitch→IRC（LimeChat2）→自作スクリプト
+で良い感じに扱えるんじゃないかと思って試したら少し詰まったのでメモ
+LimeChat 接続 予めサーバーに接続してチャンネルに入ってWeb上の方と問題なく接続出来るか確認しておく
+この辺は解説記事が多いので詰まることもなかった
+一応メモっておくと
+http://www.twitchapps.com/tmi/ に接続してパスワードを発行する LimeChatを起動して「自分で設定する（上級者向け）」みたいな文言のを選択する サーバーの追加（Ctrl+Q）から以下のように設定する 設定名：適当にわかりやすいのを ホスト名：irc.twitch.tv ポート：80 サーバーパスワードを使う：チェック サーバーパスワード：先程生成したのを貼り付け ニックネーム：TwitchのアカウントID 左上のボタン（Alt+C）で接続してみる チャンネル追加（Ctrl+W）で自分のチャンネル（#で始まるもの）を入力 チャンネルに入って適当にWebとLimeChat両方から入力してみてテスト マクロ 設定→マクロ設定（Alt+Shift+M）を開く 新規ボタンをクリックして設定名を入力して新しく作成 マクロファイルの編集画面が開くので新規を押して新しく作成 設定を以下のようにする ユーザー：%me|* コマンド：Privmsg チャンネル：#hogehoge（自分のチャンネル名） メッセージ：空 自分と送信者の状態：なし 動作：Execute（確認用に表示させてるので動いたらExecuteMinimizeに変更する） 送信者：空 動作の情報：ここに自分のプログラムの実行パスを書く 例）python hoge.py &amp;quot;%n %m&amp;quot;
+%nにはユーザー名
+%mにはメッセージが入る
+今回は読み上げするだけなので一文にして渡してるけど必要に応じて適宜送ったり送らなかったりすれば良い OKを2回押してマクロの設定まで戻る 設定名の右横を右クリックし有効にする
+これ忘れてて結構ハマりました　しょーもない プログラム ただ引数として投げられてくるので各言語のargvを参照して好きなように料理すれば良い
+とりあえずこんな感じのコードでも置いてゆかりさんに読み上げてもらうことにした</description></item></channel></rss>

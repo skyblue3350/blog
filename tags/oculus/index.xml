@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oculus on メモ帳</title><link>/tags/oculus/</link><description>Recent content in Oculus on メモ帳</description><generator>Hugo -- gohugo.io</generator><language>ja-jp</language><lastBuildDate>Fri, 30 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="/tags/oculus/index.xml" rel="self" type="application/rss+xml"/><item><title>Oculus Rift買いました</title><link>/post/oculus-rift%E8%B2%B7%E3%81%84%E3%81%BE%E3%81%97%E3%81%9F/</link><pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate><guid>/post/oculus-rift%E8%B2%B7%E3%81%84%E3%81%BE%E3%81%97%E3%81%9F/</guid><description>ブラックフライデーセールで5000円安くなったのでOculus Rift買いました．
+25日に購入したので入荷待ちになるかな？と思いましたが，無事28日の午前には到着しました．
+気になったことをまとめておきます．
+セットアップ センサスタンド x 2（USB3.0 x 2）とRift本体（HDMI + USB3.0）をPCに接続する．
+公式サイトからセットアップ用のexeを落としてきて実行する．
+ウィザードの通り実行していき，問題なく終了．
+セットアップが終わるとデモアプリが起動するので基本操作を学べる．この辺は親切さを感じた．
+※1 RiftがHDMIを1つ取るので複数ディスプレイつないでる人は空きスロットを確認しておいて方が良い．
+完全に失念したので変換ケーブル来るまで不便でした．
+※2 メガネ族は大変というのは事前に聞いてましたが，実際大変なので何かしら対策考えたいと思います．
+ショートテンプルが欲しいけど，現状売り切れてるので難しそう．
+幸いなことに今使用してるメガネでもRiftはつけられました．
+公式サイトにも説明がありますが，メガネ側から掛けていくと良いです．
+Riftのレンズとメガネのレンズが当たりそうで怖かったので，Riftのレンズの保護カバーを外さずに何回か装着テストして大丈夫なことを確認してから保護シート剥がしました．
+コンテンツ やった順に値段とやり方をまとめておきます．
+Steamのものに関しては事前にSteamVRを設定しておく必要あり．
+Robo Recall（無料）（Oculusストア） Oculusストアから無料で落とせる．
+プレイ中にケーブルが絡まないかと心配していたが，移動方法が良く考えられていたので2時間くらい遊んで1回くらいしか絡まなかった．
+YouTube VR（無料）（Steam） SteamにYouTubeのアプリがあるのでそれを入れた．
+事前にSteamVRの設定が必要．Riftをつないだ状態でSteamクライアントを起動するとSteamVRを入れるように促されるのでそこからインストールして起動すると設定できる．
+出てこなかったらSteamクライアント -&amp;gt; ライブラリ -&amp;gt; ツール -&amp;gt; 「SteamVR」で検索すると出てくるので，それをダウンロードする．
+何故かRiftが認識されなかったがPCを再起動したら認識されるようになった．
+あとはOculusの設定 -&amp;gt; 一般 -&amp;gt; 提供元不明アプリの許可をしておくのも忘れずに．
+SteamVRさえ設定できていれば，YouTubeVR自体は問題なく起動できる．
+動画は個人的にピンと来なかった．
+Epic Roller Coasters（無料）（Oculusストア） VRと言えばジェットコースターみたいなところあるので試した．
+Oculusストアからダウンロードできる．
+結構没入感はあったが加減速の感覚がないのに視点が加減速してるせいか少し酔いそうになった．
+Assetto Corsa（有料：2050円）（Steam） 設定のグラフィックス設定で出力方法をOculusに変更するだけで遊べるようになる．
+ただ，Oculus Touchの操作は対応してないっぽいのでマウスが必要だった．
+ゲーム始まってしまえばハンコンから操作できるので問題なし．
+初期位置がおかしい時はOculus Touchを押してメニューに戻ると初期位置をリセットできるボタンがあるのでそこから．
+細かいシート位置調整はゲーム中のUIの位置調整からできるので，ある程度はゲームからもできる．
+ただゲーム内のappsの描画位置が顔に近すぎるので，もうちょい奥にして欲しい．
+config書き換えればいけるかもしれない．
+Euro Truck Simulator 2（有料：2280円）（Steam） 下記で詳細に説明されているので説明はそちらで．</description></item></channel></rss>
