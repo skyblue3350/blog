@@ -182,6 +182,12 @@ OrganizationalUnit 配下に User を追加しておきます。
 
 ### freeradius の設定
 
+<details>
+  <summary>freeradius の設定（追記前）</summary>
+
+折りたたんでいる部分は 2023/02/11 時点でこちらの手順を再検証したところうまく動きませんでした。
+イメージを独自でビルドする方法を改めて追記したのでそちらを御覧ください。
+
 以下のイメージを利用します。
 
 - [irasnyd/freeradius-ldap](https://hub.docker.com/r/irasnyd/freeradius-ldap)
@@ -208,10 +214,158 @@ services:
       - "RADIUS_CLIENT_CREDENTIALS=127.0.0.1:password1234"
 ```
 
-コンテナを起動しておきます。
+</details>
+
+実行イメージを手元でビルドするようにします。
+
+```yaml
+version: "3"
+services:
+  ldap:
+  ...
+  radius:
+    build: ./freeradius
+    ports:
+      - "1812:1812/udp"
+      - "1813:1813/udp"
+```
+
+`./freeradius/Dockerfile`
+
+公式の3.2系の最新版を利用してイメージをビルドします。
+最小構成から LDAP 関連の設定のみ追加します。
+
+```dockerfile
+FROM freeradius/freeradius-server:latest-3.2
+
+COPY raddb/ /etc/raddb/
+
+RUN ln -s /etc/raddb/mods-available/ldap /etc/raddb/mods-enabled/ldap
+
+CMD ["radiusd", "-f", "-l", "stdout"]
+```
+
+`./freeradius/raddb/mods-available/ldap`
+
+https://github.com/FreeRADIUS/freeradius-server/blob/v3.2.x/raddb/mods-available/ldap を参考に設定します。
 
 ```
-sudo docker-compose up -d
+# -*- text -*-
+
+# base file
+# https://github.com/FreeRADIUS/freeradius-server/blob/v3.2.x/raddb/mods-available/ldap
+
+ldap {
+    server = 'ldap'
+    base_dn = 'dc=sample,dc=com'
+    identity = 'cn=admin,dc=sample,dc=com'
+    password = 'sample_ldap_password'
+
+	sasl {}
+	update {
+		control:Password-With-Header	+= 'userPassword'
+
+		control:			+= 'radiusControlAttribute'
+		request:			+= 'radiusRequestAttribute'
+		reply:				+= 'radiusReplyAttribute'
+	}
+
+	user {
+		base_dn = "${..base_dn}"
+		filter = "(uid=%{%{Stripped-User-Name}:-%{User-Name}})"
+		sasl {}
+	}
+
+	group {
+		base_dn = "${..base_dn}"
+		filter = '(objectClass=posixGroup)'
+		membership_attribute = 'memberOf'
+	}
+
+	profile {}
+
+	client {
+		base_dn = "${..base_dn}"
+		filter = '(objectClass=radiusClient)'
+		template {}
+		attribute {
+			ipaddr				= 'radiusClientIdentifier'
+			secret				= 'radiusClientSecret'
+		}
+	}
+
+	accounting {
+		reference = "%{tolower:type.%{Acct-Status-Type}}"
+
+		type {
+			start {
+				update {
+					description := "Online at %S"
+				}
+			}
+
+			interim-update {
+				update {
+					description := "Last seen at %S"
+				}
+			}
+
+			stop {
+				update {
+					description := "Offline at %S"
+				}
+			}
+		}
+	}
+
+	post-auth {
+		update {
+			description := "Authenticated at %S"
+		}
+	}
+
+	options {
+		chase_referrals = yes
+		rebind = yes
+		res_timeout = 10
+		srv_timelimit = 3
+		net_timeout = 1
+		idle = 60
+		probes = 3
+		interval = 3
+		ldap_debug = 0x0028
+	}
+
+	tls {
+		cipher_list = "DEFAULT"
+	}
+
+	pool {
+		start = ${thread[pool].start_servers}
+		min = ${thread[pool].min_spare_servers}
+		max = ${thread[pool].max_servers}
+		spare = ${thread[pool].max_spare_servers}
+		uses = 0
+		retry_delay = 30
+		lifetime = 0
+		idle_timeout = 60
+	}
+}
+```
+
+`./freeradius/raddb/clients.conf`
+
+```
+client ldap {
+	ipaddr = 127.0.0.1
+	secret = password1234
+}
+```
+
+上記のファイルを利用してビルドした上でコンテナを起動しておきます。
+
+```
+sudo docker-compose up -d --build
 ```
 
 radtest コマンドを利用して freeradius <-> ldap 間の接続テストを行います。
@@ -268,7 +422,43 @@ radius_1  | Tue Dec 27 06:32:41 2022 : Error: Ignoring request to auth address *
 
 よりセキュアにする場合は `LDAP_RADIUS_ACCESS_GROUP` 等を利用して特定ユーザーのみグループに入れて利用可能等にすると良さそうです。
 
+最後にこの後の手順で追加する SoftEther からの接続を受け入れるために以下に clients.conf を差し替えておきます。
+
+```
+```
+client ldap {
+	ipaddr = vpn
+	secret = password1234
+}
+```
+```
+
 ### SoftEther の設定変更
+
+---
+
+#### 追記 2023/02/11
+
+この設定が使えるのはリージョンロックの影響で日本か中国でない環境に限ります。
+検証時は AWS のインスタンスを適当に建てていたので記憶がないですが、手元環境で構築したところ Radius 認証を有効に出来ませんでした。
+
+その場合は下記を参考に回避できます。
+
+- [SoftEther のリージョンロックを外して RADIUS や証明書認証を有効にする](https://blog.cles.jp/item/9524)
+
+下記 Dockerfile でソースコードをダウンロードしたあとに設定を書き換えます。
+
+- [siomiz/SoftEtherVPN Dockerfile](https://github.com/siomiz/SoftEtherVPN/blob/6f546d6c4445e13de3dcb41f0c7b2a714441e9c7/Dockerfile#L9)
+
+以下のような置換でブログと同様の内容でリビルドした Docker image を使うことで日本環境された場合でも当該機能を有効化できました。
+
+```
+RUN sed -i -e "10920 s/ret;/false;/g" /usr/local/src/SoftEtherVPN_Stable-4.39-9772-beta/src/Cedar/Server.c
+```
+
+追記終わり
+
+---
 
 radius サーバが用意できたのでつなぎこみます。
 先程 VPN を張れるようにした際にリモートから設定投入できるようになっているので GUI で設定してしまいます。
