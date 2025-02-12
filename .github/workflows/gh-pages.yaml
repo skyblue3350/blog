@@ -6,6 +6,9 @@ on:
 
 jobs:
   deploy:
+    permissions:
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
 
     steps:
@@ -21,9 +24,9 @@ jobs:
       - name: Build
         run: hugo --minify
 
-      - name: publish
-        uses: peaceiris/actions-gh-pages@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./public
-          cname: blog.sky-net.pw
+          path: public
+
+      - name: publish
+        uses: actions/deploy-pages@v4
