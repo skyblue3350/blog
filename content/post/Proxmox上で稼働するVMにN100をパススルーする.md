@@ -1,7 +1,7 @@
 +++
 author = "すかい"
 title = "Proxmox上で稼働するVMにN100をパススルーする"
-date = "2026/06/27"
+date = "2026-06-27"
 description = "Proxmoxでパススルーするメモ"
 tags = [
     "Ubuntu",

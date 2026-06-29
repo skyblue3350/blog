@@ -1,7 +1,7 @@
 +++
 author = "すかい"
 title = "k8sでQSVを利用する"
-date = "2026/06/28"
+date = "2026-06-28"
 description = "k8s上で稼働するKonomi-TVでQSVEncCするメモ"
 tags = [
     "Ubuntu",
